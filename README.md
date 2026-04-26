@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://render.com/deploy?repo=https://github.com/vigneshvar11/ai-catalyst">
-    <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render">
+  <a href="https://ai-catalyest.onrender.com">
+    <img src="https://img.shields.io/badge/Live_Dashboard-ai--catalyest.onrender.com-009999?style=for-the-badge" alt="Live Dashboard">
   </a>
 </p>
 
