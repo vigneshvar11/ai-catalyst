@@ -20,14 +20,23 @@ const state = {
 
 // ════════════════════ INIT ════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
-  state.socket = io();
-  await loadAllData();
-  setupNavigation();
-  setupAuth();
-  setupSocketListeners();
-  renderCurrentTab();
-  startCountdown();
-  checkForActiveSurvey();
+  showLoader('Connecting to server...');
+  try {
+    await loadAllData();
+    state.socket = io({ reconnection: true, reconnectionAttempts: 10, reconnectionDelay: 1000 });
+    setupNavigation();
+    setupAuth();
+    setupSocketListeners();
+    renderCurrentTab();
+    startCountdown();
+    checkForActiveSurvey();
+    hideLoader();
+  } catch (e) {
+    console.error('Init failed:', e);
+    showLoader('Server is waking up... retrying', true);
+    // Auto-retry after 5s
+    setTimeout(() => location.reload(), 5000);
+  }
 
   // Easter egg: type "aicatalyst" anywhere
   let easterBuf = '';
@@ -44,6 +53,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
+// ════════════════════ LOADER ════════════════════
+function showLoader(msg, showRetry = false) {
+  const el = document.getElementById('app-loader');
+  if (!el) return;
+  el.classList.remove('hidden');
+  document.getElementById('loader-text').textContent = msg;
+  document.getElementById('loader-retry').style.display = showRetry ? 'inline-block' : 'none';
+}
+function hideLoader() {
+  const el = document.getElementById('app-loader');
+  if (!el) return;
+  el.classList.add('hidden');
+  setTimeout(() => el.remove(), 500);
+}
+
 // ════════════════════ DATA LOADING ════════════════════
 async function loadAllData() {
   const [members, events, points, leaderboard, quizzes, surveys] = await Promise.all([
@@ -54,6 +78,10 @@ async function loadAllData() {
     api('/api/quizzes'),
     api('/api/surveys'),
   ]);
+  // Validate we got real data (not all empty from cold-start failures)
+  if (!members.length && !events.length) {
+    throw new Error('No data returned — server may still be starting');
+  }
   state.members = members;
   state.events = events.sort((a, b) => a.month - b.month);
   state.points = points;
@@ -63,13 +91,24 @@ async function loadAllData() {
 }
 
 async function api(url, options = {}) {
-  try {
-    const res = await fetch(url, {
-      headers: { 'Content-Type': 'application/json', ...options.headers },
-      ...options,
-    });
-    return await res.json();
-  } catch (e) { console.error('API Error:', e); return []; }
+  const maxRetries = 3;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'Content-Type': 'application/json', ...options.headers },
+        ...options,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      console.warn(`API ${url} attempt ${attempt + 1}/${maxRetries}:`, e.message);
+      if (attempt < maxRetries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1))); // 1s, 2s backoff
+      }
+    }
+  }
+  console.error('API failed after retries:', url);
+  return [];
 }
 
 // ════════════════════ NAVIGATION ════════════════════
