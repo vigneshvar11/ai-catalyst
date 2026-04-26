@@ -8,6 +8,12 @@
   <em>Siemens · Chennai · FT D AA IN SGI DET ENGSYS</em>
 </p>
 
+<p align="center">
+  <a href="https://render.com/deploy?repo=https://github.com/vigneshvar11/embrace-ai">
+    <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render">
+  </a>
+</p>
+
 ---
 
 ## What Is This?
