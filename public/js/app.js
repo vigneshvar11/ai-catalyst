@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   EMBRACE AI — Frontend Application
+   AI CatalyESt — Frontend Application
    ═══════════════════════════════════════════════════════════ */
 
 // ════════════════════ STATE ════════════════════
@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   startCountdown();
   checkForActiveSurvey();
 
-  // Easter egg: type "embraceai" anywhere
+  // Easter egg: type "aicatalyst" anywhere
   let easterBuf = '';
   document.addEventListener('keypress', e => {
     easterBuf += e.key;
-    if (easterBuf.includes('embraceai')) {
+    if (easterBuf.includes('aicatalyst')) {
       easterBuf = '';
       document.body.style.transition = '1s';
       document.querySelector('.hero-text h1').innerHTML = '🤖 You found the <span class="gradient-text">secret</span>!';
-      toast('🎉 Easter egg unlocked! You truly embrace AI.', 'success');
+      toast('🎉 Easter egg unlocked! You truly AI CatalyESt.', 'success');
       setTimeout(() => location.reload(), 3000);
     }
     if (easterBuf.length > 20) easterBuf = easterBuf.slice(-20);

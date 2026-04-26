@@ -1,4 +1,4 @@
-# EMBRACE AI — Copilot Instructions
+# AI CatalyESt — Copilot Instructions
 
 ## Architecture Overview
 

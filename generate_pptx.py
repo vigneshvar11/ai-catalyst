@@ -1,5 +1,5 @@
 """
-Generate EMBRACE AI — 12-Month Initiative PowerPoint Presentation
+Generate AI CatalyESt — 12-Month Initiative PowerPoint Presentation
 """
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
@@ -9,7 +9,7 @@ from pptx.enum.shapes import MSO_SHAPE
 import os
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(BASE, "EMBRACE_AI_Presentation.pptx")
+OUT = os.path.join(BASE, "AI_CatalyESt_Presentation.pptx")
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -87,7 +87,7 @@ def add_divider(slide, left, top, width, color=PETROL):
     shape.line.fill.background()
     return shape
 
-def slide_footer(slide, text="EMBRACE AI  ·  Engineering Systems  ·  Siemens"):
+def slide_footer(slide, text="AI CatalyESt  ·  Engineering Systems  ·  Siemens"):
     add_text_box(slide, Inches(0.5), Inches(7.0), Inches(8), Inches(0.4),
                  text, font_size=9, color=GREY_LIGHT)
 
@@ -108,7 +108,7 @@ add_text_box(slide, Inches(1.0), Inches(0.8), Inches(4), Inches(0.6),
 add_divider(slide, Inches(1.0), Inches(1.5), Inches(3))
 
 add_text_box(slide, Inches(1.0), Inches(2.2), Inches(8), Inches(1.2),
-             "EMBRACE AI", font_size=60, color=WHITE, bold=True)
+             "AI CatalyESt", font_size=60, color=WHITE, bold=True)
 
 add_text_box(slide, Inches(1.0), Inches(3.5), Inches(8), Inches(0.8),
              "12-Month AI Initiative Plan", font_size=28, color=GREEN)
@@ -131,7 +131,7 @@ for i, (x, y, size, opacity_color) in enumerate([
     shape.line.fill.background()
 
 add_text_box(slide, Inches(1.0), Inches(6.2), Inches(6), Inches(0.8),
-             "Prepared by: Vigneshvar SA\nvigneshvar.sa@siemens.com  ·  April 2025",
+             "Prepared by: Vigneshvar SA\nvigneshvar.sa@siemens.com  ·  April 2026",
              font_size=12, color=GREY_LIGHT, spacing=1.4)
 
 
@@ -228,7 +228,7 @@ add_divider(slide, Inches(0.8), Inches(1.3), Inches(3))
 # Key stats in cards
 stats = [
     ("16", "Team Members", "Across 4 domains"),
-    ("12", "Monthly Sessions", "April 2025 – March 2026"),
+    ("12", "Monthly Sessions", "April 2026 – March 2027"),
     ("4", "Phases", "SPARK → BUILD → APPLY → DELIVER"),
     ("🏆", "Star Points", "Top 3 win gift cards & vouchers"),
 ]
@@ -478,7 +478,7 @@ slide_footer(slide)
 months_detail = [
     {
         "num": 1, "title": "Who's Who: AI Edition", "phase": "SPARK", "color": SPARK_COL,
-        "date": "Apr 8, 2025", "type": "Pre-worked", "dur": "90 min",
+        "date": "Apr 14, 2026", "type": "Pre-worked", "dur": "90 min",
         "desc": "Each member crafts AI prompts and generates portraits + one-liners for every colleague. Fun kickoff activity.",
         "seminar": "What is GenAI and Why Should Engineers Care?",
         "presenter": "Vigneshvar SA",
@@ -487,7 +487,7 @@ months_detail = [
     },
     {
         "num": 2, "title": "AI Storyteller: EngSys Chronicles", "phase": "SPARK", "color": SPARK_COL,
-        "date": "May 13, 2025", "type": "In-session (Groups)", "dur": "90 min",
+        "date": "May 12, 2026", "type": "In-session (Groups)", "dur": "90 min",
         "desc": "Teams of 4 create illustrated AI stories from fictional EngSys scenarios — comic-strip style.",
         "seminar": "History & Evolution of AI",
         "presenter": "TBD (Random Draw)",
@@ -496,7 +496,7 @@ months_detail = [
     },
     {
         "num": 3, "title": "Prompt Battle Arena", "phase": "SPARK", "color": SPARK_COL,
-        "date": "Jun 10, 2025", "type": "In-session (Tournament)", "dur": "100 min",
+        "date": "Jun 9, 2026", "type": "In-session (Tournament)", "dur": "100 min",
         "desc": "Live prompt engineering tournament — Speed Round, Refinement Round, Domain Challenge, Bonus Round.",
         "seminar": "Prompt Engineering Deep Dive",
         "presenter": "TBD (Random Draw)",
@@ -505,7 +505,7 @@ months_detail = [
     },
     {
         "num": 4, "title": "Copilot Power User", "phase": "BUILD", "color": BUILD_COL,
-        "date": "Jul 8, 2025", "type": "Pre-worked + Demo", "dur": "100 min",
+        "date": "Jul 14, 2026", "type": "Pre-worked + Demo", "dur": "100 min",
         "desc": "Each person automates 1 real recurring work task using M365 Copilot. 3-minute live demos.",
         "seminar": "M365 Copilot Ecosystem",
         "presenter": "TBD (Random Draw)",
@@ -514,7 +514,7 @@ months_detail = [
     },
     {
         "num": 5, "title": "Code with AI", "phase": "BUILD", "color": BUILD_COL,
-        "date": "Aug 12, 2025", "type": "Pre-worked", "dur": "100 min",
+        "date": "Aug 11, 2026", "type": "Pre-worked", "dur": "100 min",
         "desc": "Domain-specific coding tasks using AI. Annotate correct vs hallucinated code. Share working versions.",
         "seminar": "AI-Assisted Coding Best Practices",
         "presenter": "TBD (Random Draw)",
@@ -523,7 +523,7 @@ months_detail = [
     },
     {
         "num": 6, "title": "Smart Documentation / RAG", "phase": "BUILD", "color": BUILD_COL,
-        "date": "Sep 9, 2025", "type": "Collaborative", "dur": "100 min",
+        "date": "Sep 8, 2026", "type": "Collaborative", "dur": "100 min",
         "desc": "Build a prototype AI Q&A system over team documentation. Test with domain-specific questions.",
         "seminar": "RAG — Retrieval-Augmented Generation",
         "presenter": "TBD (Random Draw)",
@@ -532,7 +532,7 @@ months_detail = [
     },
     {
         "num": 7, "title": "Automate the Boring Stuff", "phase": "APPLY", "color": APPLY_COL,
-        "date": "Oct 14, 2025", "type": "Pre-worked + Demo", "dur": "110 min",
+        "date": "Oct 13, 2026", "type": "Pre-worked + Demo", "dur": "110 min",
         "desc": "Identify & prototype an AI automation for 1 repetitive daily task. 5-minute presentations.",
         "seminar": "Agentic AI — Agents vs Chatbots",
         "presenter": "TBD (Random Draw)",
@@ -541,7 +541,7 @@ months_detail = [
     },
     {
         "num": 8, "title": "AI Agents Hackathon", "phase": "APPLY", "color": APPLY_COL,
-        "date": "Nov 11, 2025", "type": "In-session (Groups)", "dur": "120 min",
+        "date": "Nov 10, 2026", "type": "In-session (Groups)", "dur": "120 min",
         "desc": "Team hackathon with complex multi-step engineering scenarios. Design and implement agent workflows.",
         "seminar": "Building AI Agents — Frameworks & Patterns",
         "presenter": "TBD (Random Draw)",
@@ -550,7 +550,7 @@ months_detail = [
     },
     {
         "num": 9, "title": "Data Detective", "phase": "APPLY", "color": APPLY_COL,
-        "date": "Dec 9, 2025", "type": "Pre-worked + Demo", "dur": "100 min",
+        "date": "Dec 8, 2026", "type": "Pre-worked + Demo", "dur": "100 min",
         "desc": "Analyse domain-specific datasets using AI. 5 NL questions, 1 visualization, 1 insight/anomaly.",
         "seminar": "AI for Data Analysis",
         "presenter": "TBD (Random Draw)",
@@ -559,7 +559,7 @@ months_detail = [
     },
     {
         "num": 10, "title": "Use Case: Problem Definition", "phase": "DELIVER", "color": DELIVER_COL,
-        "date": "Jan 13, 2026", "type": "Pre-worked + Workshop", "dur": "110 min",
+        "date": "Jan 12, 2027", "type": "Pre-worked + Workshop", "dur": "110 min",
         "desc": "Capstone kickoff — each person identifies 1 real business use case. Formal 1-page proposals. 3-min pitches.",
         "seminar": "AI in Industrial Engineering — Case Studies",
         "presenter": "TBD (Random Draw)",
@@ -568,7 +568,7 @@ months_detail = [
     },
     {
         "num": 11, "title": "Use Case: Build & Iterate", "phase": "DELIVER", "color": DELIVER_COL,
-        "date": "Feb 10, 2026", "type": "Peer Review", "dur": "120 min",
+        "date": "Feb 9, 2027", "type": "Peer Review", "dur": "120 min",
         "desc": "Progress review — working prototypes, round-robin peer reviews, office hours, iteration planning.",
         "seminar": "Responsible AI — Ethics & Compliance",
         "presenter": "TBD (Random Draw)",
@@ -577,7 +577,7 @@ months_detail = [
     },
     {
         "num": 12, "title": "Grand Finale Showcase", "phase": "DELIVER", "color": DELIVER_COL,
-        "date": "Mar 10, 2026", "type": "Presentations", "dur": "150 min",
+        "date": "Mar 9, 2027", "type": "Presentations", "dur": "150 min",
         "desc": "Final use case presentations to team & leadership. Judging panel. Annual leaderboard finale. Prizes!",
         "seminar": "Our AI Journey: 12 Months of Growth (Retrospective)",
         "presenter": "Vigneshvar SA",
@@ -657,7 +657,7 @@ for md in months_detail:
 slide = prs.slides.add_slide(prs.slide_layouts[6])
 add_bg(slide, DARK)
 add_text_box(slide, Inches(0.8), Inches(0.5), Inches(10), Inches(0.8),
-             "The Dashboard — EMBRACE AI Web App", font_size=36, color=WHITE, bold=True)
+             "The Dashboard — AI CatalyESt Web App", font_size=36, color=WHITE, bold=True)
 add_divider(slide, Inches(0.8), Inches(1.3), Inches(3))
 
 add_text_box(slide, Inches(0.8), Inches(1.6), Inches(11), Inches(0.5),
@@ -752,18 +752,18 @@ for label, x, w in headers:
                  label, font_size=11, color=WHITE, bold=True)
 
 cal_rows = [
-    (1, "Apr 8", "Who's Who: AI Edition", "SPARK", "Pre-worked", "90m", "Prompt basics"),
-    (2, "May 13", "AI Storyteller", "SPARK", "In-session", "90m", "Multi-turn prompts"),
-    (3, "Jun 10", "Prompt Battle Arena", "SPARK", "In-session", "100m", "Advanced prompting"),
-    (4, "Jul 8", "Copilot Power User", "BUILD", "Pre + Demo", "100m", "M365 Copilot"),
-    (5, "Aug 12", "Code with AI", "BUILD", "Pre-worked", "100m", "AI coding"),
-    (6, "Sep 9", "Smart Documentation", "BUILD", "Collab", "100m", "RAG"),
-    (7, "Oct 14", "Automate Boring Stuff", "APPLY", "Pre + Demo", "110m", "AI automation"),
-    (8, "Nov 11", "AI Agents Hackathon", "APPLY", "In-session", "120m", "Agentic AI"),
-    (9, "Dec 9", "Data Detective", "APPLY", "Pre + Demo", "100m", "Data analysis"),
-    (10, "Jan 13", "Use Case: Define", "DELIVER", "Workshop", "110m", "Problem framing"),
-    (11, "Feb 10", "Use Case: Build", "DELIVER", "Peer Rev", "120m", "Prototyping"),
-    (12, "Mar 10", "Grand Finale", "DELIVER", "Present", "150m", "Value demo"),
+    (1, "Apr 14", "Who's Who: AI Edition", "SPARK", "Pre-worked", "90m", "Prompt basics"),
+    (2, "May 12", "AI Storyteller", "SPARK", "In-session", "90m", "Multi-turn prompts"),
+    (3, "Jun 9", "Prompt Battle Arena", "SPARK", "In-session", "100m", "Advanced prompting"),
+    (4, "Jul 14", "Copilot Power User", "BUILD", "Pre + Demo", "100m", "M365 Copilot"),
+    (5, "Aug 11", "Code with AI", "BUILD", "Pre-worked", "100m", "AI coding"),
+    (6, "Sep 8", "Smart Documentation", "BUILD", "Collab", "100m", "RAG"),
+    (7, "Oct 13", "Automate Boring Stuff", "APPLY", "Pre + Demo", "110m", "AI automation"),
+    (8, "Nov 10", "AI Agents Hackathon", "APPLY", "In-session", "120m", "Agentic AI"),
+    (9, "Dec 8", "Data Detective", "APPLY", "Pre + Demo", "100m", "Data analysis"),
+    (10, "Jan 12", "Use Case: Define", "DELIVER", "Workshop", "110m", "Problem framing"),
+    (11, "Feb 9", "Use Case: Build", "DELIVER", "Peer Rev", "120m", "Prototyping"),
+    (12, "Mar 9", "Grand Finale", "DELIVER", "Present", "150m", "Value demo"),
 ]
 
 phase_colors = {"SPARK": SPARK_COL, "BUILD": BUILD_COL, "APPLY": APPLY_COL, "DELIVER": DELIVER_COL}

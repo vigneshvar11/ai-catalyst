@@ -1,7 +1,7 @@
 {
-  "name": "embrace-ai",
+  "name": "ai-catalyst",
   "version": "1.0.0",
-  "description": "EMBRACE AI — Engineering Systems Team Initiative Tracker",
+  "description": "AI CatalyESt — Engineering Systems Team Initiative Tracker",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

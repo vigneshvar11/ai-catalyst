@@ -4,7 +4,7 @@
       "username": "admin",
       "password": "admin"
     },
-    "appName": "EMBRACE AI",
+    "appName": "AI CatalyESt",
     "teamName": "Engineering Systems",
     "company": "Siemens"
   },
@@ -16,7 +16,7 @@
       "role": "",
       "domain": "Manufacturing",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "aswin-gangadharan",
@@ -25,7 +25,7 @@
       "role": "",
       "domain": "OT & Automation",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "balaji-m",
@@ -34,7 +34,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "dharankumar-n",
@@ -43,7 +43,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "gopalakrishnan-rajendran",
@@ -52,7 +52,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "john-yabesh-johnson",
@@ -61,7 +61,7 @@
       "role": "",
       "domain": "Manufacturing",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "minal-ramesh-nilange",
@@ -70,7 +70,7 @@
       "role": "",
       "domain": "Manufacturing",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "pandiyarajan-nagarajan",
@@ -79,7 +79,7 @@
       "role": "",
       "domain": "Cross-Functional",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "priyadharshani-varsha-s",
@@ -88,7 +88,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "rizwan-ali-m",
@@ -97,7 +97,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "saravanan-jayabalan",
@@ -106,7 +106,7 @@
       "role": "",
       "domain": "Cross-Functional",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "sivakumar-d",
@@ -115,7 +115,7 @@
       "role": "",
       "domain": "Cross-Functional",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "soniya-dhayalan",
@@ -124,7 +124,7 @@
       "role": "",
       "domain": "OT & Automation",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "tippu-sultan-shaik",
@@ -133,7 +133,7 @@
       "role": "",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "vidya-srivatsan",
@@ -142,7 +142,7 @@
       "role": "",
       "domain": "Cross-Functional",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     },
     {
       "id": "vigneshvar-sa",
@@ -151,7 +151,7 @@
       "role": "Initiative Lead",
       "domain": "PLM",
       "avatar": null,
-      "joinedDate": "2025-04-01"
+      "joinedDate": "2026-04-01"
     }
   ],
   "events": [
@@ -160,7 +160,7 @@
       "month": 1,
       "title": "Who's Who: AI Edition",
       "phase": "SPARK",
-      "date": "2026-04-07",
+      "date": "2026-04-14",
       "time": "11:30",
       "duration": 90,
       "description": "AI Portraits & One-Liners — Each member crafts prompts and generates AI images for colleagues. Fun kickoff to the initiative.",
@@ -182,7 +182,7 @@
       "month": 2,
       "title": "AI Storyteller: The EngSys Chronicles",
       "phase": "SPARK",
-      "date": "2025-05-13",
+      "date": "2026-05-12",
       "time": "14:00",
       "duration": 90,
       "description": "Teams of 4 create illustrated AI stories from fictional EngSys scenarios. Comic-strip style with AI-generated narration and images.",
@@ -204,7 +204,7 @@
       "month": 3,
       "title": "Prompt Battle Arena",
       "phase": "SPARK",
-      "date": "2025-06-10",
+      "date": "2026-06-09",
       "time": "14:00",
       "duration": 100,
       "description": "Live prompt engineering tournament with Speed Round, Refinement Round, Domain Challenge, and Bonus Round.",
@@ -226,7 +226,7 @@
       "month": 4,
       "title": "My AI Assistant: Copilot Power User",
       "phase": "BUILD",
-      "date": "2025-07-08",
+      "date": "2026-07-14",
       "time": "14:00",
       "duration": 100,
       "description": "Each member picks a recurring work task and uses M365 Copilot to automate or accelerate it. 3-minute live demos.",
@@ -248,7 +248,7 @@
       "month": 5,
       "title": "Code with AI",
       "phase": "BUILD",
-      "date": "2025-08-12",
+      "date": "2026-08-11",
       "time": "14:00",
       "duration": 100,
       "description": "Domain-specific coding tasks using AI. Annotate correct, incorrect, and hallucinated code. Share final working versions.",
@@ -270,7 +270,7 @@
       "month": 6,
       "title": "AI Knowledge Base: Smart Documentation",
       "phase": "BUILD",
-      "date": "2025-09-09",
+      "date": "2026-09-08",
       "time": "14:00",
       "duration": 100,
       "description": "Build a prototype AI-powered Q&A system over team documentation. Each person tests with domain-specific questions.",
@@ -292,7 +292,7 @@
       "month": 7,
       "title": "Automate the Boring Stuff",
       "phase": "APPLY",
-      "date": "2025-10-14",
+      "date": "2026-10-13",
       "time": "14:00",
       "duration": 110,
       "description": "Identify and prototype an AI automation for 1 repetitive daily task. 5-minute presentations with demos.",
@@ -314,7 +314,7 @@
       "month": 8,
       "title": "AI Agents Hackathon",
       "phase": "APPLY",
-      "date": "2025-11-11",
+      "date": "2026-11-10",
       "time": "14:00",
       "duration": 120,
       "description": "Team hackathon with complex multi-step engineering scenarios. Design agent architectures and implement key steps.",
@@ -336,7 +336,7 @@
       "month": 9,
       "title": "AI + Data: Data Detective",
       "phase": "APPLY",
-      "date": "2025-12-09",
+      "date": "2026-12-08",
       "time": "14:00",
       "duration": 100,
       "description": "Analyze domain-specific datasets using AI. Ask natural-language questions, generate visualizations, identify anomalies.",
@@ -358,7 +358,7 @@
       "month": 10,
       "title": "My AI Use Case: Problem Definition",
       "phase": "DELIVER",
-      "date": "2026-01-13",
+      "date": "2027-01-12",
       "time": "14:00",
       "duration": 110,
       "description": "Capstone kickoff — each person identifies 1 real business use case. Submit 1-page proposals. 3-minute pitches.",
@@ -380,7 +380,7 @@
       "month": 11,
       "title": "My AI Use Case: Build & Iterate",
       "phase": "DELIVER",
-      "date": "2026-02-10",
+      "date": "2027-02-09",
       "time": "14:00",
       "duration": 120,
       "description": "Progress review — working prototypes, demos, round-robin peer reviews, office hours for hands-on help.",
@@ -400,9 +400,9 @@
     {
       "id": "month-12",
       "month": 12,
-      "title": "EMBRACE AI Showcase: Grand Finale",
+      "title": "AI CatalyESt Showcase: Grand Finale",
       "phase": "DELIVER",
-      "date": "2026-03-10",
+      "date": "2027-03-09",
       "time": "14:00",
       "duration": 150,
       "description": "Final use case presentations to team and leadership. Judging panel scores. Annual leaderboard finale with prizes.",

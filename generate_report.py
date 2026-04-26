@@ -1,5 +1,5 @@
 """
-Generate the EMBRACE AI — 12-Month Initiative Report (Word Document)
+Generate the AI CatalyESt — 12-Month Initiative Report (Word Document)
 Run this script once to produce the .docx file.
 """
 from docx import Document
@@ -11,7 +11,7 @@ from docx.oxml.ns import qn
 import os
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(BASE, "EMBRACE_AI_12_Month_Initiative_Report.docx")
+OUT = os.path.join(BASE, "AI_CatalyESt_12_Month_Initiative_Report.docx")
 
 doc = Document()
 
@@ -84,7 +84,7 @@ add_para("SIEMENS", bold=True, size=28, color=PETROL, align=WD_ALIGN_PARAGRAPH.C
 add_para("Engineering Systems", bold=False, size=14, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=24)
 
 doc.add_paragraph()
-add_para("EMBRACE AI", bold=True, size=36, color=DARK, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=8)
+add_para("AI CatalyESt", bold=True, size=36, color=DARK, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=8)
 add_para("12-Month AI Initiative Plan", bold=False, size=18, color=PETROL, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=6)
 add_para("Engineering Systems · FT D AA IN SGI DET ENGSYS", size=12, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=4)
 add_para("Siemens, Chennai, India", size=12, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=36)
@@ -93,7 +93,7 @@ doc.add_paragraph()
 doc.add_paragraph()
 add_para("Prepared by: Vigneshvar SA", size=12, color=DARK, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=2)
 add_para("vigneshvar.sa@siemens.com", size=11, color=PETROL, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=6)
-add_para("April 2025", size=12, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER)
+add_para("April 2026", size=12, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER)
 
 doc.add_page_break()
 
@@ -123,7 +123,7 @@ toc_items = [
     "   9.10 Month 10 — My AI Use Case: Problem Definition",
     "   9.11 Month 11 — My AI Use Case: Build & Iterate",
     "   9.12 Month 12 — Grand Finale Showcase",
-    "10. EMBRACE AI Dashboard (Web Application)",
+    "10. AI CatalyESt Dashboard (Web Application)",
     "11. Expected Outcomes",
     "12. Cumulative Deliverables",
     "13. Appendix — Event Calendar",
@@ -138,7 +138,7 @@ doc.add_page_break()
 # ═══════════════════════════════════════════════════════════
 doc.add_heading("1. Executive Summary", level=1)
 doc.add_paragraph(
-    "EMBRACE AI is a structured, gamified, 12-month initiative designed to progressively upskill "
+    "AI CatalyESt is a structured, gamified, 12-month initiative designed to progressively upskill "
     "the 16-member Engineering Systems offshore team at Siemens, Chennai on Generative AI. "
     "The initiative transitions from fun, curiosity-driven activities in the early months to "
     "hands-on automation, agentic AI applications, and ultimately the delivery of individual "
@@ -201,12 +201,12 @@ doc.add_heading("3. Initiative Overview", level=1)
 add_table(
     ["Attribute", "Details"],
     [
-        ["Initiative Name", "EMBRACE AI"],
+        ["Initiative Name", "AI CatalyESt"],
         ["Team", "Engineering Systems (EngSys)"],
         ["Location", "Siemens, Chennai, India (Offshore)"],
         ["Reporting To", "North America Profit Centers"],
         ["Team Size", "16 members"],
-        ["Duration", "12 months (April 2025 – March 2026)"],
+        ["Duration", "12 months (April 2026 – March 2027)"],
         ["Initiative Lead", "Vigneshvar SA"],
         ["Cadence", "1 session per month (2nd Tuesday)"],
         ["Session Duration", "90–150 minutes"],
@@ -276,7 +276,7 @@ doc.add_heading("6. Points & Rewards System", level=1)
 
 doc.add_paragraph(
     "A gamified points system runs throughout the 12 months. Points are accumulated across "
-    "all activities and tracked on the EMBRACE AI Dashboard leaderboard."
+    "all activities and tracked on the AI CatalyESt Dashboard leaderboard."
 )
 
 add_table(
@@ -357,11 +357,11 @@ doc.add_heading("9. Month-by-Month Detailed Plan", level=1)
 # ─── Data for all 12 months ───
 months_data = [
     {
-        "num": 1, "title": "Who's Who: AI Edition", "phase": "SPARK", "date": "April 8, 2025",
+        "num": 1, "title": "Who's Who: AI Edition", "phase": "SPARK", "date": "April 14, 2026",
         "duration": "90 min", "type": "Pre-worked (submitted 2 weeks before session)",
         "seminar": "What is Generative AI and Why Should Engineers Care? (Vigneshvar SA)",
         "description": (
-            "The inaugural activity that officially kicks off EMBRACE AI. Each team member generates "
+            "The inaugural activity that officially kicks off AI CatalyESt. Each team member generates "
             "AI portraits and one-liners for every other colleague using GenAI tools."
         ),
         "prep": [
@@ -376,7 +376,7 @@ months_data = [
         "execution": [
             "0:00–0:20 — Seminar: Vigneshvar presents 'What is GenAI and Why Should Engineers Care?'",
             "0:20–0:30 — Quiz: 5 questions on GenAI basics. Top 3 scorers get 3/2/1 points.",
-            "0:30–0:35 — Official kickoff: Unveil EMBRACE AI Charter, explain 12-month journey.",
+            "0:30–0:35 — Official kickoff: Unveil AI CatalyESt Charter, explain 12-month journey.",
             "0:35–1:00 — Gallery Walk: Display all images and one-liners on shared screen.",
             "1:00–1:15 — Peer Voting for each award category.",
             "1:15–1:25 — Award Ceremony. Update leaderboard live on the dashboard.",
@@ -393,7 +393,7 @@ months_data = [
         ],
     },
     {
-        "num": 2, "title": "AI Storyteller: The EngSys Chronicles", "phase": "SPARK", "date": "May 13, 2025",
+        "num": 2, "title": "AI Storyteller: The EngSys Chronicles", "phase": "SPARK", "date": "May 12, 2026",
         "duration": "90 min", "type": "In-session (Groups of 4)",
         "seminar": "History & Evolution of AI — From Turing to Transformers",
         "description": (
@@ -423,7 +423,7 @@ months_data = [
         ],
     },
     {
-        "num": 3, "title": "Prompt Battle Arena", "phase": "SPARK", "date": "June 10, 2025",
+        "num": 3, "title": "Prompt Battle Arena", "phase": "SPARK", "date": "June 9, 2026",
         "duration": "100 min", "type": "In-session (Individual tournament)",
         "seminar": "Prompt Engineering Deep Dive — Techniques, Patterns & Anti-Patterns",
         "description": (
@@ -456,7 +456,7 @@ months_data = [
         ],
     },
     {
-        "num": 4, "title": "My AI Assistant: Copilot Power User", "phase": "BUILD", "date": "July 8, 2025",
+        "num": 4, "title": "My AI Assistant: Copilot Power User", "phase": "BUILD", "date": "July 14, 2026",
         "duration": "100 min", "type": "Pre-worked (2 weeks) + Live demo",
         "seminar": "M365 Copilot — What It Can Actually Do for Engineers",
         "description": (
@@ -485,7 +485,7 @@ months_data = [
         ],
     },
     {
-        "num": 5, "title": "Code with AI", "phase": "BUILD", "date": "August 12, 2025",
+        "num": 5, "title": "Code with AI", "phase": "BUILD", "date": "August 11, 2026",
         "duration": "100 min", "type": "Pre-worked (2 weeks)",
         "seminar": "AI-Assisted Coding — GitHub Copilot, SiemensGPT for Code, Best Practices",
         "description": (
@@ -514,7 +514,7 @@ months_data = [
         ],
     },
     {
-        "num": 6, "title": "AI Knowledge Base: Smart Documentation", "phase": "BUILD", "date": "September 9, 2025",
+        "num": 6, "title": "AI Knowledge Base: Smart Documentation", "phase": "BUILD", "date": "September 8, 2026",
         "duration": "100 min", "type": "Collaborative + In-session",
         "seminar": "RAG — How AI Can Search and Summarize Your Own Documents",
         "description": (
@@ -545,7 +545,7 @@ months_data = [
         ],
     },
     {
-        "num": 7, "title": "Automate the Boring Stuff", "phase": "APPLY", "date": "October 14, 2025",
+        "num": 7, "title": "Automate the Boring Stuff", "phase": "APPLY", "date": "October 13, 2026",
         "duration": "110 min", "type": "Pre-worked (3 weeks) + Live demo",
         "seminar": "Agentic AI — What Are AI Agents vs. Simple Chatbots",
         "description": (
@@ -573,7 +573,7 @@ months_data = [
         ],
     },
     {
-        "num": 8, "title": "AI Agents Hackathon", "phase": "APPLY", "date": "November 11, 2025",
+        "num": 8, "title": "AI Agents Hackathon", "phase": "APPLY", "date": "November 10, 2026",
         "duration": "120 min", "type": "In-session (Groups — Extended session)",
         "seminar": "Building AI Agents — Tools, Frameworks, and Patterns",
         "description": (
@@ -603,7 +603,7 @@ months_data = [
         ],
     },
     {
-        "num": 9, "title": "AI + Data: Data Detective", "phase": "APPLY", "date": "December 9, 2025",
+        "num": 9, "title": "AI + Data: Data Detective", "phase": "APPLY", "date": "December 8, 2026",
         "duration": "100 min", "type": "Pre-worked (2–3 weeks) + Live presentation",
         "seminar": "AI for Data Analysis — LLMs for Querying, Summarizing & Visualizing Data",
         "description": (
@@ -632,7 +632,7 @@ months_data = [
         ],
     },
     {
-        "num": 10, "title": "My AI Use Case: Problem Definition", "phase": "DELIVER", "date": "January 13, 2026",
+        "num": 10, "title": "My AI Use Case: Problem Definition", "phase": "DELIVER", "date": "January 12, 2027",
         "duration": "110 min", "type": "Pre-worked (3 weeks) + In-session workshop",
         "seminar": "AI in Industrial Engineering — Real-World Case Studies",
         "description": (
@@ -662,7 +662,7 @@ months_data = [
         ],
     },
     {
-        "num": 11, "title": "My AI Use Case: Build & Iterate", "phase": "DELIVER", "date": "February 10, 2026",
+        "num": 11, "title": "My AI Use Case: Build & Iterate", "phase": "DELIVER", "date": "February 9, 2027",
         "duration": "120 min", "type": "Pre-worked (ongoing) + Peer review session",
         "seminar": "Responsible AI — Ethics, Bias, Compliance & Siemens Principles",
         "description": (
@@ -692,7 +692,7 @@ months_data = [
         ],
     },
     {
-        "num": 12, "title": "EMBRACE AI Showcase: Grand Finale", "phase": "DELIVER", "date": "March 10, 2026",
+        "num": 12, "title": "AI CatalyESt Showcase: Grand Finale", "phase": "DELIVER", "date": "March 9, 2027",
         "duration": "150 min", "type": "Presentations + Celebration (Extended session)",
         "seminar": "Our AI Journey: 12 Months of Growth — Retrospective (Vigneshvar SA)",
         "description": (
@@ -720,7 +720,7 @@ months_data = [
         "skills": "End-to-end AI value demonstration, presentation skills",
         "tools": "All tools",
         "followup": [
-            "Compile EMBRACE AI Portfolio: 16 use cases with executive summaries.",
+            "Compile AI CatalyESt Portfolio: 16 use cases with executive summaries.",
             "Share portfolio with higher management in India and US profit centers.",
             "Process Star Points for Top 3.",
             "Archive all materials to shared repository.",
@@ -774,9 +774,9 @@ for md in months_data:
 doc.add_page_break()
 
 # ═══════════════════════════════════════════════════════════
-# 10. EMBRACE AI DASHBOARD
+# 10. AI CatalyESt DASHBOARD
 # ═══════════════════════════════════════════════════════════
-doc.add_heading("10. EMBRACE AI Dashboard (Web Application)", level=1)
+doc.add_heading("10. AI CatalyESt Dashboard (Web Application)", level=1)
 
 doc.add_paragraph(
     "A custom-built web application powers the initiative, providing real-time tracking, "
@@ -845,7 +845,7 @@ outcomes = [
     "16 documented AI use cases with working prototypes — ready to be pitched to US/Canada profit centers as value-adds.",
     "Measurable productivity gains — aggregated time savings across the team.",
     "A culture of AI-first thinking embedded into Engineering Systems.",
-    "A reusable playbook that can be shared with other Siemens teams in India as a model for Embrace AI adoption.",
+    "A reusable playbook that can be shared with other Siemens teams in India as a model for AI CatalyESt adoption.",
     "Direct alignment with the team's existing AI engagement under the OT & Automation pillar — turning a formal engagement into demonstrated capability.",
 ]
 for o in outcomes:
@@ -868,7 +868,7 @@ deliverables = [
     ["9", "AI Data Analysis Findings", "Month 9"],
     ["10", "16 Approved Use Case Proposals", "Month 10"],
     ["11", "16 Working Prototypes (draft)", "Month 11"],
-    ["12", "EMBRACE AI Portfolio — 16 Final Use Cases", "Month 12"],
+    ["12", "AI CatalyESt Portfolio — 16 Final Use Cases", "Month 12"],
 ]
 add_table(["#", "Deliverable", "Created In"], deliverables)
 
@@ -878,18 +878,18 @@ add_table(["#", "Deliverable", "Created In"], deliverables)
 doc.add_heading("13. Appendix — Event Calendar", level=1)
 
 calendar = [
-    ["1", "Apr 8, 2025", "Who's Who: AI Edition", "SPARK", "Pre-worked", "90 min"],
-    ["2", "May 13, 2025", "AI Storyteller", "SPARK", "In-session", "90 min"],
-    ["3", "Jun 10, 2025", "Prompt Battle Arena", "SPARK", "In-session", "100 min"],
-    ["4", "Jul 8, 2025", "Copilot Power User", "BUILD", "Pre-worked + Demo", "100 min"],
-    ["5", "Aug 12, 2025", "Code with AI", "BUILD", "Pre-worked", "100 min"],
-    ["6", "Sep 9, 2025", "Smart Documentation / RAG", "BUILD", "Collaborative", "100 min"],
-    ["7", "Oct 14, 2025", "Automate the Boring Stuff", "APPLY", "Pre-worked + Demo", "110 min"],
-    ["8", "Nov 11, 2025", "AI Agents Hackathon", "APPLY", "In-session", "120 min"],
-    ["9", "Dec 9, 2025", "Data Detective", "APPLY", "Pre-worked + Demo", "100 min"],
-    ["10", "Jan 13, 2026", "Use Case: Problem Definition", "DELIVER", "Pre-worked + Workshop", "110 min"],
-    ["11", "Feb 10, 2026", "Use Case: Build & Iterate", "DELIVER", "Peer Review", "120 min"],
-    ["12", "Mar 10, 2026", "Grand Finale Showcase", "DELIVER", "Presentations", "150 min"],
+    ["1", "Apr 14, 2026", "Who's Who: AI Edition", "SPARK", "Pre-worked", "90 min"],
+    ["2", "May 12, 2026", "AI Storyteller", "SPARK", "In-session", "90 min"],
+    ["3", "Jun 9, 2026", "Prompt Battle Arena", "SPARK", "In-session", "100 min"],
+    ["4", "Jul 14, 2026", "Copilot Power User", "BUILD", "Pre-worked + Demo", "100 min"],
+    ["5", "Aug 11, 2026", "Code with AI", "BUILD", "Pre-worked", "100 min"],
+    ["6", "Sep 8, 2026", "Smart Documentation / RAG", "BUILD", "Collaborative", "100 min"],
+    ["7", "Oct 13, 2026", "Automate the Boring Stuff", "APPLY", "Pre-worked + Demo", "110 min"],
+    ["8", "Nov 10, 2026", "AI Agents Hackathon", "APPLY", "In-session", "120 min"],
+    ["9", "Dec 8, 2026", "Data Detective", "APPLY", "Pre-worked + Demo", "100 min"],
+    ["10", "Jan 12, 2027", "Use Case: Problem Definition", "DELIVER", "Pre-worked + Workshop", "110 min"],
+    ["11", "Feb 9, 2027", "Use Case: Build & Iterate", "DELIVER", "Peer Review", "120 min"],
+    ["12", "Mar 9, 2027", "Grand Finale Showcase", "DELIVER", "Presentations", "150 min"],
 ]
 add_table(["Month", "Date", "Title", "Phase", "Type", "Duration"], calendar)
 

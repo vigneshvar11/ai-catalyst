@@ -1,5 +1,5 @@
 """
-EMBRACE AI — Engineering Systems · Siemens
+AI CatalyESt — Engineering Systems · Siemens
 Backend server using Flask + Flask-SocketIO
 """
 import os
@@ -14,7 +14,7 @@ from flask_socketio import SocketIO, emit, join_room
 # ─── App Setup ───
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, static_folder='public', static_url_path='')
-app.config['SECRET_KEY'] = 'embrace-ai-secret'
+app.config['SECRET_KEY'] = 'ai-catalyst-secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 DB_PATH = os.path.join(BASE_DIR, 'data', 'db.json')
@@ -60,7 +60,7 @@ def login():
     db = read_db()
     cfg = db.get('config', {}).get('admin', {})
     if data.get('username') == cfg.get('username') and data.get('password') == cfg.get('password'):
-        return jsonify(success=True, token='embrace-ai-admin-token')
+        return jsonify(success=True, token='ai-catalyst-admin-token')
     return jsonify(success=False, message='Invalid credentials'), 401
 
 
@@ -541,7 +541,7 @@ if __name__ == '__main__':
     print()
     print("  ╔══════════════════════════════════════════╗")
     print("  ║                                          ║")
-    print("  ║   🚀 EMBRACE AI Dashboard                ║")
+    print("  ║   🚀 AI CatalyESt Dashboard                ║")
     print("  ║   Engineering Systems · Siemens           ║")
     print("  ║                                          ║")
     print("  ║   → http://localhost:3000                ║")

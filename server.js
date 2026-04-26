@@ -49,7 +49,7 @@ app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
   const db = readDB();
   if (username === db.config.admin.username && password === db.config.admin.password) {
-    return res.json({ success: true, token: 'embrace-ai-admin-token' });
+    return res.json({ success: true, token: 'ai-catalyst-admin-token' });
   }
   res.status(401).json({ success: false, message: 'Invalid credentials' });
 });
@@ -474,7 +474,7 @@ app.get('*', (req, res) => {
 server.listen(PORT, () => {
   console.log(`\n  ╔══════════════════════════════════════════╗`);
   console.log(`  ║                                          ║`);
-  console.log(`  ║   🚀 EMBRACE AI Dashboard                ║`);
+  console.log(`  ║   🚀 AI CatalyESt Dashboard                ║`);
   console.log(`  ║   Engineering Systems · Siemens           ║`);
   console.log(`  ║                                          ║`);
   console.log(`  ║   → http://localhost:${PORT}                ║`);

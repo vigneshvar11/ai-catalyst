@@ -2,14 +2,14 @@
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Siemens-logo.svg/320px-Siemens-logo.svg.png" alt="Siemens" width="160">
 </p>
 
-<h1 align="center">EMBRACE AI</h1>
+<h1 align="center">AI CatalyESt</h1>
 <p align="center"><strong>Engineering Systems — 12-Month AI Initiative Dashboard</strong></p>
 <p align="center">
   <em>Siemens · Chennai · FT D AA IN SGI DET ENGSYS</em>
 </p>
 
 <p align="center">
-  <a href="https://render.com/deploy?repo=https://github.com/vigneshvar11/embrace-ai">
+  <a href="https://render.com/deploy?repo=https://github.com/vigneshvar11/ai-catalyst">
     <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render">
   </a>
 </p>
@@ -18,7 +18,7 @@
 
 ## What Is This?
 
-EMBRACE AI is a gamified, 12-month learning initiative designed to upskill the 16-member Engineering Systems offshore team on Generative AI — starting from fun, curiosity-driven activities and progressing to real business use-case delivery.
+AI CatalyESt is a gamified, 12-month learning initiative designed to upskill the 16-member Engineering Systems offshore team on Generative AI — starting from fun, curiosity-driven activities and progressing to real business use-case delivery.
 
 This repository contains the **full-stack dashboard** that powers the initiative:
 
@@ -45,8 +45,8 @@ This repository contains the **full-stack dashboard** that powers the initiative
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/embrace-ai-dashboard.git
-cd embrace-ai-dashboard
+git clone https://github.com/YOUR_USERNAME/ai-catalyst-dashboard.git
+cd ai-catalyst-dashboard
 
 # 2. Install dependencies
 pip install -r requirements.txt
@@ -72,7 +72,7 @@ Click the **profile icon** (top right) and enter:
 ## Project Structure
 
 ```
-EmbraceAI/
+AICatalyESt/
 ├── app.py                  # Python Flask server (backend)
 ├── requirements.txt        # Python dependencies
 ├── data/
@@ -203,7 +203,7 @@ Top 3 at year-end receive **Star Points** redeemable for gift cards / vouchers.
 
 ## Easter Eggs 🥚
 
-- Type `embraceai` anywhere on the page
+- Type `aicatalyst` anywhere on the page
 - Check the footer
 
 ---
