@@ -1,0 +1,430 @@
+{
+  "config": {
+    "admin": {
+      "username": "admin",
+      "password": "admin"
+    },
+    "appName": "EMBRACE AI",
+    "teamName": "Engineering Systems",
+    "company": "Siemens"
+  },
+  "members": [
+    {
+      "id": "aravinthan-dhanabal",
+      "name": "Aravinthan Dhanabal",
+      "email": "aravinthan.dhanabal@siemens.com",
+      "role": "",
+      "domain": "Manufacturing",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "aswin-gangadharan",
+      "name": "Aswin Gangadharan",
+      "email": "aswin.gangadharan@siemens.com",
+      "role": "",
+      "domain": "OT & Automation",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "balaji-m",
+      "name": "Balaji M",
+      "email": "balaji.m@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "dharankumar-n",
+      "name": "Dharankumar N",
+      "email": "dharankumar.n@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "gopalakrishnan-rajendran",
+      "name": "Gopalakrishnan Rajendran",
+      "email": "gopalakrishnan.rajendran@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "john-yabesh-johnson",
+      "name": "John Yabesh Johnson",
+      "email": "john-yabesh.johnson@siemens.com",
+      "role": "",
+      "domain": "Manufacturing",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "minal-ramesh-nilange",
+      "name": "Minal Ramesh Nilange",
+      "email": "minal.nilange@siemens.com",
+      "role": "",
+      "domain": "Manufacturing",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "pandiyarajan-nagarajan",
+      "name": "Pandiyarajan Nagarajan",
+      "email": "pandiyarajan.n@siemens.com",
+      "role": "",
+      "domain": "Cross-Functional",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "priyadharshani-varsha-s",
+      "name": "Priyadharshani Varsha S",
+      "email": "priyadharshani.varsha-s@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "rizwan-ali-m",
+      "name": "Rizwan Ali M",
+      "email": "rizwan.m@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "saravanan-jayabalan",
+      "name": "Saravanan Jayabalan",
+      "email": "saravanan.jayabalan@siemens.com",
+      "role": "",
+      "domain": "Cross-Functional",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "sivakumar-d",
+      "name": "Sivakumar D",
+      "email": "sivakumar.d.ext@siemens.com",
+      "role": "",
+      "domain": "Cross-Functional",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "soniya-dhayalan",
+      "name": "Soniya Dhayalan",
+      "email": "soniya.dhayalan@siemens.com",
+      "role": "",
+      "domain": "OT & Automation",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "tippu-sultan-shaik",
+      "name": "Tippu Sultan Shaik",
+      "email": "tippu.shaik@siemens.com",
+      "role": "",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "vidya-srivatsan",
+      "name": "Vidya Srivatsan",
+      "email": "vidya.srivatsan@siemens.com",
+      "role": "",
+      "domain": "Cross-Functional",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "vigneshvar-sa",
+      "name": "Vigneshvar SA",
+      "email": "vigneshvar.sa@siemens.com",
+      "role": "Initiative Lead",
+      "domain": "PLM",
+      "avatar": null,
+      "joinedDate": "2025-04-01"
+    }
+  ],
+  "events": [
+    {
+      "id": "month-1",
+      "month": 1,
+      "title": "Who's Who: AI Edition",
+      "phase": "SPARK",
+      "date": "2026-04-07",
+      "time": "11:30",
+      "duration": 90,
+      "description": "AI Portraits & One-Liners — Each member crafts prompts and generates AI images for colleagues. Fun kickoff to the initiative.",
+      "seminarPresenter": "vigneshvar-sa",
+      "seminarTopic": "What is Generative AI and Why Should Engineers Care?",
+      "activityType": "Pre-worked",
+      "categories": [
+        "Most Creative Prompt",
+        "Best AI-Generated Image",
+        "Funniest One-Liner",
+        "First to Complete"
+      ],
+      "skills": "Prompt engineering basics, image generation, iterative prompting",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-2",
+      "month": 2,
+      "title": "AI Storyteller: The EngSys Chronicles",
+      "phase": "SPARK",
+      "date": "2025-05-13",
+      "time": "14:00",
+      "duration": 90,
+      "description": "Teams of 4 create illustrated AI stories from fictional EngSys scenarios. Comic-strip style with AI-generated narration and images.",
+      "seminarPresenter": null,
+      "seminarTopic": "History & Evolution of AI — From Turing to Transformers",
+      "activityType": "In-session (Groups)",
+      "categories": [
+        "Best Storyline",
+        "Most Visually Creative",
+        "Best Use of AI Tools",
+        "People's Choice"
+      ],
+      "skills": "Multi-turn prompting, chaining prompts, collaborative AI use, visual storytelling",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-3",
+      "month": 3,
+      "title": "Prompt Battle Arena",
+      "phase": "SPARK",
+      "date": "2025-06-10",
+      "time": "14:00",
+      "duration": 100,
+      "description": "Live prompt engineering tournament with Speed Round, Refinement Round, Domain Challenge, and Bonus Round.",
+      "seminarPresenter": null,
+      "seminarTopic": "Prompt Engineering Deep Dive — Techniques, Patterns & Anti-Patterns",
+      "activityType": "In-session (Individual)",
+      "categories": [
+        "Speed King/Queen",
+        "Best Iterative Improver",
+        "Domain Prompt Master",
+        "Overall Prompt Champion"
+      ],
+      "skills": "Advanced prompt engineering — personas, system instructions, few-shot, chain-of-thought",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-4",
+      "month": 4,
+      "title": "My AI Assistant: Copilot Power User",
+      "phase": "BUILD",
+      "date": "2025-07-08",
+      "time": "14:00",
+      "duration": 100,
+      "description": "Each member picks a recurring work task and uses M365 Copilot to automate or accelerate it. 3-minute live demos.",
+      "seminarPresenter": null,
+      "seminarTopic": "M365 Copilot — What It Can Actually Do for Engineers",
+      "activityType": "Pre-worked + Demo",
+      "categories": [
+        "Most Time Saved",
+        "Most Creative Use of Copilot",
+        "Best Before/After Transformation",
+        "People's Choice"
+      ],
+      "skills": "Practical AI tool integration, measuring AI ROI, M365 Copilot deep dive",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-5",
+      "month": 5,
+      "title": "Code with AI",
+      "phase": "BUILD",
+      "date": "2025-08-12",
+      "time": "14:00",
+      "duration": 100,
+      "description": "Domain-specific coding tasks using AI. Annotate correct, incorrect, and hallucinated code. Share final working versions.",
+      "seminarPresenter": null,
+      "seminarTopic": "AI-Assisted Coding — GitHub Copilot, SiemensGPT, Best Practices",
+      "activityType": "Pre-worked",
+      "categories": [
+        "Most Accurate AI-Generated Code",
+        "Best Prompt for Code Generation",
+        "Best Code Review / Bug Catch",
+        "Most Relevant to Real Work"
+      ],
+      "skills": "AI-assisted coding, code review discipline, understanding hallucinations",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-6",
+      "month": 6,
+      "title": "AI Knowledge Base: Smart Documentation",
+      "phase": "BUILD",
+      "date": "2025-09-09",
+      "time": "14:00",
+      "duration": 100,
+      "description": "Build a prototype AI-powered Q&A system over team documentation. Each person tests with domain-specific questions.",
+      "seminarPresenter": null,
+      "seminarTopic": "RAG — How AI Can Search and Summarize Your Own Documents",
+      "activityType": "Collaborative + In-session",
+      "categories": [
+        "Best Source Documents Contributed",
+        "Most Insightful Test Questions",
+        "Best Improvement Suggestion",
+        "RAG Champion"
+      ],
+      "skills": "RAG fundamentals, document preparation for AI, enterprise AI assistants",
+      "status": "upcoming",
+      "comments": "Mid-Year Check-In: Share leaderboard summary with manager."
+    },
+    {
+      "id": "month-7",
+      "month": 7,
+      "title": "Automate the Boring Stuff",
+      "phase": "APPLY",
+      "date": "2025-10-14",
+      "time": "14:00",
+      "duration": 110,
+      "description": "Identify and prototype an AI automation for 1 repetitive daily task. 5-minute presentations with demos.",
+      "seminarPresenter": null,
+      "seminarTopic": "Agentic AI — What Are AI Agents vs. Simple Chatbots",
+      "activityType": "Pre-worked + Demo",
+      "categories": [
+        "Most Impactful Automation",
+        "Most Creative Solution",
+        "Best Prototype / Demo",
+        "Highest Estimated Time Savings"
+      ],
+      "skills": "Identifying automation opportunities, AI solution design, basic agentic thinking",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-8",
+      "month": 8,
+      "title": "AI Agents Hackathon",
+      "phase": "APPLY",
+      "date": "2025-11-11",
+      "time": "14:00",
+      "duration": 120,
+      "description": "Team hackathon with complex multi-step engineering scenarios. Design agent architectures and implement key steps.",
+      "seminarPresenter": null,
+      "seminarTopic": "Building AI Agents — Tools, Frameworks, and Patterns",
+      "activityType": "In-session (Groups)",
+      "categories": [
+        "Best Agent Architecture Design",
+        "Most Realistic Implementation",
+        "Best Team Collaboration",
+        "Most Business-Relevant Solution"
+      ],
+      "skills": "Multi-step AI reasoning, agent design patterns, tool orchestration",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-9",
+      "month": 9,
+      "title": "AI + Data: Data Detective",
+      "phase": "APPLY",
+      "date": "2025-12-09",
+      "time": "14:00",
+      "duration": 100,
+      "description": "Analyze domain-specific datasets using AI. Ask natural-language questions, generate visualizations, identify anomalies.",
+      "seminarPresenter": null,
+      "seminarTopic": "AI for Data Analysis — LLMs for Querying, Summarizing & Visualizing Data",
+      "activityType": "Pre-worked + Demo",
+      "categories": [
+        "Best Insight / Anomaly Discovery",
+        "Best AI-Generated Visualization",
+        "Most Business-Relevant Finding",
+        "Data Detective Champion"
+      ],
+      "skills": "AI-powered data analysis, natural language querying, data visualization",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-10",
+      "month": 10,
+      "title": "My AI Use Case: Problem Definition",
+      "phase": "DELIVER",
+      "date": "2026-01-13",
+      "time": "14:00",
+      "duration": 110,
+      "description": "Capstone kickoff — each person identifies 1 real business use case. Submit 1-page proposals. 3-minute pitches.",
+      "seminarPresenter": null,
+      "seminarTopic": "AI in Industrial Engineering — Real-World Case Studies",
+      "activityType": "Pre-worked + Workshop",
+      "categories": [
+        "Best Problem Definition",
+        "Most Innovative Proposed Solution",
+        "Most Impactful Use Case",
+        "Best Feasibility Analysis"
+      ],
+      "skills": "Business problem framing, AI solution design, stakeholder communication",
+      "status": "upcoming",
+      "comments": "Buddy pairs assigned for peer support over next 3 months."
+    },
+    {
+      "id": "month-11",
+      "month": 11,
+      "title": "My AI Use Case: Build & Iterate",
+      "phase": "DELIVER",
+      "date": "2026-02-10",
+      "time": "14:00",
+      "duration": 120,
+      "description": "Progress review — working prototypes, demos, round-robin peer reviews, office hours for hands-on help.",
+      "seminarPresenter": null,
+      "seminarTopic": "Responsible AI — Ethics, Bias, Compliance & Siemens Principles",
+      "activityType": "Pre-worked + Peer Review",
+      "categories": [
+        "Most Progress Made",
+        "Best Working Prototype",
+        "Best Peer Feedback Given",
+        "Most Resilient"
+      ],
+      "skills": "Iterative development, peer review, responsible AI considerations",
+      "status": "upcoming",
+      "comments": ""
+    },
+    {
+      "id": "month-12",
+      "month": 12,
+      "title": "EMBRACE AI Showcase: Grand Finale",
+      "phase": "DELIVER",
+      "date": "2026-03-10",
+      "time": "14:00",
+      "duration": 150,
+      "description": "Final use case presentations to team and leadership. Judging panel scores. Annual leaderboard finale with prizes.",
+      "seminarPresenter": "vigneshvar-sa",
+      "seminarTopic": "Our AI Journey: 12 Months of Growth (Retrospective)",
+      "activityType": "Presentations + Celebration",
+      "categories": [
+        "Best Overall AI Use Case",
+        "Runner-Up",
+        "Second Runner-Up",
+        "Most Innovative Solution",
+        "Most Business Impact",
+        "Best Presentation",
+        "People's Choice"
+      ],
+      "skills": "End-to-end AI value demonstration, presentation skills",
+      "status": "upcoming",
+      "comments": "Extended session 2.5–3 hours. Star Points awarded to Top 3 annual performers."
+    }
+  ],
+  "points": [],
+  "quizzes": [],
+  "surveys": [],
+  "teams": []
+}

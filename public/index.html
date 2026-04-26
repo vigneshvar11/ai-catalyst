@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMBRACE AI — Engineering Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="app-header">
+    <div class="header-left">
+      <div class="siemens-logo" title="Siemens">
+        <svg viewBox="0 0 120 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="16" font-family="Inter, sans-serif" font-weight="700" font-size="17" fill="#009999" letter-spacing="3">SIEMENS</text>
+        </svg>
+      </div>
+      <div class="header-divider"></div>
+      <span class="app-title">EMBRACE AI</span>
+    </div>
+    <nav id="main-nav">
+      <button class="nav-btn active" data-tab="dashboard">
+        <i class="ri-dashboard-3-line"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-btn" data-tab="leaderboard">
+        <i class="ri-trophy-line"></i><span>Leaderboard</span>
+      </button>
+      <button class="nav-btn" data-tab="calendar">
+        <i class="ri-calendar-line"></i><span>Calendar</span>
+      </button>
+      <button class="nav-btn" data-tab="team">
+        <i class="ri-team-line"></i><span>Team</span>
+      </button>
+      <button class="nav-btn" data-tab="quiz" id="nav-quiz" style="display:none;">
+        <i class="ri-gamepad-line"></i><span>Quiz</span>
+      </button>
+      <!-- Admin-only tabs -->
+      <button class="nav-btn admin-only" data-tab="admin-members" style="display:none;">
+        <i class="ri-user-settings-line"></i><span>Members</span>
+      </button>
+      <button class="nav-btn admin-only" data-tab="admin-points" style="display:none;">
+        <i class="ri-star-line"></i><span>Points</span>
+      </button>
+      <button class="nav-btn admin-only" data-tab="admin-quiz" style="display:none;">
+        <i class="ri-gamepad-line"></i><span>Quiz Mgr</span>
+      </button>
+      <button class="nav-btn admin-only" data-tab="admin-survey" style="display:none;">
+        <i class="ri-survey-line"></i><span>Survey</span>
+      </button>
+    </nav>
+    <div class="header-right">
+      <button class="profile-btn" id="profileBtn" title="Admin Login">
+        <i class="ri-user-line"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main id="app-main">
+
+    <!-- ── DASHBOARD ── -->
+    <section id="tab-dashboard" class="tab-content active">
+      <div class="section-hero">
+        <div class="hero-text">
+          <h1>Welcome to <span class="gradient-text">EMBRACE AI</span></h1>
+          <p>Engineering Systems · 12-Month AI Learning Journey</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Next Event Countdown -->
+        <div class="card card-countdown">
+          <div class="card-header">
+            <i class="ri-timer-flash-line"></i>
+            <h3>Next Session</h3>
+          </div>
+          <div id="countdown-body" class="countdown-body">
+            <div class="countdown-event-title" id="countdown-title">Loading...</div>
+            <div class="countdown-timer" id="countdown-timer">
+              <div class="countdown-unit"><span id="cd-days">--</span><small>days</small></div>
+              <div class="countdown-sep">:</div>
+              <div class="countdown-unit"><span id="cd-hours">--</span><small>hrs</small></div>
+              <div class="countdown-sep">:</div>
+              <div class="countdown-unit"><span id="cd-mins">--</span><small>min</small></div>
+            </div>
+            <div class="countdown-date" id="countdown-date"></div>
+          </div>
+        </div>
+
+        <!-- Current Month Activity -->
+        <div class="card card-activity">
+          <div class="card-header">
+            <i class="ri-lightbulb-flash-line"></i>
+            <h3>Current Activity</h3>
+          </div>
+          <div id="activity-body" class="activity-body"></div>
+        </div>
+
+        <!-- Seminar Reminder -->
+        <div class="card card-seminar">
+          <div class="card-header">
+            <i class="ri-mic-line"></i>
+            <h3>Seminar Spotlight</h3>
+          </div>
+          <div id="seminar-body" class="seminar-body"></div>
+        </div>
+
+        <!-- Top 3 Leaderboard -->
+        <div class="card card-top3">
+          <div class="card-header">
+            <i class="ri-medal-line"></i>
+            <h3>Top Performers</h3>
+          </div>
+          <div id="top3-body" class="top3-body"></div>
+        </div>
+
+        <!-- Phase Progress -->
+        <div class="card card-progress">
+          <div class="card-header">
+            <i class="ri-road-map-line"></i>
+            <h3>Journey Progress</h3>
+          </div>
+          <div id="progress-body" class="progress-body"></div>
+        </div>
+
+        <!-- Active Survey (shown when active) -->
+        <div class="card card-survey-active" id="active-survey-card" style="display:none;">
+          <div class="card-header">
+            <i class="ri-star-smile-line"></i>
+            <h3>Rate the Presenter</h3>
+            <span class="badge badge-live">LIVE</span>
+          </div>
+          <div id="active-survey-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEADERBOARD ── -->
+    <section id="tab-leaderboard" class="tab-content">
+      <div class="section-header">
+        <h2><i class="ri-trophy-line"></i> Leaderboard</h2>
+        <p>Cumulative points across all months</p>
+      </div>
+      <div id="leaderboard-content"></div>
+    </section>
+
+    <!-- ── CALENDAR ── -->
+    <section id="tab-calendar" class="tab-content">
+      <div class="section-header">
+        <h2><i class="ri-calendar-line"></i> Event Calendar</h2>
+        <p>12-month syllabus timeline</p>
+      </div>
+      <div id="calendar-content"></div>
+    </section>
+
+    <!-- ── TEAM ── -->
+    <section id="tab-team" class="tab-content">
+      <div class="section-header">
+        <h2><i class="ri-team-line"></i> The Team</h2>
+        <p>Engineering Systems — 16 members across 4 domains</p>
+      </div>
+      <div class="domain-filter" id="domain-filter"></div>
+      <div id="team-content" class="team-grid"></div>
+    </section>
+
+    <!-- ── QUIZ (participant view) ── -->
+    <section id="tab-quiz" class="tab-content">
+      <div class="section-header">
+        <h2><i class="ri-gamepad-line"></i> Quiz Arena</h2>
+        <p>Join a live quiz session</p>
+      </div>
+      <div id="quiz-content"></div>
+    </section>
+
+    <!-- ═══ ADMIN TABS ═══ -->
+
+    <!-- ── ADMIN: Members ── -->
+    <section id="tab-admin-members" class="tab-content admin-only">
+      <div class="section-header">
+        <h2><i class="ri-user-settings-line"></i> Manage Members</h2>
+        <p>Add, edit, or remove team members</p>
+      </div>
+      <div id="admin-members-content"></div>
+    </section>
+
+    <!-- ── ADMIN: Points ── -->
+    <section id="tab-admin-points" class="tab-content admin-only">
+      <div class="section-header">
+        <h2><i class="ri-star-line"></i> Manage Points</h2>
+        <p>Award and adjust points by month</p>
+      </div>
+      <div id="admin-points-content"></div>
+    </section>
+
+    <!-- ── ADMIN: Quiz Manager ── -->
+    <section id="tab-admin-quiz" class="tab-content admin-only">
+      <div class="section-header">
+        <h2><i class="ri-gamepad-line"></i> Quiz Manager</h2>
+        <p>Create quizzes and manage live sessions</p>
+      </div>
+      <div id="admin-quiz-content"></div>
+    </section>
+
+    <!-- ── ADMIN: Survey ── -->
+    <section id="tab-admin-survey" class="tab-content admin-only">
+      <div class="section-header">
+        <h2><i class="ri-survey-line"></i> Seminar Survey</h2>
+        <p>Launch anonymous presenter rating surveys</p>
+      </div>
+      <div id="admin-survey-content"></div>
+    </section>
+
+  </main>
+
+  <!-- ═══ LOGIN MODAL ═══ -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal">
+      <div class="modal-close" id="closeLogin"><i class="ri-close-line"></i></div>
+      <div class="modal-icon"><i class="ri-shield-user-line"></i></div>
+      <h2>Admin Access</h2>
+      <p>Sign in to manage the EMBRACE AI initiative</p>
+      <form id="loginForm">
+        <div class="input-group">
+          <i class="ri-user-line"></i>
+          <input type="text" id="loginUser" placeholder="Username" autocomplete="off" required>
+        </div>
+        <div class="input-group">
+          <i class="ri-lock-line"></i>
+          <input type="password" id="loginPass" placeholder="Password" required>
+        </div>
+        <div id="loginError" class="form-error"></div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ GENERIC MODAL ═══ -->
+  <div class="modal-overlay" id="genericModal">
+    <div class="modal modal-lg">
+      <div class="modal-close" id="closeGenericModal"><i class="ri-close-line"></i></div>
+      <div id="genericModalContent"></div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST CONTAINER ═══ -->
+  <div id="toast-container"></div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer id="app-footer">
+    <div class="footer-content">
+      <span class="footer-brand">EMBRACE AI · Engineering Systems · Siemens</span>
+      <span class="footer-vibe" title="Built with passion and artificial intelligence">
+        <span class="vibe-text">vibe coded with</span>
+        <span class="vibe-heart">AI</span>
+        <span class="vibe-sparkle">✦</span>
+      </span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
