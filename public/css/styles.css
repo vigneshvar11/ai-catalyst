@@ -1256,6 +1256,26 @@ label.form-label {
   .card { break-inside: avoid; }
 }
 
+/* ═══ SURVEY REPORT SUB-TABS ═══ */
+.sr-subtabs {
+  display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.sr-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text-secondary);
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  border-radius: var(--radius-full); cursor: pointer;
+  transition: all 0.25s ease;
+}
+.sr-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+.sr-tab.active {
+  background: var(--siemens-petrol); color: white;
+  border-color: var(--siemens-petrol);
+  box-shadow: 0 2px 8px rgba(0,153,153,0.25);
+}
+.sr-tab i { font-size: 15px; }
+
 /* ═══ FLOWLINE PROGRESS BAR ═══ */
 .flowline-progress { padding: 4px 0; }
 .flowline-track {

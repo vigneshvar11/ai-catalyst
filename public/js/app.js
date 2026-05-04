@@ -676,14 +676,41 @@ function renderTeamCards(domain) {
 function renderSurveyReport() {
   const container = document.getElementById('survey-report-content');
   if (!container) return;
-  // Only render the iframe once
-  if (!container.querySelector('iframe')) {
-    container.innerHTML = `
-      <div style="position:relative;width:100%;height:calc(100vh - 80px);min-height:600px;">
-        <iframe src="/survey-report.html" style="width:100%;height:100%;border:none;border-radius:var(--radius);"></iframe>
-      </div>
-    `;
-  }
+  if (container.querySelector('.sr-subtabs')) return; // already built
+
+  container.innerHTML = `
+    <div class="section-header">
+      <h2><i class="ri-bar-chart-box-line"></i> Survey Report</h2>
+      <p>AI CatalyESt adoption survey — 21 use cases from 15 respondents</p>
+    </div>
+    <div class="sr-subtabs" id="sr-subtabs">
+      <button class="sr-tab active" data-srtab="overview"><i class="ri-pie-chart-line"></i> Overview</button>
+      <button class="sr-tab" data-srtab="catalogue"><i class="ri-grid-line"></i> Catalogue</button>
+      <button class="sr-tab" data-srtab="impact"><i class="ri-bar-chart-line"></i> Impact</button>
+      <button class="sr-tab" data-srtab="rawdata"><i class="ri-database-2-line"></i> Raw Data</button>
+    </div>
+    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:hidden;display:block;min-height:800px;"></iframe>
+  `;
+
+  // Auto-resize iframe to content height — no scrollbar
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'sr-height') {
+      const iframe = document.getElementById('sr-iframe');
+      if (iframe) iframe.style.height = (e.data.height + 20) + 'px';
+    }
+  });
+
+  // Sub-tab switching
+  document.querySelectorAll('.sr-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sr-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const iframe = document.getElementById('sr-iframe');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'sr-switch-tab', tab: btn.dataset.srtab }, '*');
+      }
+    });
+  });
 }
 
 // ════════════════════ ADMIN: MEMBERS ════════════════════

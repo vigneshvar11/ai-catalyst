@@ -13,3 +13,6 @@ build/
 .venv/
 *.docx
 *.pptx
+
+Photoshoot/
+

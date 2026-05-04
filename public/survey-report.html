@@ -240,6 +240,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 @media(max-width:768px){.nav-inner{padding:0 12px}.nav-tab{padding:6px 12px;font-size:12px}.hero{padding:32px 16px 24px}.hero h1{font-size:22px}.main{padding:20px 16px 40px}.method-grid{grid-template-columns:repeat(2,1fr)}.chart-wrap{height:300px}.chart-wrap-tall{height:400px}}
 @media print{.nav-bar{position:static}.tab-content{display:block!important;page-break-before:always}}
 
+/* ══ EMBED MODE ══ */
+.nav-bar{display:none!important}
+.hero{display:none!important}
+body{background:transparent!important;margin:0!important;padding:0!important;overflow-x:hidden!important}
+.main{padding-top:0!important}
+
 </style>
 </head>
 <body>
@@ -1277,6 +1283,27 @@ document.querySelectorAll('.nav-tab').forEach(function(tab) {
         document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+});
+
+/* ── Embed: post height to parent ── */
+function postHeight(){
+  window.parent.postMessage({type:'sr-height',height:document.documentElement.scrollHeight},'*');
+}
+if(window.ResizeObserver){new ResizeObserver(postHeight).observe(document.body);}
+window.addEventListener('load',function(){setTimeout(postHeight,400);});
+setInterval(postHeight,1000);
+
+/* ── Embed: receive tab-switch from parent ── */
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='sr-switch-tab')return;
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+  var navTab=document.querySelector('.nav-tab[data-tab="'+e.data.tab+'"]');
+  if(navTab)navTab.classList.add('active');
+  var content=document.getElementById('tab-'+e.data.tab);
+  if(content)content.classList.add('active');
+  if(e.data.tab==='impact'){setTimeout(function(){if(typeof buildChart==='function')buildChart();},150);}
+  setTimeout(postHeight,300);
 });
 </script>
 </body>
