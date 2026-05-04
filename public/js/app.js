@@ -5,6 +5,7 @@
 // ════════════════════ STATE ════════════════════
 const state = {
   isAdmin: false,
+  isEngSys: false,
   currentTab: 'dashboard',
   members: [],
   events: [],
@@ -139,6 +140,7 @@ function renderCurrentTab() {
     case 'calendar': renderCalendar(); break;
     case 'team': renderTeam(); break;
     case 'quiz': renderQuizParticipant(); break;
+    case 'survey-report': renderSurveyReport(); break;
     case 'admin-members': renderAdminMembers(); break;
     case 'admin-points': renderAdminPoints(); break;
     case 'admin-quiz': renderAdminQuiz(); break;
@@ -154,11 +156,13 @@ function setupAuth() {
   const loginForm = document.getElementById('loginForm');
 
   profileBtn.addEventListener('click', () => {
-    if (state.isAdmin) {
+    if (state.isAdmin || state.isEngSys) {
       state.isAdmin = false;
+      state.isEngSys = false;
       profileBtn.classList.remove('admin-active');
       profileBtn.innerHTML = '<i class="ri-user-line"></i>';
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
       document.getElementById('nav-quiz').style.display = '';
       switchTab('dashboard');
       toast('Logged out');
@@ -179,15 +183,28 @@ function setupAuth() {
       body: JSON.stringify({ username: user, password: pass }),
     });
     if (res.success) {
-      state.isAdmin = true;
-      profileBtn.classList.add('admin-active');
-      profileBtn.innerHTML = '<i class="ri-shield-user-line"></i>';
-      document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
-      document.getElementById('nav-quiz').style.display = 'none';
       loginModal.classList.remove('show');
       loginForm.reset();
       document.getElementById('loginError').textContent = '';
-      toast('Welcome, Admin!', 'success');
+      profileBtn.classList.add('admin-active');
+
+      if (res.role === 'admin') {
+        state.isAdmin = true;
+        state.isEngSys = false;
+        profileBtn.innerHTML = '<i class="ri-shield-user-line"></i>';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+        document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
+        document.getElementById('nav-quiz').style.display = 'none';
+        toast('Welcome, Admin!', 'success');
+      } else if (res.role === 'engsys') {
+        state.isEngSys = true;
+        state.isAdmin = false;
+        profileBtn.innerHTML = '<i class="ri-team-line"></i>';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.engsys-only').forEach(el => el.style.display = '');
+        document.getElementById('nav-quiz').style.display = '';
+        toast('Welcome, EngSys!', 'success');
+      }
       renderCurrentTab();
     } else {
       document.getElementById('loginError').textContent = 'Invalid credentials';
@@ -363,30 +380,29 @@ function renderTop3Card() {
 }
 
 function renderProgressCard() {
-  const phases = [
-    { name: 'SPARK', months: '1–3', color: '#f59e0b' },
-    { name: 'BUILD', months: '4–6', color: '#3b82f6' },
-    { name: 'APPLY', months: '7–9', color: '#f97316' },
-    { name: 'DELIVER', months: '10–12', color: '#ef4444' },
-  ];
-  const completedMonths = state.events.filter(e => e.status === 'completed').length;
-  const progress = Math.round((completedMonths / 12) * 100);
+  const total = state.events.length;
+  const completed = state.events.filter(e => e.status === 'completed').length;
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   document.getElementById('progress-body').innerHTML = `
-    <div class="phase-list">
-      ${phases.map(p => `
-        <div class="phase-item">
-          <div class="phase-dot" style="background:${p.color}"></div>
-          <div class="phase-label">${p.name}</div>
-          <div class="phase-months">Months ${p.months}</div>
-        </div>
-      `).join('')}
-    </div>
-    <div class="phase-bar-wrap" style="margin-top:16px;">
-      <div class="phase-bar" style="width:${progress}%"></div>
-    </div>
-    <div style="text-align:center;margin-top:8px;font-size:13px;color:var(--text-secondary);">
-      ${completedMonths}/12 sessions completed
+    <div class="flowline-progress">
+      <div class="flowline-track">
+        ${state.events.map((e, i) => {
+          const isDone = e.status === 'completed';
+          const isCurrent = !isDone && (i === 0 || state.events[i-1]?.status === 'completed');
+          const dotClass = isDone ? 'done' : isCurrent ? 'current' : '';
+          return `
+            <div class="flowline-step ${dotClass}">
+              <div class="flowline-dot"></div>
+              ${i < total - 1 ? '<div class="flowline-line"></div>' : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="flowline-labels">
+        <span>${completed} of ${total} sessions done</span>
+        <span>${progress}%</span>
+      </div>
     </div>
   `;
 }
@@ -394,7 +410,8 @@ function renderProgressCard() {
 // ════════════════════ LEADERBOARD ════════════════════
 function renderLeaderboard() {
   const lb = state.leaderboard;
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const maxMonth = state.events.length > 0 ? Math.max(...state.events.map(e => e.month)) : 12;
+  const months = Array.from({ length: maxMonth }, (_, i) => i + 1);
 
   document.getElementById('leaderboard-content').innerHTML = `
     <div class="leaderboard-table-wrap">
@@ -454,13 +471,16 @@ function renderCalendar() {
               <div class="cal-header">
                 <span class="cal-month-badge">MONTH ${e.month}</span>
                 <span class="activity-phase phase-${e.phase}" style="margin:0;padding:2px 8px;font-size:10px;">${e.phase}</span>
+                ${e.activityType ? `<span class="cal-tag-pill"><i class="ri-flashlight-line"></i>${e.activityType}</span>` : ''}
                 <span class="cal-date"><i class="ri-calendar-line"></i> ${formatDate(e.date)}</span>
-                ${state.isAdmin ? `<button class="cal-edit-btn" onclick="editEventModal('${e.id}')"><i class="ri-edit-line"></i> Edit</button>` : ''}
+                ${state.isAdmin ? `
+                  <button class="cal-edit-btn" onclick="editEventModal('${e.id}')"><i class="ri-edit-line"></i> Edit</button>
+                  <button class="cal-edit-btn cal-delete-btn" onclick="deleteEvent('${e.id}')"><i class="ri-delete-bin-line"></i></button>
+                ` : ''}
               </div>
               <div class="cal-title">${e.title}</div>
               <div class="cal-desc">${e.description}</div>
               <div class="cal-meta">
-                <span class="cal-tag"><i class="ri-flashlight-line"></i>${e.activityType}</span>
                 <span class="cal-tag"><i class="ri-time-line"></i>${e.duration} min</span>
                 <span class="cal-tag"><i class="ri-mic-line"></i>${presenter ? presenter.name : 'TBD'}</span>
                 ${e.status === 'completed' ? '<span class="badge badge-completed">Completed</span>' : '<span class="badge badge-upcoming">Upcoming</span>'}
@@ -471,8 +491,82 @@ function renderCalendar() {
         `;
       }).join('')}
     </div>
+    ${state.isAdmin ? `<button class="btn btn-primary" style="margin-top:20px;" onclick="addEventModal()"><i class="ri-add-line"></i> Add Session</button>` : ''}
   `;
 }
+
+// Admin: Delete event
+window.deleteEvent = async function(eventId) {
+  if (!confirm('Delete this event?')) return;
+  await api(`/api/events/${eventId}`, { method: 'DELETE' });
+  await loadAllData();
+  renderCurrentTab();
+  toast('Event deleted', 'success');
+};
+
+// Admin: Add event modal
+window.addEventModal = function() {
+  const nextMonth = state.events.length > 0 ? Math.max(...state.events.map(e => e.month)) + 1 : 1;
+  openModal(`
+    <h2 style="text-align:left;margin-bottom:20px;">Add New Session</h2>
+    <form id="addEventForm">
+      <div class="form-row">
+        <div><label class="form-label">Month #</label><div class="input-group"><i class="ri-calendar-line"></i><input type="number" id="ae-month" value="${nextMonth}" required></div></div>
+        <div><label class="form-label">Phase</label>
+          <div class="input-group"><i class="ri-flag-line"></i>
+            <select id="ae-phase"><option>SPARK</option><option>BUILD</option><option>APPLY</option><option>DELIVER</option></select>
+          </div>
+        </div>
+      </div>
+      <label class="form-label">Title</label>
+      <div class="input-group"><i class="ri-text"></i><input id="ae-title" placeholder="Session title" required></div>
+      <label class="form-label">Description</label>
+      <div class="input-group"><i class="ri-file-text-line"></i><textarea id="ae-desc" placeholder="What happens in this session"></textarea></div>
+      <div class="form-row">
+        <div><label class="form-label">Date</label><div class="input-group"><i class="ri-calendar-line"></i><input type="date" id="ae-date" required></div></div>
+        <div><label class="form-label">Time</label><div class="input-group"><i class="ri-time-line"></i><input type="time" id="ae-time" value="14:00"></div></div>
+      </div>
+      <div class="form-row">
+        <div><label class="form-label">Duration (min)</label><div class="input-group"><i class="ri-timer-line"></i><input type="number" id="ae-duration" value="60"></div></div>
+        <div><label class="form-label">Activity Type</label><div class="input-group"><i class="ri-flashlight-line"></i><input id="ae-type" placeholder="e.g. Pre-worked"></div></div>
+      </div>
+      <label class="form-label">Skills (comma-separated)</label>
+      <div class="input-group"><i class="ri-tools-line"></i><input id="ae-skills" placeholder="e.g. Python, prompt engineering"></div>
+      <label class="form-label">Seminar Presenter</label>
+      <div class="input-group"><i class="ri-user-line"></i>
+        <select id="ae-presenter"><option value="">TBD</option>${state.members.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}</select>
+      </div>
+      <label class="form-label">Seminar Topic</label>
+      <div class="input-group"><i class="ri-chat-quote-line"></i><input id="ae-topic" placeholder="Optional"></div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">Add Session</button>
+    </form>
+  `);
+  document.getElementById('addEventForm').onsubmit = async (ev) => {
+    ev.preventDefault();
+    await api('/api/events', {
+      method: 'POST',
+      body: JSON.stringify({
+        month: parseInt(document.getElementById('ae-month').value),
+        phase: document.getElementById('ae-phase').value,
+        title: document.getElementById('ae-title').value,
+        description: document.getElementById('ae-desc').value,
+        date: document.getElementById('ae-date').value,
+        time: document.getElementById('ae-time').value,
+        duration: parseInt(document.getElementById('ae-duration').value),
+        activityType: document.getElementById('ae-type').value,
+        skills: document.getElementById('ae-skills').value,
+        seminarPresenter: document.getElementById('ae-presenter').value || null,
+        seminarTopic: document.getElementById('ae-topic').value,
+        status: 'upcoming',
+        comments: '',
+      }),
+    });
+    await loadAllData();
+    closeModal();
+    renderCurrentTab();
+    toast('Session added', 'success');
+  };
+};
 
 // Admin: Edit event modal
 window.editEventModal = function(eventId) {
@@ -484,6 +578,14 @@ window.editEventModal = function(eventId) {
       <label class="form-label">Title</label>
       <div class="input-group"><i class="ri-text"></i><input id="ee-title" value="${e.title}" required></div>
       <div class="form-row">
+        <div><label class="form-label">Month #</label><div class="input-group"><i class="ri-calendar-line"></i><input type="number" id="ee-month" value="${e.month}"></div></div>
+        <div><label class="form-label">Phase</label>
+          <div class="input-group"><i class="ri-flag-line"></i>
+            <select id="ee-phase"><option ${e.phase==='SPARK'?'selected':''}>SPARK</option><option ${e.phase==='BUILD'?'selected':''}>BUILD</option><option ${e.phase==='APPLY'?'selected':''}>APPLY</option><option ${e.phase==='DELIVER'?'selected':''}>DELIVER</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
         <div><label class="form-label">Date</label><div class="input-group"><i class="ri-calendar-line"></i><input type="date" id="ee-date" value="${e.date}" required></div></div>
         <div><label class="form-label">Time</label><div class="input-group"><i class="ri-time-line"></i><input type="time" id="ee-time" value="${e.time || '14:00'}"></div></div>
       </div>
@@ -493,8 +595,12 @@ window.editEventModal = function(eventId) {
           <select id="ee-status"><option value="upcoming" ${e.status==='upcoming'?'selected':''}>Upcoming</option><option value="completed" ${e.status==='completed'?'selected':''}>Completed</option></select>
         </div></div>
       </div>
+      <label class="form-label">Activity Type</label>
+      <div class="input-group"><i class="ri-flashlight-line"></i><input id="ee-acttype" value="${e.activityType || ''}"></div>
       <label class="form-label">Description</label>
       <div class="input-group"><i class="ri-file-text-line"></i><textarea id="ee-desc">${e.description}</textarea></div>
+      <label class="form-label">Skills (comma-separated)</label>
+      <div class="input-group"><i class="ri-tools-line"></i><input id="ee-skills" value="${e.skills || ''}"></div>
       <label class="form-label">Seminar Presenter</label>
       <div class="input-group"><i class="ri-user-line"></i>
         <select id="ee-presenter">
@@ -514,11 +620,15 @@ window.editEventModal = function(eventId) {
     await api(`/api/events/${eventId}`, {
       method: 'PUT',
       body: JSON.stringify({
+        month: parseInt(document.getElementById('ee-month').value),
+        phase: document.getElementById('ee-phase').value,
         title: document.getElementById('ee-title').value,
         date: document.getElementById('ee-date').value,
         time: document.getElementById('ee-time').value,
         duration: parseInt(document.getElementById('ee-duration').value),
         status: document.getElementById('ee-status').value,
+        activityType: document.getElementById('ee-acttype').value,
+        skills: document.getElementById('ee-skills').value,
         description: document.getElementById('ee-desc').value,
         seminarPresenter: document.getElementById('ee-presenter').value || null,
         seminarTopic: document.getElementById('ee-topic').value,
@@ -534,7 +644,9 @@ window.editEventModal = function(eventId) {
 
 // ════════════════════ TEAM ════════════════════
 function renderTeam() {
-  const domains = ['All', 'PLM', 'Manufacturing', 'OT & Automation', 'Cross-Functional'];
+  const domains = ['All', ...new Set(state.members.map(m => m.domain))];
+  const subtitle = document.getElementById('team-subtitle');
+  if (subtitle) subtitle.textContent = `Engineering Systems \u2014 ${state.members.length} members across ${domains.length - 1} domains`;
   const filterEl = document.getElementById('domain-filter');
   filterEl.innerHTML = domains.map(d =>
     `<button class="filter-btn ${d === 'All' ? 'active' : ''}" onclick="filterTeam('${d}')">${d}</button>`
@@ -558,6 +670,20 @@ function renderTeamCards(domain) {
       <span class="team-domain-badge domain-${m.domain.split(' ')[0]}">${m.domain}</span>
     </div>
   `).join('');
+}
+
+// ════════════════════ SURVEY REPORT ════════════════════
+function renderSurveyReport() {
+  const container = document.getElementById('survey-report-content');
+  if (!container) return;
+  // Only render the iframe once
+  if (!container.querySelector('iframe')) {
+    container.innerHTML = `
+      <div style="position:relative;width:100%;height:calc(100vh - 80px);min-height:600px;">
+        <iframe src="/survey-report.html" style="width:100%;height:100%;border:none;border-radius:var(--radius);"></iframe>
+      </div>
+    `;
+  }
 }
 
 // ════════════════════ ADMIN: MEMBERS ════════════════════

@@ -1255,3 +1255,82 @@ label.form-label {
   #app-main { max-width: 100%; padding: 0; }
   .card { break-inside: avoid; }
 }
+
+/* ═══ FLOWLINE PROGRESS BAR ═══ */
+.flowline-progress { padding: 4px 0; }
+.flowline-track {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  overflow-x: auto;
+}
+.flowline-step {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.flowline-step:last-child { flex: 0; }
+.flowline-dot {
+  width: 14px; height: 14px;
+  border-radius: var(--radius-full);
+  border: 2.5px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.flowline-step.done .flowline-dot {
+  background: var(--siemens-petrol);
+  border-color: var(--siemens-petrol);
+  box-shadow: 0 0 0 3px rgba(0,153,153,0.18);
+}
+.flowline-step.current .flowline-dot {
+  background: var(--siemens-green);
+  border-color: var(--siemens-petrol);
+  box-shadow: 0 0 0 4px rgba(0,255,185,0.25);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(0,255,185,0.25); }
+  50% { box-shadow: 0 0 0 8px rgba(0,255,185,0.10); }
+}
+.flowline-line {
+  flex: 1;
+  height: 3px;
+  min-width: 18px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.flowline-step.done .flowline-line {
+  background: linear-gradient(90deg, var(--siemens-petrol), var(--siemens-petrol-light));
+}
+.flowline-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 10px;
+  padding: 0 2px;
+}
+
+/* ═══ CALENDAR DELETE BUTTON ═══ */
+.cal-delete-btn {
+  background: rgba(239,68,68,0.08) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239,68,68,0.2) !important;
+  padding: 4px 8px !important;
+}
+.cal-delete-btn:hover {
+  background: #ef4444 !important;
+  color: white !important;
+}
+.cal-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: rgba(0,153,153,0.08);
+  color: var(--siemens-petrol);
+}

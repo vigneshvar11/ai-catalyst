@@ -48,8 +48,14 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
   const db = readDB();
+  // Admin login
   if (username === db.config.admin.username && password === db.config.admin.password) {
-    return res.json({ success: true, token: 'ai-catalyst-admin-token' });
+    return res.json({ success: true, token: 'ai-catalyst-admin-token', role: 'admin' });
+  }
+  // EngSys login
+  const engsys = db.config.engsys || { username: 'engsys', password: 'engsys' };
+  if (username === engsys.username && password === engsys.password) {
+    return res.json({ success: true, token: 'ai-catalyst-engsys-token', role: 'engsys' });
   }
   res.status(401).json({ success: false, message: 'Invalid credentials' });
 });

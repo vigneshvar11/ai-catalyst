@@ -4,6 +4,10 @@
       "username": "admin",
       "password": "admin"
     },
+    "engsys": {
+      "username": "engsys",
+      "password": "engsys"
+    },
     "appName": "AI CatalyESt",
     "teamName": "Engineering Systems",
     "company": "Siemens"

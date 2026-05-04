@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI CatalyESt Survey Report</title>
+<style>
+
+:root {
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --bg: #F5F5F7; --surface: #FFFFFF; --glass: rgba(255,255,255,0.72);
+    --card-bg: rgba(255,255,255,0.72); --card-border: rgba(0,0,0,0.06);
+    --card-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.08);
+    --text: #1D1D1F; --text-s: #86868B; --text-xs: #AEAEB2;
+    --divider: rgba(0,0,0,0.06);
+    --shadow: 0 2px 12px rgba(0,0,0,0.06); --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+    --radius: 16px; --radius-sm: 12px; --radius-xs: 8px;
+    --transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --accent: #009999; --accent-light: #E6F5F5;
+    --green: #34C759; --blue: #007AFF; --orange: #FF9500; --red: #FF3B30;
+    --teal: #1B6B93; --sky: #4FC0D0; --purple: #7B2D8E;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+.nav-bar{position:sticky;top:0;z-index:100;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--divider)}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;height:56px;gap:8px;padding:0 24px}
+.nav-logo{font-weight:700;font-size:15px;color:var(--text);margin-right:20px;white-space:nowrap;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
+.nav-logo svg{width:20px;height:20px}
+.nav-tab{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border:none;background:transparent;color:var(--text-s);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border-radius:var(--radius-xs);transition:var(--transition);white-space:nowrap}
+.nav-tab:hover{background:rgba(0,0,0,0.04);color:var(--text)}
+.nav-tab.active{background:#009999;color:white;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.nav-tab svg{width:16px;height:16px;flex-shrink:0}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#000028 0%,#003040 100%);color:white;padding:48px 24px 36px;text-align:center}
+.hero h1{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
+.hero .hero-sub{font-size:14px;color:rgba(255,255,255,0.6);font-weight:400}
+.hero-kpis{display:flex;justify-content:center;gap:20px;margin-top:24px;flex-wrap:wrap}
+.hero-kpi{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:14px 24px;text-align:center;backdrop-filter:blur(10px)}
+.hero-kpi-val{font-size:24px;font-weight:700;color:var(--sky)}
+.hero-kpi-lbl{font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:32px 24px 60px}
+.tab-content{display:none;animation:fadeUp 0.4s ease}
+.tab-content.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION */
+.tab-header{margin-bottom:28px}
+.tab-header h2{font-size:24px;font-weight:700;letter-spacing:-0.4px}
+.tab-header .subtitle{font-size:14px;color:var(--text-s);margin-top:4px}
+.section-block{margin-bottom:36px}
+.section-block h3{font-size:18px;font-weight:600;margin-bottom:16px;letter-spacing:-0.2px}
+.section-block h4{font-size:15px;font-weight:600;margin:16px 0 10px}
+.body-text{font-size:14px;color:var(--text-s);line-height:1.65;margin-bottom:16px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px}
+.kpi-card{background:var(--surface);border-radius:var(--radius-sm);padding:20px 16px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:var(--transition)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--teal));border-radius:3px 3px 0 0}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi-val{font-size:28px;font-weight:700;color:var(--teal)}
+.kpi-lbl{font-size:11px;color:var(--text-s);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+.kpi-icon{font-size:22px;margin-bottom:6px}
+.kpi-sub{font-size:11px;color:var(--text-xs);margin-top:4px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+
+/* THEME */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.theme-card{background:var(--surface);border-radius:var(--radius-xs);padding:16px 18px;box-shadow:var(--shadow)}
+.theme-name{font-size:14px;font-weight:600;margin-bottom:6px}
+.theme-ucs{font-size:12px;color:var(--teal);font-weight:500}
+.theme-note{font-size:12px;color:var(--text-s);margin-top:4px;font-style:italic}
+
+/* UC CARDS */
+.uc-card{background:var(--surface);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow);transition:var(--transition)}
+.uc-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.uc-card.uc-highlight{box-shadow:0 0 0 3px var(--blue),0 8px 30px rgba(0,0,0,0.1)!important;transition:box-shadow 0.3s ease}
+.uc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.uc-id-badge{background:#009999;color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px}
+.uc-title{font-size:16px;font-weight:600;margin-bottom:8px;letter-spacing:-0.1px}
+.uc-person{font-size:13px;color:var(--teal);display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.uc-role{color:var(--text-s)}
+.uc-outline{font-size:13px;color:var(--text-s);line-height:1.6;margin-bottom:14px}
+.uc-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.uc-meta{background:var(--bg);border-radius:var(--radius-xs);padding:10px 14px}
+.meta-label{display:block;font-size:10px;color:var(--text-xs);text-transform:uppercase;letter-spacing:0.5px}
+.meta-val{display:block;font-size:13px;color:var(--text);font-weight:500;margin-top:3px}
+.meta-val-sm{display:block;font-size:12px;color:var(--text);margin-top:3px;line-height:1.5}
+
+/* BADGES */
+.scope-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.3px}
+.scope-team{background:rgba(52,199,89,0.1);color:#34C759}
+.scope-role{background:rgba(0,122,255,0.1);color:#007AFF}
+.scope-indiv{background:rgba(255,149,0,0.1);color:#FF9500}
+.bucket-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:6px}
+.wsjf-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px}
+.wsjf-high{background:rgba(52,199,89,0.12);color:#34C759}
+.wsjf-med{background:rgba(0,122,255,0.12);color:#007AFF}
+.wsjf-low{background:rgba(255,149,0,0.12);color:#FF9500}
+
+/* RANK TABLE */
+.table-scroll{overflow-x:auto;border-radius:var(--radius-sm);box-shadow:var(--shadow)}
+.rank-table{width:100%;border-collapse:collapse;font-size:13px}
+.rank-table thead th{background:#000028;color:white;padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.rank-table thead th:first-child{border-radius:var(--radius-xs) 0 0 0}
+.rank-table thead th:last-child{border-radius:0 var(--radius-xs) 0 0}
+.rank-table tbody td{padding:9px 12px;border-bottom:1px solid var(--divider);background:var(--surface)}
+.rank-table tbody tr:hover td{background:rgba(0,153,153,0.04)}
+.rank-num{font-weight:700;color:var(--text-s);text-align:center}
+.rank-title{font-weight:500;max-width:260px}
+.center{text-align:center}
+.score-cell{position:relative;min-width:90px}
+.score-bar{position:absolute;left:0;top:0;bottom:0;background:rgba(52,199,89,0.12);border-radius:0 4px 4px 0}
+.score-cell span{position:relative;font-weight:600;font-size:11px;color:#34C759}
+.bucket-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+/* METHOD */
+.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.method-card{background:var(--surface);border-radius:var(--radius-sm);padding:20px;text-align:center;box-shadow:var(--shadow)}
+.method-weight{font-size:28px;font-weight:800;color:var(--teal)}
+.method-name{font-size:14px;font-weight:600;margin-top:6px}
+.method-desc{font-size:11px;color:var(--text-s);margin-top:4px}
+
+/* CHART */
+.chart-legend-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.legend-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 18px;border:2px solid transparent;border-radius:24px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.25s ease;opacity:0.3;background:transparent;color:var(--text-s);user-select:none}
+.legend-chip.active{opacity:1}
+.lc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.lc-a{border-color:#34C759;color:#2D8A4E}.lc-a.active{background:rgba(52,199,89,0.1)}
+.lc-b{border-color:#007AFF;color:#0066D6}.lc-b.active{background:rgba(0,122,255,0.1)}
+.lc-c{border-color:#FF9500;color:#CC7700}.lc-c.active{background:rgba(255,149,0,0.1)}
+.lc-d{border-color:#FF3B30;color:#CC2F26}.lc-d.active{background:rgba(255,59,48,0.1)}
+.chart-card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.chart-card-full{grid-column:1/-1}
+.chart-wrap{position:relative;height:380px}
+.chart-wrap-tall{height:520px}
+.chart-desc{font-size:12px;color:var(--text-s);margin-top:10px;line-height:1.5}
+
+/* TOOLTIP */
+#chart-tooltip{position:absolute;z-index:9999;pointer-events:none;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(24px);border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px 20px;box-shadow:0 12px 40px rgba(0,0,0,0.14),0 2px 8px rgba(0,0,0,0.06);max-width:360px;min-width:270px;opacity:0;transition:opacity 0.18s ease;transform:translate(-50%,calc(-100% - 16px));font-family:var(--font)}
+.tt-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tt-id{font-size:11px;font-weight:800;background:#000028;color:white;padding:3px 9px;border-radius:6px}
+.tt-bkt{font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px}
+.tt-bkt-a{background:rgba(52,199,89,0.12);color:#34C759}
+.tt-bkt-b{background:rgba(0,122,255,0.12);color:#007AFF}
+.tt-bkt-c{background:rgba(255,149,0,0.12);color:#FF9500}
+.tt-bkt-d{background:rgba(255,59,48,0.12);color:#FF3B30}
+.tt-ttl{font-size:13px;font-weight:600;color:#1D1D1F;margin-bottom:5px;line-height:1.4}
+.tt-per{font-size:11px;color:#86868B;margin-bottom:12px}
+.tt-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tt-tbl td{padding:3.5px 0;color:#1D1D1F}
+.tt-tbl td:first-child{color:#86868B;width:78px;font-weight:500}
+.tt-tech{font-size:10px;color:#86868B;line-height:1.4;max-width:200px}
+
+/* UC QUICK REF */
+.uc-quick-ref{margin-top:32px}
+.uc-quick-ref h4{font-size:15px;font-weight:600;margin-bottom:14px}
+.qr-hint{font-weight:400;font-size:12px;color:var(--text-xs)}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.qr-item{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border-left:3px solid transparent;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:all 0.2s ease;font-size:12px}
+.qr-item:hover,.qr-item.qr-hover{background:rgba(0,153,153,0.04);transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.qr-id{font-weight:800;min-width:50px;font-size:11px}
+.qr-title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-s)}
+.qr-score{font-weight:700;color:var(--green);min-width:32px;text-align:right;font-size:13px}
+.qr-add{width:24px;height:24px;border-radius:6px;border:none;background:rgba(52,199,89,0.12);color:#34C759;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qr-add:hover{background:#34C759;color:white;transform:scale(1.1)}
+
+/* UC-REF LINKS (anywhere in HTML) */
+.uc-ref{cursor:pointer;color:var(--teal);font-weight:600;text-decoration:none;position:relative}
+.uc-ref:hover{text-decoration:underline}
+
+/* WHITEBOARD */
+.whiteboard{min-height:80px;background:var(--surface);border:2px dashed var(--divider);border-radius:var(--radius);padding:16px;position:relative}
+.wb-empty{text-align:center;padding:24px;color:var(--text-xs);font-size:13px}
+.wb-item{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:6px;background:var(--bg);border-radius:var(--radius-xs);border-left:4px solid var(--green);cursor:grab;transition:all 0.15s ease;user-select:none}
+.wb-item:active{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.wb-item.wb-dragging{opacity:0.5}
+.wb-item.wb-over{border-top:3px solid var(--blue);margin-top:3px}
+.wb-num{font-size:13px;font-weight:800;color:var(--text-xs);min-width:20px}
+.wb-id{font-size:11px;font-weight:800;min-width:50px}
+.wb-title{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wb-wsjf{font-size:12px;font-weight:700;color:var(--green);min-width:40px;text-align:right}
+.wb-remove{width:22px;height:22px;border-radius:5px;border:none;background:rgba(255,59,48,0.1);color:#FF3B30;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.wb-remove:hover{background:#FF3B30;color:white}
+
+/* GLASS CARD (overview) */
+.glass-card{background:var(--card-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px;margin-bottom:20px;box-shadow:var(--card-shadow)}
+.glass-card h3{font-size:18px;font-weight:600;letter-spacing:-0.3px;margin-bottom:14px}
+.full-width{overflow-x:auto}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.grid-2{grid-template-columns:1fr}}
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.data-table thead th{background:#000028;color:white;padding:12px 16px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;text-align:left;position:sticky;top:0}
+.data-table thead th:first-child{border-radius:var(--radius-xs) 0 0 0}
+.data-table thead th:last-child{border-radius:0 var(--radius-xs) 0 0}
+.data-table tbody td{padding:10px 16px;border-bottom:1px solid var(--divider);vertical-align:middle}
+.data-table tbody tr:hover{background:rgba(0,153,153,0.04)}
+.bar-bg{width:100%;height:6px;background:var(--divider);border-radius:3px;overflow:hidden;min-width:60px}
+.bar-fill{height:100%;background:linear-gradient(90deg,#009999,#00BEDC);border-radius:3px;transition:width 0.6s ease}
+.bar-fill.danger{background:linear-gradient(90deg,#EF4444,#F87171)}
+.blocker-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--divider)}
+.blocker-item:last-child{border-bottom:none}
+.blocker-label{display:flex;align-items:center;gap:8px;font-weight:500;flex:1;min-width:200px}
+.blocker-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.blocker-bar{display:flex;align-items:center;gap:10px;flex:1}
+.blocker-count{font-weight:700;color:var(--text-s);font-size:13px}
+.takeaway-card{display:flex;gap:16px;background:linear-gradient(135deg,#000028,#003040);color:white;padding:24px 28px;border-radius:var(--radius);margin-top:24px;line-height:1.65}
+.takeaway-icon{font-size:28px;flex-shrink:0}
+.takeaway-card strong{color:#64D2FF}
+
+/* RESPONSE CARDS */
+.response-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--card-shadow)}
+.response-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--divider)}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#009999,#00BEDC);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.role-badge{display:inline-block;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:20px;font-size:11px;font-weight:600;margin-left:8px}
+.response-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:700px){.response-grid{grid-template-columns:1fr}}
+.response-field{background:#F9FAFB;border-radius:var(--radius-sm);padding:14px}
+.field-label{font-size:11px;font-weight:600;color:var(--text-s);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.field-value{font-size:13px;line-height:1.6;color:var(--text)}
+.response-meta{display:flex;gap:20px;font-size:12px;color:var(--text-s);padding-top:12px;border-top:1px solid var(--divider);flex-wrap:wrap}
+
+/* UC POPOVER (for uc-ref hover) */
+.uc-popover{position:absolute;z-index:9998;pointer-events:none;background:rgba(255,255,255,0.95);backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,0.12);max-width:320px;min-width:240px;opacity:0;transition:opacity 0.15s ease;font-family:var(--font)}
+.uc-popover.visible{opacity:1}
+.pop-id{font-size:11px;font-weight:800;background:#000028;color:white;padding:2px 8px;border-radius:5px;margin-right:6px}
+.pop-title{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:4px}
+.pop-person{font-size:11px;color:#86868B;margin-bottom:6px}
+.pop-row{font-size:11px;color:var(--text);margin-bottom:2px}
+.pop-row span{color:#86868B}
+
+/* FOOTER */
+.dashboard-footer{display:none}
+
+/* RESPONSIVE */
+@media(max-width:768px){.nav-inner{padding:0 12px}.nav-tab{padding:6px 12px;font-size:12px}.hero{padding:32px 16px 24px}.hero h1{font-size:22px}.main{padding:20px 16px 40px}.method-grid{grid-template-columns:repeat(2,1fr)}.chart-wrap{height:300px}.chart-wrap-tall{height:400px}}
+@media print{.nav-bar{position:static}.tab-content{display:block!important;page-break-before:always}}
+
+</style>
+</head>
+<body>
+
+<div class="nav-bar"><div class="nav-inner">
+    <div class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>AI CatalyESt</div>
+    <button class="nav-tab active" data-tab="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Overview</button>
+    <button class="nav-tab" data-tab="catalogue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Catalogue</button>
+    <button class="nav-tab" data-tab="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Impact</button>
+    <button class="nav-tab" data-tab="rawdata"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Raw Data</button>
+</div></div>
+
+<div class="hero">
+    <h1>AI CatalyESt &mdash; Survey Report</h1>
+    <p class="hero-sub">21 Use Cases &bull; 15 Survey Responses &bull; Priority-Ranked &bull; May 2026</p>
+    <div class="hero-kpis">
+        <div class="hero-kpi"><div class="hero-kpi-val">21</div><div class="hero-kpi-lbl">Use Cases</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">15</div><div class="hero-kpi-lbl">Respondents</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">3,230-6,600</div><div class="hero-kpi-lbl">Est. Hrs/Year</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">4</div><div class="hero-kpi-lbl">Theme Buckets</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">87%</div><div class="hero-kpi-lbl">Daily AI Users</div></div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="tab-content active" id="tab-overview"><div class="tab-header"><h2>Executive Overview</h2>
+    <p class="subtitle">AI CatalyESt &mdash; Adoption &amp; Productivity | May 2026 | Team Survey (N=15)</p></div><div class="kpi-row">
+        <div class="kpi-card" style="--accent:#1B6B93"><div class="kpi-icon">&#x1F465;</div><div class="kpi-val" style="color:#1B6B93">15</div><div class="kpi-lbl">Responses</div><div class="kpi-sub">Full team survey</div></div>
+        <div class="kpi-card" style="--accent:#10B981"><div class="kpi-icon">&#x26A1;</div><div class="kpi-val" style="color:#10B981">87%</div><div class="kpi-lbl">Daily AI Users</div><div class="kpi-sub">13/15 use AI daily</div></div>
+        <div class="kpi-card" style="--accent:#3B82F6"><div class="kpi-icon">&#x23F1;</div><div class="kpi-val" style="color:#3B82F6">46h</div><div class="kpi-lbl">Weekly Hrs Saved</div><div class="kpi-sub">~2184h/year</div></div>
+        <div class="kpi-card" style="--accent:#F59E0B"><div class="kpi-icon">&#x1F4C8;</div><div class="kpi-val" style="color:#F59E0B">+4h</div><div class="kpi-lbl">Projected Add'l/Wk</div><div class="kpi-sub">If solutions deployed</div></div>
+        <div class="kpi-card" style="--accent:#8B5CF6"><div class="kpi-icon">&#x1F310;</div><div class="kpi-val" style="color:#8B5CF6">87%</div><div class="kpi-lbl">Scalable Ideas</div><div class="kpi-sub">13/15 scalable</div></div>
+    </div><div class="grid-2"><div class="glass-card"><h3>AI Tool Adoption</h3><table class="data-table"><thead><tr><th>AI Tool</th><th>Users</th><th>Adoption</th><th>Coverage</th></tr></thead><tbody><tr><td>Microsoft Copilot</td><td>15</td><td>100%</td><td><div class="bar-bg"><div class="bar-fill" style="width:100.0%"></div></div></td></tr><tr><td>SiemensGPT</td><td>9</td><td>60%</td><td><div class="bar-bg"><div class="bar-fill" style="width:60.0%"></div></div></td></tr><tr><td>GitHub Copilot (GHCP)</td><td>3</td><td>20%</td><td><div class="bar-bg"><div class="bar-fill" style="width:20.0%"></div></div></td></tr><tr><td>ChatGPT</td><td>3</td><td>20%</td><td><div class="bar-bg"><div class="bar-fill" style="width:20.0%"></div></div></td></tr><tr><td>Claude</td><td>2</td><td>13%</td><td><div class="bar-bg"><div class="bar-fill" style="width:13.333333333333334%"></div></div></td></tr><tr><td>Gemini</td><td>1</td><td>7%</td><td><div class="bar-bg"><div class="bar-fill" style="width:6.666666666666667%"></div></div></td></tr><tr><td>Copilot M365</td><td>1</td><td>7%</td><td><div class="bar-bg"><div class="bar-fill" style="width:6.666666666666667%"></div></div></td></tr></tbody></table></div><div class="glass-card"><h3>Task Categories</h3><table class="data-table"><thead><tr><th>#</th><th>Task Category</th><th>Users</th><th>Coverage</th></tr></thead><tbody><tr><td>1</td><td>Email &amp; Communication</td><td>14/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:93.33333333333333%"></div></div></td></tr><tr><td>2</td><td>Documentation &amp; Reports</td><td>12/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:80.0%"></div></div></td></tr><tr><td>3</td><td>Design &amp; Problem Solving</td><td>11/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:73.33333333333333%"></div></div></td></tr><tr><td>4</td><td>Reviews &amp; Validation</td><td>11/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:73.33333333333333%"></div></div></td></tr><tr><td>5</td><td>Meeting Prep &amp; Summaries</td><td>10/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:66.66666666666666%"></div></div></td></tr><tr><td>6</td><td>Requirements &amp; Summarization</td><td>10/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:66.66666666666666%"></div></div></td></tr><tr><td>7</td><td>Code &amp; Script Review</td><td>9/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:60.0%"></div></div></td></tr><tr><td>8</td><td>Data Analysis</td><td>6/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:40.0%"></div></div></td></tr><tr><td>9</td><td>Project Management</td><td>1/15</td><td><div class="bar-bg"><div class="bar-fill" style="width:6.666666666666667%"></div></div></td></tr></tbody></table></div></div><div class="glass-card"><h3>Key Blockers</h3><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Prompt engineering skill gap</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:100.0%"></div></div><span class="blocker-count">4</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>AI hallucination / inaccuracy</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:75.0%"></div></div><span class="blocker-count">3</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Custom app limitations</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:75.0%"></div></div><span class="blocker-count">3</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Lack of hands-on ecosystem</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:75.0%"></div></div><span class="blocker-count">3</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Security &amp; data privacy</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:75.0%"></div></div><span class="blocker-count">3</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Other</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:50.0%"></div></div><span class="blocker-count">2</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>License cost &amp; fragmentation</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:50.0%"></div></div><span class="blocker-count">2</span></div></div><div class="blocker-item"><div class="blocker-label"><span class="blocker-dot" style="background:#EF4444"></span>Tool access restrictions</div><div class="blocker-bar"><div class="bar-bg"><div class="bar-fill danger" style="width:50.0%"></div></div><span class="blocker-count">2</span></div></div></div><div class="takeaway-card"><div class="takeaway-icon">&#x1F4A1;</div><div>
+    <strong>87%</strong> of the team uses AI tools daily, collectively saving <strong>46 hours/week</strong> (~2184h/year). The team has identified <strong>21 actionable use cases</strong> spanning intelligent troubleshooting, knowledge management, workflow automation, and manufacturing quality. Top blockers are <strong>accuracy/hallucination concerns</strong> and <strong>data readiness/trust</strong>. A structured enablement program (Python workshops, prompt engineering, RAG bootcamp) would unlock the next tier of productivity gains.</div></div></div>
+    <div class="tab-content" id="tab-catalogue"><div class="tab-header"><h2>Use-Case Catalogue</h2>
+    <p class="subtitle">21 use cases from 15 contributors &bull; Organized into 4 strategic theme buckets</p></div>
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-val">21</div><div class="kpi-lbl">Use Cases</div></div>
+        <div class="kpi-card"><div class="kpi-val">15</div><div class="kpi-lbl">Contributors</div></div>
+        <div class="kpi-card"><div class="kpi-val">13</div><div class="kpi-lbl">Team-wide</div></div>
+        <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Role-based</div></div>
+        <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Theme Buckets</div></div>
+    </div><div class="section-block"><h3>Theme Buckets</h3><div class="theme-grid"><div class="theme-card" style="border-left:4px solid #34C759"><div class="theme-name">Knowledge Management, Chatbots &amp; Troubleshooting</div><div class="theme-ucs">UC-01, UC-03b, UC-05, UC-08, UC-09, UC-11a, UC-11b, UC-14a</div><div class="theme-note">8 use cases &mdash; Process enhancement through knowledge access and intelligent diagnostics</div></div><div class="theme-card" style="border-left:4px solid #007AFF"><div class="theme-name">Automation of Repetitive Workflows</div><div class="theme-ucs">UC-03a, UC-03c, UC-07, UC-14b, UC-15</div><div class="theme-note">5 use cases &mdash; Scripted automation and portal consolidation — no AI required</div></div><div class="theme-card" style="border-left:4px solid #FF9500"><div class="theme-name">AI/ML/RAG-Centric Core Ideas</div><div class="theme-ucs">UC-02, UC-06, UC-10, UC-13</div><div class="theme-note">4 use cases &mdash; Advanced AI architectures: RAG pipelines, knowledge assistants, AI governance</div></div><div class="theme-card" style="border-left:4px solid #FF3B30"><div class="theme-name">Manufacturing Quality Enhancement</div><div class="theme-ucs">UC-04a, UC-04b, UC-12a, UC-12b</div><div class="theme-note">4 use cases &mdash; CAD validation, scrap prediction, material re-use optimization</div></div></div></div><div class="section-block"><h3 style="color:#34C759">Bucket A &mdash; Knowledge Management, Chatbots &amp; Troubleshooting (8)</h3><div class="uc-card" id="card-UC-11a" data-ucid="UC-11a">
+            <div class="uc-header"><div class="uc-id-badge">UC-11a</div><span class="wsjf-badge wsjf-high">#3 Do First</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">Automated PanelBuilder Log Monitor &amp; Alert System</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Priyadharshini Varsha &mdash; <span class="uc-role">Software Engineer / Developer</span></div>
+            <p class="uc-outline">Script monitors PanelBuilder logs in real-time. On failure, auto-logs into TC, identifies releaser, and sends email notification.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">1-3 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Fewer reworks, Higher first-time-right</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python scripting, Task Scheduler, SMTP</span></div>
+            </div></div><div class="uc-card" id="card-UC-05" data-ucid="UC-05">
+            <div class="uc-header"><div class="uc-id-badge">UC-05</div><span class="wsjf-badge wsjf-high">#5 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">AI-Assisted TC Troubleshooting (Log Analysis)</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Balaji M &mdash; <span class="uc-role">Software Engineer / TC Administrator</span></div>
+            <p class="uc-outline">AI analyzes large Teamcenter log files to diagnose user access issues, workflow failures, and server errors.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">1-3 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Higher first-time-right, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python (regex/pandas), keyword dictionary, SiemensGPT</span></div>
+            </div></div><div class="uc-card" id="card-UC-08" data-ucid="UC-08">
+            <div class="uc-header"><div class="uc-id-badge">UC-08</div><span class="wsjf-badge wsjf-med">#6 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">Production Issue Self-Service Knowledge Base</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Rizwan Ali M &mdash; <span class="uc-role">PLM Admin &amp; Infra Management</span></div>
+            <p class="uc-outline">Aggregate all historical Production Problem Reports into an AI-queryable knowledge base. Users query before raising incidents.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Fewer reworks, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">SharePoint FAQ, Outlook templates, Power Automate</span></div>
+            </div></div><div class="uc-card" id="card-UC-09" data-ucid="UC-09">
+            <div class="uc-header"><div class="uc-id-badge">UC-09</div><span class="wsjf-badge wsjf-med">#7 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">AI-Driven Problem Diagnosis from System Logs &amp; Alerts</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Saravanan Jayabalan &mdash; <span class="uc-role">Team Manager</span></div>
+            <p class="uc-outline">AI correlates and analyzes system logs, monitoring alerts, historical incidents, and known issues across engineering and manufacturing applications.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Fewer reworks, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python (log parsing), known-issue DB, SiemensGPT</span></div>
+            </div></div><div class="uc-card" id="card-UC-03b" data-ucid="UC-03b">
+            <div class="uc-header"><div class="uc-id-badge">UC-03b</div><span class="wsjf-badge wsjf-med">#9 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">Cross-Team Knowledge Management Chatbot</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Vigneshvar SA &mdash; <span class="uc-role">Creo &amp; MCAD Admin / Software Developer</span></div>
+            <p class="uc-outline">A unified chatbot on Teams/SharePoint serving as team&#x27;s collective memory. Covers project history, QB updates, timelines, responsible persons, and common abbreviations.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-03a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Higher first-time-right, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Azure OpenAI, SharePoint, Teams bot framework</span></div>
+            </div></div><div class="uc-card" id="card-UC-14a" data-ucid="UC-14a">
+            <div class="uc-header"><div class="uc-id-badge">UC-14a</div><span class="wsjf-badge wsjf-med">#10 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">AI-Powered Edge Device Troubleshooting Assistant</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Aravinthan D &mdash; <span class="uc-role">Test Professional</span></div>
+            <p class="uc-outline">AI-powered support forum that troubleshoots Edge device issues based on recorded history logs. Suggests suitable solutions; if unsuccessful, notifies the product owner with full context for escalation.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python, SiemensGPT, Edge device APIs, notification system</span></div>
+            </div></div><div class="uc-card" id="card-UC-11b" data-ucid="UC-11b">
+            <div class="uc-header"><div class="uc-id-badge">UC-11b</div><span class="wsjf-badge wsjf-low">#14 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">Application Issue Resolution Chatbot</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Priyadharshini Varsha &mdash; <span class="uc-role">Software Engineer / Developer</span></div>
+            <p class="uc-outline">Chatbot trained on historical issue-solution datasets. Users can diagnose and resolve production issues when the sole handler is unavailable.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-11a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Fewer reworks, Higher first-time-right</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Power Virtual Agents, SharePoint FAQ, SiemensGPT</span></div>
+            </div></div><div class="uc-card" id="card-UC-01" data-ucid="UC-01">
+            <div class="uc-header"><div class="uc-id-badge">UC-01</div><span class="wsjf-badge wsjf-low">#15 Plan Ahead</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
+            <h4 class="uc-title">Intelligent Application Monitoring &amp; Auto-Remediation Agent</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Tippu Sultan Shaik &mdash; <span class="uc-role">Teamcenter Admin</span></div>
+            <p class="uc-outline">A multi-agent pipeline that continuously monitors Teamcenter application status, auto-searches internal docs for solutions when an anomaly is detected, raises a Production Problem Report, emails the team with diagnosis and proposed fix, watches for resolution and escalates if unresolved, and auto-documents the incident timeline once closed.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">1-3 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Higher first-time-right, Faster turnaround, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python, monitoring APIs, SiemensGPT, SMTP, Power Automate</span></div>
+            </div></div></div><div class="section-block"><h3 style="color:#007AFF">Bucket B &mdash; Automation of Repetitive Workflows (5)</h3><div class="uc-card" id="card-UC-03a" data-ucid="UC-03a">
+            <div class="uc-header"><div class="uc-id-badge">UC-03a</div><span class="wsjf-badge wsjf-high">#1 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+            <h4 class="uc-title">Automated Teamcenter User Creation</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Vigneshvar SA &mdash; <span class="uc-role">Creo &amp; MCAD Admin / Software Developer</span></div>
+            <p class="uc-outline">Dashboard-driven automation for TC user provisioning. Automated scripts handle end-to-end user creation workflow with minimal human intervention.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">5+ hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Higher first-time-right, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python/PowerShell, TC CLI, Excel/CSV template</span></div>
+            </div></div><div class="uc-card" id="card-UC-03c" data-ucid="UC-03c">
+            <div class="uc-header"><div class="uc-id-badge">UC-03c</div><span class="wsjf-badge wsjf-high">#2 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+            <h4 class="uc-title">Unified Creo Software Download Portal</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Vigneshvar SA &mdash; <span class="uc-role">Creo &amp; MCAD Admin / Software Developer</span></div>
+            <p class="uc-outline">Centralized web portal for Creo start-scripts across multiple locations. Uses PIT/Git for download and deployment.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-03a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Higher first-time-right, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">SharePoint/HTML portal, Git/PIT commands</span></div>
+            </div></div><div class="uc-card" id="card-UC-07" data-ucid="UC-07">
+            <div class="uc-header"><div class="uc-id-badge">UC-07</div><span class="wsjf-badge wsjf-high">#4 Do First</span><span class="scope-badge scope-indiv">Individual</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+            <h4 class="uc-title">AI-Automated Workflow Diagram Generation</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Soniya Dhayalan &mdash; <span class="uc-role">System Engineer / AGW Support</span></div>
+            <p class="uc-outline">AI automates creation of flowcharts and workflow diagrams from process descriptions.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Fewer reworks, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Copilot / ChatGPT prompts, Mermaid.js / Visio</span></div>
+            </div></div><div class="uc-card" id="card-UC-14b" data-ucid="UC-14b">
+            <div class="uc-header"><div class="uc-id-badge">UC-14b</div><span class="wsjf-badge wsjf-med">#8 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+            <h4 class="uc-title">Real-Time Edge Device Monitoring Dashboard</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Aravinthan D &mdash; <span class="uc-role">Test Professional</span></div>
+            <p class="uc-outline">Monitors Edge device status using APIs, displays real-time information in a dashboard, and tracks current performance with automated alerts for anomalies.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-14a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">More capacity, Fewer reworks</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python, REST APIs, Streamlit/Power BI, monitoring hooks</span></div>
+            </div></div><div class="uc-card" id="card-UC-15" data-ucid="UC-15">
+            <div class="uc-header"><div class="uc-id-badge">UC-15</div><span class="wsjf-badge wsjf-med">#12 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+            <h4 class="uc-title">Cross-Project AI Status Report Generator</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Vidya Srivatsan &mdash; <span class="uc-role">Project Manager</span></div>
+            <p class="uc-outline">LLM-based model that consolidates status across multiple projects from Microsoft Planner, generates downloadable reports, and provides accurate AI-driven summaries with validation support. Accessible to all employees without license restrictions.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">1-3 hrs/week</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Fewer reworks, More capacity, Higher first-time-right</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Microsoft Graph API (Planner), Azure OpenAI/Copilot Studio, Power Automate</span></div>
+            </div></div></div><div class="section-block"><h3 style="color:#FF9500">Bucket C &mdash; AI/ML/RAG-Centric Core Ideas (4)</h3><div class="uc-card" id="card-UC-10" data-ucid="UC-10">
+            <div class="uc-header"><div class="uc-id-badge">UC-10</div><span class="wsjf-badge wsjf-med">#11 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#FF950022;color:#FF9500;border:1px solid #FF950044">Bucket C</span></div>
+            <h4 class="uc-title">AI-Powered Engineering Knowledge Assistant</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Gopalakrishnan Rajendran &mdash; <span class="uc-role">Team Lead / TC Solution Engineer</span></div>
+            <p class="uc-outline">Comprehensive knowledge management platform: intelligent search across Confluence/JIRA/repos, contextual Q&amp;A, auto-summarization, proactive suggestions, knowledge gap identification.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Faster turnaround, Fewer reworks, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">RAG (LangChain/LlamaIndex), Azure OpenAI, vector DB, connectors</span></div>
+            </div></div><div class="uc-card" id="card-UC-13" data-ucid="UC-13">
+            <div class="uc-header"><div class="uc-id-badge">UC-13</div><span class="wsjf-badge wsjf-low">#13 Plan Ahead</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#FF950022;color:#FF9500;border:1px solid #FF950044">Bucket C</span></div>
+            <h4 class="uc-title">AI-Powered Unified Work Intelligence &amp; Progress Tracker</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Pandiyarajan Nagarajan &mdash; <span class="uc-role">Sr. Software Developer</span></div>
+            <p class="uc-outline">Automatically captures activities from meetings, emails, chats, and system updates. Summarizes progress into clear status views, links actions to owners and artifacts, proactively highlights gaps or delays, and enables natural language queries across all work context.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Higher first-time-right, More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Microsoft Graph API, Azure OpenAI, Teams/Outlook/PLM connectors, Power Automate</span></div>
+            </div></div><div class="uc-card" id="card-UC-02" data-ucid="UC-02">
+            <div class="uc-header"><div class="uc-id-badge">UC-02</div><span class="wsjf-badge wsjf-low">#16 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#FF950022;color:#FF9500;border:1px solid #FF950044">Bucket C</span></div>
+            <h4 class="uc-title">Domain-Specific RAG Model for TC/NX API Development</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Dharankumar N &mdash; <span class="uc-role">Software Developer</span></div>
+            <p class="uc-outline">Build a RAG AI model trained on official Teamcenter and NX API documentation. Replaces unreliable GitHub Copilot suggestions that hallucinate non-existent APIs.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">1-3 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Higher first-time-right, Fewer reworks, Faster turnaround</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">RAG (LangChain), Azure OpenAI, vector DB, VS Code extension</span></div>
+            </div></div><div class="uc-card" id="card-UC-06" data-ucid="UC-06">
+            <div class="uc-header"><div class="uc-id-badge">UC-06</div><span class="wsjf-badge wsjf-low">#19 Plan Ahead</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#FF950022;color:#FF9500;border:1px solid #FF950044">Bucket C</span></div>
+            <h4 class="uc-title">Secure AI Workflow Platform with Data Governance</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Sivakumar Dayalan &mdash; <span class="uc-role">IT Infra Engineer</span></div>
+            <p class="uc-outline">Governed, use-case-driven AI platform with data governance guardrails and role-based access controls.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">More capacity, Fewer reworks</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Azure AI / AWS Bedrock, AAD, API gateway</span></div>
+            </div></div></div><div class="section-block"><h3 style="color:#FF3B30">Bucket D &mdash; Manufacturing Quality Enhancement (4)</h3><div class="uc-card" id="card-UC-12a" data-ucid="UC-12a">
+            <div class="uc-header"><div class="uc-id-badge">UC-12a</div><span class="wsjf-badge wsjf-low">#17 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#FF3B3022;color:#FF3B30;border:1px solid #FF3B3044">Bucket D</span></div>
+            <h4 class="uc-title">Predictive Scrap Analysis Module</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>John Yabesh &mdash; <span class="uc-role">System Engineer / Praxis</span></div>
+            <p class="uc-outline">Collect and analyze historical scrap reasons. Build a predictive model for scrap probability during nesting stage.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">&lt;1 hr/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Python (scikit-learn/XGBoost), scrap dataset, Power BI</span></div>
+            </div></div><div class="uc-card" id="card-UC-04a" data-ucid="UC-04a">
+            <div class="uc-header"><div class="uc-id-badge">UC-04a</div><span class="wsjf-badge wsjf-low">#18 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#FF3B3022;color:#FF3B30;border:1px solid #FF3B3044">Bucket D</span></div>
+            <h4 class="uc-title">AI-Powered CAD Design Constraint Validation</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Aswin Gangadharan &mdash; <span class="uc-role">Post Processor SME</span></div>
+            <p class="uc-outline">Rule-based AI checks CAD designs against manufacturing constraints before shop floor release. Catches design errors leading to scrap parts.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">3-5 hrs/week additional</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Fewer reworks, Higher first-time-right</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">CAD API (Creo/NX SDK), Python, rule engine</span></div>
+            </div></div><div class="uc-card" id="card-UC-04b" data-ucid="UC-04b">
+            <div class="uc-header"><div class="uc-id-badge">UC-04b</div><span class="wsjf-badge wsjf-low">#20 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#FF3B3022;color:#FF3B30;border:1px solid #FF3B3044">Bucket D</span></div>
+            <h4 class="uc-title">CAM Manufacturing View Reader Enhancement</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Aswin Gangadharan &mdash; <span class="uc-role">Post Processor SME</span></div>
+            <p class="uc-outline">AI-based interpretation layer bridges gap between design intent and manufacturing data when CAM software fails to read Manufacturing Views.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-04a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">Fewer reworks, Higher first-time-right</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">CAM API/SDK, custom parser, geometric reasoning</span></div>
+            </div></div><div class="uc-card" id="card-UC-12b" data-ucid="UC-12b">
+            <div class="uc-header"><div class="uc-id-badge">UC-12b</div><span class="wsjf-badge wsjf-low">#21 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#FF3B3022;color:#FF3B30;border:1px solid #FF3B3044">Bucket D</span></div>
+            <h4 class="uc-title">AI-Driven Scrap Part Re-Use Optimization</h4>
+            <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>John Yabesh &mdash; <span class="uc-role">System Engineer / Praxis</span></div>
+            <p class="uc-outline">Algorithm examines scrapped parts and identifies smaller parts that can be punched from remaining usable area.</p>
+            <div class="uc-meta-grid">
+                <div class="uc-meta"><span class="meta-label">Projected Savings</span><span class="meta-val">Combined with UC-12a</span></div>
+                <div class="uc-meta"><span class="meta-label">Pillars</span><span class="meta-val">More capacity</span></div>
+                <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val">Computational geometry, nesting optimization, OR-Tools</span></div>
+            </div></div></div></div>
+    <div class="tab-content" id="tab-impact"><div class="tab-header"><h2>Impact &amp; Priority Ranking</h2>
+    <p class="subtitle">Use cases ranked by business value, urgency, and implementation effort</p></div><div class="section-block"><h3>How We Ranked</h3>
+    <p class="body-text">Each use case was evaluated on <strong>three value factors</strong> (how important, how urgent, and how much risk it reduces) weighed against the <strong>effort to implement</strong>. Ideas that deliver the most value for the least effort rank highest.</p>
+    <div class="method-grid">
+        <div class="method-card"><div class="method-weight" style="font-size:22px">&#x1F4B0;</div><div class="method-name">Business Value</div><div class="method-desc">Impact on productivity, satisfaction &amp; strategy</div></div>
+        <div class="method-card"><div class="method-weight" style="font-size:22px">&#x23F3;</div><div class="method-name">Urgency</div><div class="method-desc">Time-sensitivity and deadline pressure</div></div>
+        <div class="method-card"><div class="method-weight" style="font-size:22px">&#x1F6E1;</div><div class="method-name">Risk Reduction</div><div class="method-desc">Reduces risk or unlocks new opportunities</div></div>
+        <div class="method-card"><div class="method-weight" style="font-size:22px">&#x2699;</div><div class="method-name">Effort</div><div class="method-desc">Implementation complexity &amp; time required</div></div>
+    </div></div><div class="section-block"><h3>Complete Ranking</h3><div class="table-scroll"><table class="rank-table"><thead><tr><th>#</th><th>Bucket</th><th>ID</th><th>Use Case</th><th>Person</th><th>Value</th><th>Urgency</th><th>Risk Red.</th><th>Combined</th><th>Effort</th><th>Priority</th></tr></thead><tbody><tr><td class="rank-num">1</td>
+            <td><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+            <td class="uc-ref" data-ucid="UC-03a">UC-03a</td><td class="rank-title">Automated Teamcenter User Creation</td>
+            <td>Vigneshvar</td>
+            <td class="center">5</td><td class="center">5</td>
+            <td class="center">3</td><td class="center"><strong>13</strong></td>
+            <td class="center">1</td>
+            <td class="score-cell"><div class="score-bar" style="width:86.66666666666667%"></div><span>Do First</span></td></tr><tr><td class="rank-num">2</td>
+            <td><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+            <td class="uc-ref" data-ucid="UC-03c">UC-03c</td><td class="rank-title">Unified Creo Software Download Portal</td>
+            <td>Vigneshvar</td>
+            <td class="center">3</td><td class="center">3</td>
+            <td class="center">2</td><td class="center"><strong>8</strong></td>
+            <td class="center">1</td>
+            <td class="score-cell"><div class="score-bar" style="width:53.333333333333336%"></div><span>Do First</span></td></tr><tr><td class="rank-num">3</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-11a">UC-11a</td><td class="rank-title">Automated PanelBuilder Log Monitor &amp; Alert</td>
+            <td>Priyadharshini</td>
+            <td class="center">3</td><td class="center">3</td>
+            <td class="center">2</td><td class="center"><strong>8</strong></td>
+            <td class="center">1</td>
+            <td class="score-cell"><div class="score-bar" style="width:53.333333333333336%"></div><span>Do First</span></td></tr><tr><td class="rank-num">4</td>
+            <td><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+            <td class="uc-ref" data-ucid="UC-07">UC-07</td><td class="rank-title">AI-Automated Workflow Diagram Generation</td>
+            <td>Soniya</td>
+            <td class="center">3</td><td class="center">2</td>
+            <td class="center">2</td><td class="center"><strong>7</strong></td>
+            <td class="center">1</td>
+            <td class="score-cell"><div class="score-bar" style="width:46.666666666666664%"></div><span>Do First</span></td></tr><tr><td class="rank-num">5</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-05">UC-05</td><td class="rank-title">AI-Assisted TC Troubleshooting (Log Analys</td>
+            <td>Balaji</td>
+            <td class="center">5</td><td class="center">5</td>
+            <td class="center">3</td><td class="center"><strong>13</strong></td>
+            <td class="center">2</td>
+            <td class="score-cell"><div class="score-bar" style="width:43.333333333333336%"></div><span>Do First</span></td></tr><tr><td class="rank-num">6</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-08">UC-08</td><td class="rank-title">Production Issue Self-Service Knowledge Ba</td>
+            <td>Rizwan</td>
+            <td class="center">5</td><td class="center">5</td>
+            <td class="center">3</td><td class="center"><strong>13</strong></td>
+            <td class="center">2</td>
+            <td class="score-cell"><div class="score-bar" style="width:43.333333333333336%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">7</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-09">UC-09</td><td class="rank-title">AI-Driven Problem Diagnosis from System Lo</td>
+            <td>Saravanan</td>
+            <td class="center">8</td><td class="center">5</td>
+            <td class="center">5</td><td class="center"><strong>18</strong></td>
+            <td class="center">3</td>
+            <td class="score-cell"><div class="score-bar" style="width:40.0%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">8</td>
+            <td><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+            <td class="uc-ref" data-ucid="UC-14b">UC-14b</td><td class="rank-title">Real-Time Edge Device Monitoring Dashboard</td>
+            <td>Aravinthan</td>
+            <td class="center">5</td><td class="center">3</td>
+            <td class="center">3</td><td class="center"><strong>11</strong></td>
+            <td class="center">2</td>
+            <td class="score-cell"><div class="score-bar" style="width:36.666666666666664%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">9</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-03b">UC-03b</td><td class="rank-title">Cross-Team Knowledge Management Chatbot</td>
+            <td>Vigneshvar</td>
+            <td class="center">5</td><td class="center">3</td>
+            <td class="center">5</td><td class="center"><strong>13</strong></td>
+            <td class="center">3</td>
+            <td class="score-cell"><div class="score-bar" style="width:28.866666666666667%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">10</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-14a">UC-14a</td><td class="rank-title">AI-Powered Edge Device Troubleshooting Ass</td>
+            <td>Aravinthan</td>
+            <td class="center">5</td><td class="center">5</td>
+            <td class="center">3</td><td class="center"><strong>13</strong></td>
+            <td class="center">3</td>
+            <td class="score-cell"><div class="score-bar" style="width:28.866666666666667%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">11</td>
+            <td><span class="bucket-dot" style="background:#FF9500"></span>C</td>
+            <td class="uc-ref" data-ucid="UC-10">UC-10</td><td class="rank-title">AI-Powered Engineering Knowledge Assistant</td>
+            <td>Gopalakrishnan</td>
+            <td class="center">8</td><td class="center">3</td>
+            <td class="center">8</td><td class="center"><strong>19</strong></td>
+            <td class="center">5</td>
+            <td class="score-cell"><div class="score-bar" style="width:25.33333333333333%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">12</td>
+            <td><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+            <td class="uc-ref" data-ucid="UC-15">UC-15</td><td class="rank-title">Cross-Project AI Status Report Generator</td>
+            <td>Vidya</td>
+            <td class="center">5</td><td class="center">3</td>
+            <td class="center">3</td><td class="center"><strong>11</strong></td>
+            <td class="center">3</td>
+            <td class="score-cell"><div class="score-bar" style="width:24.46666666666667%"></div><span>Do Next</span></td></tr><tr><td class="rank-num">13</td>
+            <td><span class="bucket-dot" style="background:#FF9500"></span>C</td>
+            <td class="uc-ref" data-ucid="UC-13">UC-13</td><td class="rank-title">AI-Powered Unified Work Intelligence &amp; Pro</td>
+            <td>Pandiyarajan</td>
+            <td class="center">8</td><td class="center">5</td>
+            <td class="center">5</td><td class="center"><strong>18</strong></td>
+            <td class="center">5</td>
+            <td class="score-cell"><div class="score-bar" style="width:24.000000000000004%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">14</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-11b">UC-11b</td><td class="rank-title">Application Issue Resolution Chatbot</td>
+            <td>Priyadharshini</td>
+            <td class="center">3</td><td class="center">3</td>
+            <td class="center">3</td><td class="center"><strong>9</strong></td>
+            <td class="center">3</td>
+            <td class="score-cell"><div class="score-bar" style="width:20.0%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">15</td>
+            <td><span class="bucket-dot" style="background:#34C759"></span>A</td>
+            <td class="uc-ref" data-ucid="UC-01">UC-01</td><td class="rank-title">Intelligent Application Monitoring &amp; Auto-</td>
+            <td>Tippu</td>
+            <td class="center">5</td><td class="center">3</td>
+            <td class="center">5</td><td class="center"><strong>13</strong></td>
+            <td class="center">5</td>
+            <td class="score-cell"><div class="score-bar" style="width:17.333333333333336%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">16</td>
+            <td><span class="bucket-dot" style="background:#FF9500"></span>C</td>
+            <td class="uc-ref" data-ucid="UC-02">UC-02</td><td class="rank-title">Domain-Specific RAG Model for TC/NX API De</td>
+            <td>Dharankumar</td>
+            <td class="center">5</td><td class="center">3</td>
+            <td class="center">5</td><td class="center"><strong>13</strong></td>
+            <td class="center">5</td>
+            <td class="score-cell"><div class="score-bar" style="width:17.333333333333336%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">17</td>
+            <td><span class="bucket-dot" style="background:#FF3B30"></span>D</td>
+            <td class="uc-ref" data-ucid="UC-12a">UC-12a</td><td class="rank-title">Predictive Scrap Analysis Module</td>
+            <td>John</td>
+            <td class="center">5</td><td class="center">2</td>
+            <td class="center">5</td><td class="center"><strong>12</strong></td>
+            <td class="center">5</td>
+            <td class="score-cell"><div class="score-bar" style="width:16.0%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">18</td>
+            <td><span class="bucket-dot" style="background:#FF3B30"></span>D</td>
+            <td class="uc-ref" data-ucid="UC-04a">UC-04a</td><td class="rank-title">AI-Powered CAD Design Constraint Validatio</td>
+            <td>Aswin</td>
+            <td class="center">8</td><td class="center">3</td>
+            <td class="center">5</td><td class="center"><strong>16</strong></td>
+            <td class="center">8</td>
+            <td class="score-cell"><div class="score-bar" style="width:13.333333333333334%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">19</td>
+            <td><span class="bucket-dot" style="background:#FF9500"></span>C</td>
+            <td class="uc-ref" data-ucid="UC-06">UC-06</td><td class="rank-title">Secure AI Workflow Platform with Data Gove</td>
+            <td>Sivakumar</td>
+            <td class="center">5</td><td class="center">2</td>
+            <td class="center">8</td><td class="center"><strong>15</strong></td>
+            <td class="center">8</td>
+            <td class="score-cell"><div class="score-bar" style="width:12.533333333333333%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">20</td>
+            <td><span class="bucket-dot" style="background:#FF3B30"></span>D</td>
+            <td class="uc-ref" data-ucid="UC-04b">UC-04b</td><td class="rank-title">CAM Manufacturing View Reader Enhancement</td>
+            <td>Aswin</td>
+            <td class="center">5</td><td class="center">2</td>
+            <td class="center">3</td><td class="center"><strong>10</strong></td>
+            <td class="center">8</td>
+            <td class="score-cell"><div class="score-bar" style="width:8.333333333333332%"></div><span>Plan Ahead</span></td></tr><tr><td class="rank-num">21</td>
+            <td><span class="bucket-dot" style="background:#FF3B30"></span>D</td>
+            <td class="uc-ref" data-ucid="UC-12b">UC-12b</td><td class="rank-title">AI-Driven Scrap Part Re-Use Optimization</td>
+            <td>John</td>
+            <td class="center">5</td><td class="center">1</td>
+            <td class="center">3</td><td class="center"><strong>9</strong></td>
+            <td class="center">8</td>
+            <td class="score-cell"><div class="score-bar" style="width:7.466666666666668%"></div><span>Plan Ahead</span></td></tr></tbody></table></div></div><div class="section-block">
+        <h3>Consolidated Multi-Dimension View</h3>
+        <p class="body-text">Hover any data point for full use-case details. Click bucket chips to filter visibility.</p>
+        <div class="chart-legend-bar" id="bucketFilters">
+            <button class="legend-chip lc-a active" data-bucket="A"><span class="lc-dot" style="background:#34C759"></span>A Knowledge &amp; Troubleshooting</button>
+            <button class="legend-chip lc-b active" data-bucket="B"><span class="lc-dot" style="background:#007AFF"></span>B Automation</button>
+            <button class="legend-chip lc-c active" data-bucket="C"><span class="lc-dot" style="background:#FF9500"></span>C AI/ML/RAG</button>
+            <button class="legend-chip lc-d active" data-bucket="D"><span class="lc-dot" style="background:#FF3B30"></span>D Manufacturing</button>
+        </div>
+        <div class="chart-card chart-card-full"><div class="chart-wrap chart-wrap-tall"><canvas id="cCon"></canvas></div>
+        <div class="chart-desc">Each bubble is a use case. <strong>Left = less effort, Right = more effort.</strong> <strong>Higher up = higher priority.</strong> <strong>Bigger bubble = greater combined value.</strong> The best opportunities are large bubbles in the top-left &mdash; high value, low effort. Hover any bubble for details.</div></div>
+        <div class="uc-quick-ref"><h4>Use-Case Quick Reference <span class="qr-hint">(hover to highlight on chart &middot; click to jump to catalogue card &middot; press <strong>+</strong> to add to whiteboard)</span></h4><div class="qr-grid" id="qrGrid"></div></div>
+    </div><div class="section-block">
+        <h3>Execution Whiteboard</h3>
+        <p class="body-text">Add use cases from Quick Reference above. Drag to reorder. This becomes your live execution sequence.</p>
+        <div class="whiteboard" id="whiteboard">
+            <div class="wb-empty" id="wbEmpty">No use cases added yet. Use the <strong>+</strong> button on any use case above to add it here.</div>
+        </div>
+    </div></div>
+    <div class="tab-content" id="tab-rawdata"><div class="tab-header"><h2>Raw Data Explorer</h2>
+    <p class="subtitle">Complete survey data mapped to each individual &mdash; unfiltered source records</p></div><div class="glass-card full-width"><h3>Survey Responses &mdash; Raw Data</h3><div class="table-scroll"><table class="data-table raw-table"><thead><tr><th>Name</th><th>Role</th><th>GHCP</th><th>Frequency</th><th>Confidence</th><th>Current Savings</th><th>Projected Savings</th><th>Scalability</th></tr></thead><tbody><tr><td>Tippu Sultan Shaik</td><td>Teamcenter Admin</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>1 – 3 hours</td>
+        <td>1 – 3 hours per week</td><td>Team-wide</td></tr><tr><td>Dharankumar.N</td><td>Software developer</td>
+        <td>Yes</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>3 – 5 hours</td>
+        <td>1 – 3 hours per week</td><td>Similar roles</td></tr><tr><td>Vigneshvar SA</td><td>Creo&amp;MCAD Admin - Software Developer</td>
+        <td>Yes</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>More than 5 hours</td>
+        <td>More than 5 hours per week</td><td>Team-wide</td></tr><tr><td>Aswin Gangadharan</td><td>Post Processor Subject matter expert</td>
+        <td>No</td><td>A Few Times Per Week</td>
+        <td>Moderately Confident</td><td>1 – 3 hours</td>
+        <td>3 – 5 hours per week</td><td>Similar roles</td></tr><tr><td>Balaji M</td><td>Software engineer/ Teamcenter Administrator </td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>1 – 3 hours</td>
+        <td>1 – 3 hours per week</td><td>Team-wide</td></tr><tr><td>Sivakumar Dayalan</td><td>IT Infra Engineer</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>1 – 3 hours</td>
+        <td>3 – 5 hours per week</td><td>Similar roles</td></tr><tr><td>Soniya Dhayalan</td><td>system engineer / My primary responsibility is to support AGW application </td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>1 – 3 hours</td>
+        <td>3 – 5 hours per week</td><td>Role-specific</td></tr><tr><td>Rizwan Ali M</td><td>PLM Administration and Infra Management</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>3 – 5 hours</td>
+        <td>3 – 5 hours per week</td><td>Team-wide</td></tr><tr><td>Saravanan Jayabalan</td><td>Team Manager</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>More than 5 hours</td>
+        <td>3 – 5 hours per week</td><td>Team-wide</td></tr><tr><td>Gopalakrishnan Rajendran</td><td>Team Lead and Teamcenter Solution Engineer</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>1 – 3 hours</td>
+        <td>3 – 5 hours per week</td><td>Team-wide</td></tr><tr><td>S. PRIYADHARSHINI VARSHA</td><td>Software Engineer / Developer</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>Less than 1 hour</td>
+        <td>1 – 3 hours per week</td><td>Similar roles</td></tr><tr><td>John Yabesh</td><td>System Engineer/Praxis</td>
+        <td>No</td><td>A Few Times Per Week</td>
+        <td>Somewhat Confident</td><td>1 – 3 hours</td>
+        <td>Less than 1 hour per week</td><td>Uncertain</td></tr><tr><td>Pandiyarajan Nagarajan</td><td>Sr. Software Developer</td>
+        <td>Yes</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>1 – 3 hours</td>
+        <td>3 – 5 hours per week</td><td>Team-wide</td></tr><tr><td>Aravinthan D</td><td>Test Professional</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Moderately Confident</td><td>3 – 5 hours</td>
+        <td>3 – 5 hours per week</td><td>Team-wide</td></tr><tr><td>Vidya Srivatsan</td><td>Project Manager</td>
+        <td>No</td><td>Multiple Times Per Day</td>
+        <td>Very Confident</td><td>3 – 5 hours</td>
+        <td>1 – 3 hours per week</td><td>Team-wide</td></tr></tbody></table></div></div><h3 style="margin-top:2em;">Individual Responses &mdash; Free Text</h3><div class="response-card"><div class="response-header">
+        <div class="avatar">T</div><div><strong>Tippu Sultan Shaik</strong><span class="role-badge">Teamcenter Admin</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">For all the presentations, document work and mails sent to the vendor</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Need to start using for the daily routine tasks i do for the application</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">Daily routine tasks that i do for the application, one such task would be giving a brief summary on the application monitoring. provide a solution for the issues if any reported in the monitoring.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1.An agent monitoring the the application status.
+2.An agent to find a solution either from the net /list of documents provided if any application monitor reports an issue.
+3.Raising a production problem report based on the severity of the issue.
+4.Sending a mail to the team along with the possible solution found for the issue
+5.An agent to monitor if the issue is resolved. If not it has to be escalated.
+6.Once the issue resolved. documenting the time and details of the issue.
+</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 4</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">D</div><div><strong>Dharankumar.N</strong><span class="role-badge">Software developer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">Usage of GHCP:
+ 
+language :
+C# - NX Open development, Python - gen AI development
+ 
+Code
+Optimizing code quality
+developing the simple method for pre-defined task
+Create a small UI (dialog box) to get the input from users through NX Application 
+add the error handling in the code
+Documentation:
+create a README.md and Architecture.md file for the project
+add commends for functions 
+Analysing
+debug the code
+analysing the functions and API suitable for the problem
+Analysis the existing code base / project structure / program
+
+and use other AI tools like Siemens GPT and copilot for doubt clarification and other purposes like email drafting, documentation, etc ... 
+ </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">For Teamcenter or NX customization and development, the results from GitHub Copilot are often unreliable, as it frequently hallucinates and suggests APIs that do not actually exist.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">For Teamcenter or NX customization and development, the results from GitHub Copilot are often unreliable, as it frequently hallucinates and suggests APIs that do not actually exist.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">Create a customized RAG based AI model with source of NX and Teamcenter API.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: GitHub Copilot (GHCP), Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 4.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 8</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">V</div><div><strong>Vigneshvar SA</strong><span class="role-badge">Creo&amp;MCAD Admin - Software Developer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">I integrate AI into my daily work primarily as an active assistant for coding, documentation, and data analysis.
+A key area where AI directly supports my workflow is software development using GitHub Copilot. For example, I leverage it to accelerate writing Python code for the DTS PLM IMM Installer, which deploys a Creo add-on for Teamcenter material integration. I also use it to help generate the HTML, CSS, and JavaScript needed to build our interactive AI CatalyESt dashboard.
+Beyond hands-on coding, I rely on AI to streamline knowledge management and administrative tasks. This includes querying our Knowledge Transfer (KT) repositories to quickly extract and summarize technical information, consolidating start scripts into a unified knowledge base, and drafting outlines for my PowerPoint presentations.</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Multiple licenses and their cost , lack of extensive exposure , knowledge and potential skill gap towards current AI capabilities within Siemens Infrastructure , chances to implement them with respect to my team&#x27;s needs and scope.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">1. TC User Creation Request - Automation of certain parts of this highly repetitive task
+2. Common Knowledge Chatbot across the team - Includes abbreviations used in every meetings , history of projects and responsible persons data so that reaching out becomes easy promoting collaboration
+3. Unified Portals hosted in web for each start scripts for Creo - Multiple locations and varying specifications needs to be documented and be centralized for better maintenance and ease of upgrades</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1. Common dashboard and automated scripts that can run with minimal human intervention in terms of creating a teamcenter user.
+2. A unified chatbot hosted in teams , or locally in browser/sharpoint , which people can quickly query to understand project history , maybe track those data from QB updates , timelines , and common abbreviations so no one feels left out in meetings
+3. Portals for Software download , hosted and downloaded using pit/git commands to save copy/paste times and errors for shared server locations.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: GitHub Copilot (GHCP), Gemini, Microsoft Copilot, SiemensGPT, ChatGPT</span>
+            <span>&#x23F1; Saving: 6.5h/wk</span>
+            <span>&#x1F4CA; Tasks: 8</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">A</div><div><strong>Aswin Gangadharan</strong><span class="role-badge">Post Processor Subject matter expert</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">Preparing solution document &amp; process, Test cases, meeting summary, automated script, understanding the post processor machine working. </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Co-relating the physical constraints in manufacturing with software implementation. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">1) Due to design constraints in CAD application wrong parts are been manufactured.
+2) CAM Software&#x27;s in ability to read Manufacturing view of the part from the design. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">Automation, reduce scrap, less manual effort.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, ChatGPT, SiemensGPT</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 2</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">B</div><div><strong>Balaji M</strong><span class="role-badge">Software engineer/ Teamcenter Administrator </span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">*Looking up error messages, root‑cause analysis, and possible fixes
+*Understanding existing or unfamiliar code logic
+*Searching for configuration steps, commands, and best practices
+*Drafting or refining technical documentation, emails, and reports
+*Getting sample or reference code to accelerate development</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">*Inaccurate or incomplete responses, especially for context‑specific or complex technical queries
+*Difficulty in framing queries clearly, which sometimes leads to AI not fully understanding the intent or requirement
+*Limited reliability when dealing with project‑specific knowledge or internal systems</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">Troubleshooting Teamcenter issues—such as user access problems, workflow failures, or server errors—often requires searching through large log files and referencing documentation, which is time‑consuming and repetitive.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">AI is proposed to reduce manual effort, improve root‑cause identification, enable proactive issue handling, and reduce dependency on individual experience by adding intelligence to existing workflows.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Claude, Microsoft Copilot, ChatGPT</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 7</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">S</div><div><strong>Sivakumar Dayalan</strong><span class="role-badge">IT Infra Engineer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">Getting automate scripts, Problem solving and creating PPT slides by using Microsoft copilot in my daily work,</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Limited understanding among business and Concerns around exposing sensitive data to AI systems</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">Fear of data leakage or uncontrolled model outputs</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">A secure, governed, and use‑case‑driven AI platform embedded into existing workflows, combining Generative AI, data governance, and role‑based adoption at scale.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 5</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">S</div><div><strong>Soniya Dhayalan</strong><span class="role-badge">system engineer / My primary responsibility is to support AGW application </span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">I am using the copilot for to draft a MOM, to prepare the documentation, prepare presentation and understand the enhancement requirements in AGW. In addition, while taking interview analysing their resume also used.  </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Currently, I am working extensively with a custom application. Due to this, I am not always able to get the expected or complete output from Microsoft Copilot when it comes to scenarios related to this custom application. However, apart from this specific limitation, I am generally satisfied with the overall experience and functionality of Copilot for my other day-to-day tasks</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">In the AGW solution, I noticed that the creation of diagram flowcharts is currently handled entirely through low-code approaches. While this works well, I believe there is an opportunity to further enhance this process by leveraging AI capabilities.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">With AI support, we could potentially automate or simplify the creation of these diagrams, making the process faster, more flexible, and less manual. This could also improve consistency and reduce effort, especially for complex flows.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 6</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">R</div><div><strong>Rizwan Ali M</strong><span class="role-badge">PLM Administration and Infra Management</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">Basic email drafting and report generation. Multiple integration of office tools and getting the requirements and Requirement understanding.</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Security and Privacy concern</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">Querying the solution for an issue and getting the defined template for the task. eg. pre-defined template needs to exist. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">We need to collect all the production problem reports and problem statement which users regularly facing and need to feed all the solution proposal. So that when a user facing issue he can query solution proposal and try once before raising the incident. it will save the time for customer and for us to do regular troubleshooting. Also, from my end, we need pre-defined templates for the task and activities that need to embed in the outlook. </div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot</span>
+            <span>&#x23F1; Saving: 4.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 5</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">S</div><div><strong>Saravanan Jayabalan</strong><span class="role-badge">Team Manager</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">For drafting email communications, preparing presentations, preparing meeting minutes, process standardization, searching information across Siemens world, problem solver for Power BI &amp; Knime data modelling logic, review the contents for technical correctness, refining the AI solution ideas and for general information search. </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">AI Platforms and software licenses are costly and having challenges in making them secure.  Need the AI ecosystem for hands-on and PoC. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">Problem diagnosis takes more time; routine works are not automated; reduce manual validation; </div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">Use AI to analyze system logs, monitoring alerts, historical incidents, and known issues across engineering and manufacturing applications to assist engineers in faster problem diagnosis.  </div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, Copilot M365, SiemensGPT</span>
+            <span>&#x23F1; Saving: 6.5h/wk</span>
+            <span>&#x1F4CA; Tasks: 8</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">G</div><div><strong>Gopalakrishnan Rajendran</strong><span class="role-badge">Team Lead and Teamcenter Solution Engineer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">I mainly use Copilot for strategic topics and project management.</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">I do not see any challenges, however the restriction with the usage of specific applications is a barrier. For example: ChatGPT could give us the desired results comparatively to Copilot however we would not be able to use for official purposes because of the usage restrictions.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">EngSys Pain Point:
+o Information Silos: Critical knowledge is often scattered across various platforms and within individual engineers&#x27; minds, making it hard to find.
+o Time-Consuming Information Retrieval: Engineers spend a significant amount of time searching for answers to common questions, troubleshooting steps, best practices, or specific code examples.
+o Slow Onboarding: New team members struggle to quickly grasp the complex systems, tools, and processes without a centralized, intelligent knowledge base.
+o Dependency on Senior Engineers: Senior team members are frequently interrupted to answer repetitive questions, diverting their focus from high-value tasks.
+o Outdated Documentation: Manual documentation updates often lag behind rapid development, leading to unreliable information.
+
+
+</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">How AI/ML Helps:
+o Intelligent Search &amp; Retrieval: An AI-powered assistant can understand natural language queries (e.g., &quot;How do I deploy the service to production?&quot;, &quot;What&#x27;s the standard way to handle database migrations?&quot;) and retrieve the most relevant information from all connected data sources, not just keywords. It can prioritize results based on freshness, relevance, and user feedback.
+o Contextual Q&amp;A: Beyond simple search, the assistant can generate direct answers to questions by synthesizing information from multiple sources. For example, if asked about a specific error code, it could pull relevant log snippets, a JIRA ticket describing a past fix, and a section from a runbook.
+o Automated Summarization: For lengthy documents, incident reports, or Slack threads, the AI can provide concise summaries, allowing engineers to quickly grasp the core information without reading everything.
+o Proactive Knowledge Suggestions: Integrated into development environments or communication platforms, the assistant could proactively suggest relevant documentation, code examples, or troubleshooting guides based on the engineer&#x27;s current context (e.g., the file they&#x27;re editing, an error message in their console).
+o Knowledge Gap Identification: By analyzing queries that don&#x27;t yield satisfactory answers, the AI can highlight areas where documentation is missing or unclear, prompting the team to create or update content.
+
+Expected Efficiency Gains:
+o Time Savings:
+Reduced Search Time: Engineers spend significantly less time searching for information (estimated 10-20% of an engineer&#x27;s day can be spent searching).
+Faster Onboarding: New hires can become productive much quicker by independently finding answers to common questions.
+Fewer Interruptions: Senior engineers are interrupted less frequently, allowing them to focus on complex problem-solving and innovation.
+o Cost Savings:
+Increased Productivity: More efficient engineers lead to faster project delivery and higher output.
+Reduced Rework: Better access to best practices and historical decisions minimizes errors and rework.
+o Quality Improvement:
+Consistent Practices: Ensures engineers follow established best practices and leverage existing solutions.
+Improved Decision-Making: Access to comprehensive knowledge leads to better-informed technical decisions.
+Enhanced Knowledge Sharing: Fosters a culture of accessible knowledge, reducing reliance on individual &quot;knowledge holders.&quot;
+
+</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 7</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">S</div><div><strong>S. PRIYADHARSHINI VARSHA</strong><span class="role-badge">Software Engineer / Developer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">I am using for creating and updating the batch scripts, incase of any issues and I don&#x27;t know the solution then I would ask copilot to suggest few solutions. If I want to learn something then I will use copilot to take the key notes or the important points.  </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Sometimes the output from AI tools are not accurate. We need to spend lot of time to explain the things and to get the output. If we ask to summarize anything, sometimes it is not providing the important points. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">1. Incase any project file got failed in the PanelBuilder every time we need to check the log file and send out an email to the user (who released the project) to fix the issue and release it again. If the administrator is not available then user might not be aware that the file got failed and it can create issues on the shop floor.
+
+2. If any application has only person to handle it and due to some reason if the person is not available and there is an issue in the production then they need to wait until the person comes and resolves this issue. It reduces the productivity of the users</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1. We can create a script / tool which has the ability to monitor the log files and login into the Teamcenter incase of any issue, check the person name who has released the project and can send out an email automatically looping the necessary person.
+
+2. We can create a chatbot that has the dataset containing the issues and solution to each problem. If the person is not available then user can use this chatbot to solve the issues</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot</span>
+            <span>&#x23F1; Saving: 0.5h/wk</span>
+            <span>&#x1F4CA; Tasks: 4</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">J</div><div><strong>John Yabesh</strong><span class="role-badge">System Engineer/Praxis</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">To understand the .NC codes that are fed into the machines, to create documents , in case if a calculation is needed  , to create test scripts and automation script.  </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">Scalability Across Plants ,I believe that a solution given to a plant cannot align with other plants since different plants use different machines and have different process and there is also a skill gap</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">part scraping and reusing of scrapped parts</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">*If we could list out all the reasons for scrapping a parts and with that we could create a predictive module that could predict the possibility of a part getting scrapped while nesting 
+*Re-using craps , the algorithm trumps provides has the ability to nest parts in a plain sheet or bus bar which has no features .if a part is getting scrapped whose size is 90X40 with some features in it smaller parts can be punched out of it so we can create an algorithm using AI or something which could figureout which part can be punched out of it ,I believe currently this is done manually .</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 5</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">P</div><div><strong>Pandiyarajan Nagarajan</strong><span class="role-badge">Sr. Software Developer</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">An AI-powered support assistant embedded that helps end users resolve day‑to‑day PLM issues, understand workflows, and complete tasks faster by answering questions in natural language with secure, traceable, PLM‑specific responses.</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">At present limited by data readiness, trust and traceability concerns.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">In day‑to‑day activities, decisions, and progress updates are scattered across multiple tools (emails, Teams chats, meetings, documents, and systems like PLM). There is no single, reliable place where work progress, ownership, decisions, and next actions are automatically captured and shared</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1. Automatically capturing activities from meetings, emails, chats, and system updates
+2. Summarizing progress into clear, up‑to‑date status views
+3. Linking actions to owners and related artifacts (tasks, documents, changes)
+4. Proactively highlighting gaps or delays without manual tracking
+5. Enabling natural‑language queries like:
+
+“Show me all open actions related to this project”
+“What changed since the last status update?”
+
+This would shift teams from reporting work to doing work.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: GitHub Copilot (GHCP), Claude, Microsoft Copilot</span>
+            <span>&#x23F1; Saving: 2.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 9</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">A</div><div><strong>Aravinthan D</strong><span class="role-badge">Test Professional</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">AI to analyse the logs of Edge device and take corrective action to resolve it. Instead of waiting for the technical team support.</div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">We don&#x27;t have many use case to use GHCP to infuse with coding.</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">1 We are creating a support request for the repetitive task in Quick base.
+2 Monitoring the Edge device status using the API displaying the information in the dashboard and also its current performance
+</div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1 Similar to the technical support forum, there could be an option to troubleshoot issues with AI. Based on recorded history logs, it will suggest suitable solutions. If the solution doesn&#x27;t work, the corresponding product owner will receive a notification that the proposed solution was unsuccessful. This would help increase user productivity.
+2 With the help of Co-pilot we use some python code to monitor the device status and its performance.</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 4.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 3</span>
+        </div></div><div class="response-card"><div class="response-header">
+        <div class="avatar">V</div><div><strong>Vidya Srivatsan</strong><span class="role-badge">Project Manager</span></div></div>
+        <div class="response-grid">
+            <div class="response-field"><div class="field-label">&#x1F4AC; Current AI Usage</div><div class="field-value">1. Use AI for generating meeting summary for all my project meetings and share it with stakeholders.
+2. Use agent to track project related task </div></div>
+            <div class="response-field"><div class="field-label">&#x26A0; Challenges</div><div class="field-value">My projects are placed in planner. I am not able to generate a consolidated reports of the all the current project status though i can generate a report for individual projects using Microsoft 365 copilot</div></div>
+            <div class="response-field"><div class="field-label">&#x1F527; Problem Described</div><div class="field-value">1. The data or report generated by AI are not sometimes entirely correct. Manual validations are necessary. and sometimes you need to experiment and understand which model provides a better output.
+2. Agent created using Microsoft Copilot should be accessible to all users even those who do not have licenses. </div></div>
+            <div class="response-field"><div class="field-label">&#x1F4A1; Proposed Solution</div><div class="field-value">1. Develop an LLM model that helps you provide the proper output. The output should be in downloadable format for future use.
+2. The Microsoft 365 copilot is available to all employees and should not be license based. 
+
+</div></div>
+        </div>
+        <div class="response-meta">
+            <span>&#x1F6E0; Tools: Microsoft Copilot, SiemensGPT</span>
+            <span>&#x23F1; Saving: 4.0h/wk</span>
+            <span>&#x1F4CA; Tasks: 3</span>
+        </div></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script>
+const ucData = [{"id": "UC-03a", "title": "Automated Teamcenter User Creation", "person": "Vigneshvar SA", "bucket": "B", "wsjf": 13.0, "rank": 1, "costOfDelay": 13, "bizValue": 5, "timeCrit": 5, "rroe": 3, "jobSize": 1, "complexity": 1, "feasibility": 5, "deployWeeksMid": 2.5, "deployWeeks": "2-3 weeks", "hrsSavedMid": 200, "hrsSaved": "150-250", "scalability": 5, "scope": "Team-wide", "techStack": "Python/PowerShell, TC CLI, Excel/CSV template", "risk": "Low. Needs TC admin CLI access."}, {"id": "UC-03c", "title": "Unified Creo Software Download Portal", "person": "Vigneshvar SA", "bucket": "B", "wsjf": 8.0, "rank": 2, "costOfDelay": 8, "bizValue": 3, "timeCrit": 3, "rroe": 2, "jobSize": 1, "complexity": 2, "feasibility": 5, "deployWeeksMid": 3, "deployWeeks": "2-4 weeks", "hrsSavedMid": 115, "hrsSaved": "80-150", "scalability": 5, "scope": "Team-wide", "techStack": "SharePoint/HTML portal, Git/PIT commands", "risk": "Minimal. Governance for version control."}, {"id": "UC-11a", "title": "Automated PanelBuilder Log Monitor & Alert System", "person": "Priyadharshini Varsha", "bucket": "A", "wsjf": 8.0, "rank": 3, "costOfDelay": 8, "bizValue": 3, "timeCrit": 3, "rroe": 2, "jobSize": 1, "complexity": 1, "feasibility": 5, "deployWeeksMid": 1.5, "deployWeeks": "1-2 weeks", "hrsSavedMid": 75, "hrsSaved": "50-100", "scalability": 3, "scope": "Role-based", "techStack": "Python scripting, Task Scheduler, SMTP", "risk": "Minimal."}, {"id": "UC-07", "title": "AI-Automated Workflow Diagram Generation", "person": "Soniya Dhayalan", "bucket": "B", "wsjf": 7.0, "rank": 4, "costOfDelay": 7, "bizValue": 3, "timeCrit": 2, "rroe": 2, "jobSize": 1, "complexity": 2, "feasibility": 4, "deployWeeksMid": 1.5, "deployWeeks": "1-2 weeks", "hrsSavedMid": 150, "hrsSaved": "100-200", "scalability": 1, "scope": "Individual", "techStack": "Copilot / ChatGPT prompts, Mermaid.js / Visio", "risk": "Low. Output depends on prompt quality."}, {"id": "UC-05", "title": "AI-Assisted TC Troubleshooting (Log Analysis)", "person": "Balaji M", "bucket": "A", "wsjf": 6.5, "rank": 5, "costOfDelay": 13, "bizValue": 5, "timeCrit": 5, "rroe": 3, "jobSize": 2, "complexity": 2, "feasibility": 4, "deployWeeksMid": 4, "deployWeeks": "3-5 weeks", "hrsSavedMid": 225, "hrsSaved": "150-300", "scalability": 5, "scope": "Team-wide", "techStack": "Python (regex/pandas), keyword dictionary, SiemensGPT", "risk": "Low-Medium. Log format variations."}, {"id": "UC-08", "title": "Production Issue Self-Service Knowledge Base", "person": "Rizwan Ali M", "bucket": "A", "wsjf": 6.5, "rank": 6, "costOfDelay": 13, "bizValue": 5, "timeCrit": 5, "rroe": 3, "jobSize": 2, "complexity": 2, "feasibility": 4, "deployWeeksMid": 4, "deployWeeks": "3-5 weeks", "hrsSavedMid": 300, "hrsSaved": "200-400", "scalability": 5, "scope": "Team-wide", "techStack": "SharePoint FAQ, Outlook templates, Power Automate", "risk": "Low. Content curation needed."}, {"id": "UC-09", "title": "AI-Driven Problem Diagnosis from System Logs & Alerts", "person": "Saravanan Jayabalan", "bucket": "A", "wsjf": 6.0, "rank": 7, "costOfDelay": 18, "bizValue": 8, "timeCrit": 5, "rroe": 5, "jobSize": 3, "complexity": 3, "feasibility": 4, "deployWeeksMid": 5, "deployWeeks": "4-6 weeks", "hrsSavedMid": 375, "hrsSaved": "250-500", "scalability": 5, "scope": "Team-wide", "techStack": "Python (log parsing), known-issue DB, SiemensGPT", "risk": "Medium. Multi-source correlation."}, {"id": "UC-14b", "title": "Real-Time Edge Device Monitoring Dashboard", "person": "Aravinthan D", "bucket": "B", "wsjf": 5.5, "rank": 8, "costOfDelay": 11, "bizValue": 5, "timeCrit": 3, "rroe": 3, "jobSize": 2, "complexity": 2, "feasibility": 4, "deployWeeksMid": 4, "deployWeeks": "3-5 weeks", "hrsSavedMid": 150, "hrsSaved": "100-200", "scalability": 5, "scope": "Team-wide", "techStack": "Python, REST APIs, Streamlit/Power BI, monitoring hooks", "risk": "Low-Medium. API availability and data refresh frequency."}, {"id": "UC-03b", "title": "Cross-Team Knowledge Management Chatbot", "person": "Vigneshvar SA", "bucket": "A", "wsjf": 4.33, "rank": 9, "costOfDelay": 13, "bizValue": 5, "timeCrit": 3, "rroe": 5, "jobSize": 3, "complexity": 3, "feasibility": 3, "deployWeeksMid": 8, "deployWeeks": "6-10 weeks", "hrsSavedMid": 300, "hrsSaved": "200-400", "scalability": 5, "scope": "Team-wide", "techStack": "Azure OpenAI, SharePoint, Teams bot framework", "risk": "Medium. Knowledge completeness bottleneck."}, {"id": "UC-14a", "title": "AI-Powered Edge Device Troubleshooting Assistant", "person": "Aravinthan D", "bucket": "A", "wsjf": 4.33, "rank": 10, "costOfDelay": 13, "bizValue": 5, "timeCrit": 5, "rroe": 3, "jobSize": 3, "complexity": 3, "feasibility": 3, "deployWeeksMid": 5, "deployWeeks": "4-6 weeks", "hrsSavedMid": 225, "hrsSaved": "150-300", "scalability": 5, "scope": "Team-wide", "techStack": "Python, SiemensGPT, Edge device APIs, notification system", "risk": "Medium. Historical log data quality and format consistency."}, {"id": "UC-10", "title": "AI-Powered Engineering Knowledge Assistant", "person": "Gopalakrishnan Rajendran", "bucket": "C", "wsjf": 3.8, "rank": 11, "costOfDelay": 19, "bizValue": 8, "timeCrit": 3, "rroe": 8, "jobSize": 5, "complexity": 4, "feasibility": 3, "deployWeeksMid": 10, "deployWeeks": "8-12 weeks", "hrsSavedMid": 600, "hrsSaved": "400-800", "scalability": 5, "scope": "Team-wide", "techStack": "RAG (LangChain/LlamaIndex), Azure OpenAI, vector DB, connectors", "risk": "Med-High. Multi-source connectors."}, {"id": "UC-15", "title": "Cross-Project AI Status Report Generator", "person": "Vidya Srivatsan", "bucket": "B", "wsjf": 3.67, "rank": 12, "costOfDelay": 11, "bizValue": 5, "timeCrit": 3, "rroe": 3, "jobSize": 3, "complexity": 3, "feasibility": 3, "deployWeeksMid": 7, "deployWeeks": "6-8 weeks", "hrsSavedMid": 175, "hrsSaved": "100-250", "scalability": 5, "scope": "Team-wide", "techStack": "Microsoft Graph API (Planner), Azure OpenAI/Copilot Studio, Power Automate", "risk": "Medium. Cross-project data access permissions, report accuracy validation."}, {"id": "UC-13", "title": "AI-Powered Unified Work Intelligence & Progress Tracker", "person": "Pandiyarajan Nagarajan", "bucket": "C", "wsjf": 3.6, "rank": 13, "costOfDelay": 18, "bizValue": 8, "timeCrit": 5, "rroe": 5, "jobSize": 5, "complexity": 4, "feasibility": 3, "deployWeeksMid": 10, "deployWeeks": "8-12 weeks", "hrsSavedMid": 300, "hrsSaved": "200-400", "scalability": 5, "scope": "Team-wide", "techStack": "Microsoft Graph API, Azure OpenAI, Teams/Outlook/PLM connectors, Power Automate", "risk": "Medium-High. Multi-system data aggregation, permission scoping."}, {"id": "UC-11b", "title": "Application Issue Resolution Chatbot", "person": "Priyadharshini Varsha", "bucket": "A", "wsjf": 3.0, "rank": 14, "costOfDelay": 9, "bizValue": 3, "timeCrit": 3, "rroe": 3, "jobSize": 3, "complexity": 3, "feasibility": 3, "deployWeeksMid": 5, "deployWeeks": "4-6 weeks", "hrsSavedMid": 150, "hrsSaved": "100-200", "scalability": 3, "scope": "Role-based", "techStack": "Power Virtual Agents, SharePoint FAQ, SiemensGPT", "risk": "Medium. FAQ completeness dependent."}, {"id": "UC-01", "title": "Intelligent Application Monitoring & Auto-Remediation Agent", "person": "Tippu Sultan Shaik", "bucket": "A", "wsjf": 2.6, "rank": 15, "costOfDelay": 13, "bizValue": 5, "timeCrit": 3, "rroe": 5, "jobSize": 5, "complexity": 4, "feasibility": 3, "deployWeeksMid": 10, "deployWeeks": "8-12 weeks", "hrsSavedMid": 225, "hrsSaved": "150-300", "scalability": 5, "scope": "Team-wide", "techStack": "Python, monitoring APIs, SiemensGPT, SMTP, Power Automate", "risk": "Medium-High. Multi-system integration."}, {"id": "UC-02", "title": "Domain-Specific RAG Model for TC/NX API Development", "person": "Dharankumar N", "bucket": "C", "wsjf": 2.6, "rank": 16, "costOfDelay": 13, "bizValue": 5, "timeCrit": 3, "rroe": 5, "jobSize": 5, "complexity": 4, "feasibility": 3, "deployWeeksMid": 10, "deployWeeks": "8-12 weeks", "hrsSavedMid": 300, "hrsSaved": "200-400", "scalability": 3, "scope": "Role-based", "techStack": "RAG (LangChain), Azure OpenAI, vector DB, VS Code extension", "risk": "Med-High. API doc structure varies."}, {"id": "UC-12a", "title": "Predictive Scrap Analysis Module", "person": "John Yabesh", "bucket": "D", "wsjf": 2.4, "rank": 17, "costOfDelay": 12, "bizValue": 5, "timeCrit": 2, "rroe": 5, "jobSize": 5, "complexity": 4, "feasibility": 2, "deployWeeksMid": 14, "deployWeeks": "12-16 weeks", "hrsSavedMid": 200, "hrsSaved": "100-300", "scalability": 3, "scope": "Role-based", "techStack": "Python (scikit-learn/XGBoost), scrap dataset, Power BI", "risk": "High. Data availability."}, {"id": "UC-04a", "title": "AI-Powered CAD Design Constraint Validation", "person": "Aswin Gangadharan", "bucket": "D", "wsjf": 2.0, "rank": 18, "costOfDelay": 16, "bizValue": 8, "timeCrit": 3, "rroe": 5, "jobSize": 8, "complexity": 4, "feasibility": 2, "deployWeeksMid": 16, "deployWeeks": "12-20 weeks", "hrsSavedMid": 450, "hrsSaved": "300-600", "scalability": 3, "scope": "Role-based", "techStack": "CAD API (Creo/NX SDK), Python, rule engine", "risk": "High. CAD API complexity."}, {"id": "UC-06", "title": "Secure AI Workflow Platform with Data Governance", "person": "Sivakumar Dayalan", "bucket": "C", "wsjf": 1.88, "rank": 19, "costOfDelay": 15, "bizValue": 5, "timeCrit": 2, "rroe": 8, "jobSize": 8, "complexity": 5, "feasibility": 2, "deployWeeksMid": 20, "deployWeeks": "16-24 weeks", "hrsSavedMid": 0, "hrsSaved": "Enabler", "scalability": 5, "scope": "Team-wide", "techStack": "Azure AI / AWS Bedrock, AAD, API gateway", "risk": "High. Cross-functional."}, {"id": "UC-04b", "title": "CAM Manufacturing View Reader Enhancement", "person": "Aswin Gangadharan", "bucket": "D", "wsjf": 1.25, "rank": 20, "costOfDelay": 10, "bizValue": 5, "timeCrit": 2, "rroe": 3, "jobSize": 8, "complexity": 5, "feasibility": 2, "deployWeeksMid": 20, "deployWeeks": "16-24 weeks", "hrsSavedMid": 300, "hrsSaved": "200-400", "scalability": 3, "scope": "Role-based", "techStack": "CAM API/SDK, custom parser, geometric reasoning", "risk": "High. Vendor dependency."}, {"id": "UC-12b", "title": "AI-Driven Scrap Part Re-Use Optimization", "person": "John Yabesh", "bucket": "D", "wsjf": 1.12, "rank": 21, "costOfDelay": 9, "bizValue": 5, "timeCrit": 1, "rroe": 3, "jobSize": 8, "complexity": 5, "feasibility": 1, "deployWeeksMid": 25, "deployWeeks": "20-30 weeks", "hrsSavedMid": 100, "hrsSaved": "50-150", "scalability": 3, "scope": "Role-based", "techStack": "Computational geometry, nesting optimization, OR-Tools", "risk": "Very High. Niche algorithm domain."}];
+
+/* ── UC Lookup for popovers ── */
+const ucMap = {};
+ucData.forEach(u => { ucMap[u.id] = u; });
+
+Chart.register(ChartDataLabels);
+Chart.defaults.set('plugins.datalabels', {display: false});
+
+const BC = {A:'#34C759',B:'#007AFF',C:'#FF9500',D:'#FF3B30'};
+const BB = {A:'rgba(52,199,89,0.28)',B:'rgba(0,122,255,0.28)',C:'rgba(255,149,0,0.28)',D:'rgba(255,59,48,0.28)'};
+const BN = {A:'Knowledge & Troubleshooting',B:'Automation',C:'AI/ML/RAG',D:'Manufacturing Quality'};
+const buckets = ['A','B','C','D'];
+let activeBuckets = new Set(buckets);
+let theChart = null;
+
+function jit(id, axis) {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = ((h << 5) - h + id.charCodeAt(i) + axis * 7) | 0;
+    return ((h % 100) / 100 - 0.5) * 0.25;
+}
+
+/* ── Custom Tooltip ── */
+function ttHandler(ctx) {
+    const {chart, tooltip} = ctx;
+    let el = document.getElementById('chart-tooltip');
+    if (!el) { el = document.createElement('div'); el.id = 'chart-tooltip'; document.body.appendChild(el); }
+    if (tooltip.opacity === 0) { el.style.opacity = '0'; return; }
+    const dp = tooltip.dataPoints[0];
+    let uc = dp.raw && dp.raw.uc ? dp.raw.uc : null;
+    if (!uc) { el.style.opacity = '0'; return; }
+    el.innerHTML =
+        '<div class="tt-hdr"><span class="tt-id">' + uc.id + '</span><span class="tt-bkt tt-bkt-' + uc.bucket.toLowerCase() + '">Bucket ' + uc.bucket + '</span><span style="font-size:11px;font-weight:700;color:#34C759;margin-left:auto">#' + uc.rank + ' Priority</span></div>' +
+        '<div class="tt-ttl">' + uc.title + '</div>' +
+        '<div class="tt-per">' + uc.person + ' &mdash; ' + uc.scope + '</div>' +
+        '<table class="tt-tbl">' +
+        '<tr><td>Value</td><td>' + uc.bizValue + '/8</td><td>Urgency</td><td>' + uc.timeCrit + '/8</td></tr>' +
+        '<tr><td>Risk Red.</td><td>' + uc.rroe + '/8</td><td>Effort</td><td>' + uc.jobSize + '/8</td></tr>' +
+        '<tr><td>Deploy</td><td colspan="3">' + uc.deployWeeks + '</td></tr>' +
+        '<tr><td>Hrs/Year</td><td colspan="3">' + uc.hrsSaved + '</td></tr>' +
+        '<tr><td>Tech</td><td colspan="3" class="tt-tech">' + uc.techStack + '</td></tr>' +
+        '</table>';
+    const rect = chart.canvas.getBoundingClientRect();
+    let left = rect.left + window.scrollX + tooltip.caretX;
+    let top  = rect.top  + window.scrollY + tooltip.caretY;
+    el.style.opacity = '1'; el.style.left = left + 'px'; el.style.top = top + 'px';
+    requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        if (r.right > window.innerWidth - 12) el.style.left = (left - r.width) + 'px';
+        if (r.left < 12) el.style.left = '12px';
+        if (r.top < 12) { el.style.top = (top + 24) + 'px'; el.style.transform = 'translate(-50%, 0)'; }
+        else { el.style.transform = 'translate(-50%, calc(-100% - 16px))'; }
+    });
+}
+document.addEventListener('mousemove', e => {
+    var el = document.getElementById('chart-tooltip');
+    if (!el || el.style.opacity === '0') return;
+    var over = false;
+    document.querySelectorAll('.chart-wrap canvas').forEach(c => {
+        var r = c.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) over = true;
+    });
+    if (!over) el.style.opacity = '0';
+});
+
+var fontFam = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif";
+var gridClr = 'rgba(0,0,0,0.04)';
+
+/* ── Consolidated Chart: X=JobSize, Y=WSJF, Bubble=CoD ── */
+function buildChart() {
+    var canvas = document.getElementById('cCon');
+    if (!canvas) return;
+    if (theChart) theChart.destroy();
+    var datasets = buckets.map(bk => {
+        var pts = ucData.filter(u => u.bucket === bk);
+        return {
+            label: bk + ' ' + BN[bk],
+            data: pts.map(u => ({x: u.jobSize + jit(u.id,0), y: u.wsjf, r: Math.max(8, u.costOfDelay * 1.5), uc: u})),
+            backgroundColor: BB[bk], borderColor: BC[bk], borderWidth: 2,
+            hoverBorderWidth: 3,
+        };
+    });
+    theChart = new Chart(canvas, {
+        type: 'bubble',
+        data: {datasets: datasets},
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: {duration: 900, easing: 'easeOutQuart'},
+            plugins: {
+                legend: {display: false}, tooltip: {enabled: false, external: ttHandler},
+                datalabels: {
+                    display: true,
+                    formatter: (_, ctx) => ctx.dataset.data[ctx.dataIndex].uc.id,
+                    font: {size: 9, weight: 700, family: fontFam}, anchor: 'end', align: 'top', offset: 3,
+                    color: ctx => BC[ctx.dataset.data[ctx.dataIndex].uc.bucket],
+                }
+            },
+            scales: {
+                x: {title:{display:true,text:'Effort to Implement (1=Low, 8=High)',font:{size:12,family:fontFam}},min:0.5,max:9,grid:{color:gridClr}},
+                y: {title:{display:true,text:'Priority Ranking (higher = do first)',font:{size:12,family:fontFam}},min:0,grid:{color:gridClr}}
+            },
+            onHover: (e,els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; }
+        }
+    });
+    /* Apply bucket filters */
+    buckets.forEach((bk, i) => { theChart.getDatasetMeta(i).hidden = !activeBuckets.has(bk); });
+    theChart.update('none');
+}
+buildChart();
+
+/* ── Bucket filter chips ── */
+document.querySelectorAll('.legend-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        var bk = chip.dataset.bucket;
+        if (activeBuckets.has(bk)) activeBuckets.delete(bk); else activeBuckets.add(bk);
+        chip.classList.toggle('active');
+        if (theChart) {
+            buckets.forEach((b, i) => { theChart.getDatasetMeta(i).hidden = !activeBuckets.has(b); });
+            theChart.update('none');
+        }
+        document.querySelectorAll('.qr-item').forEach(el => {
+            el.style.opacity = activeBuckets.has(el.dataset.bucket) ? '1' : '0.2';
+        });
+    });
+});
+
+/* ── Quick Reference + Whiteboard ── */
+var wbItems = []; // {id, title, wsjf, bucket, rank}
+
+function renderWhiteboard() {
+    var wb = document.getElementById('whiteboard');
+    var empty = document.getElementById('wbEmpty');
+    if (!wb) return;
+    /* Clear existing except empty msg */
+    wb.querySelectorAll('.wb-item').forEach(el => el.remove());
+    if (wbItems.length === 0) { if (empty) empty.style.display = ''; return; }
+    if (empty) empty.style.display = 'none';
+    wbItems.forEach((item, idx) => {
+        var el = document.createElement('div');
+        el.className = 'wb-item';
+        el.draggable = true;
+        el.dataset.idx = idx;
+        el.innerHTML =
+            '<span class="wb-num">' + (idx+1) + '</span>' +
+            '<span class="wb-id" style="color:' + BC[item.bucket] + '">' + item.id + '</span>' +
+            '<span class="wb-title">' + item.title + '</span>' +
+            '<span class="wb-wsjf">#' + item.rank + '</span>' +
+            '<button class="wb-remove" title="Remove">&times;</button>';
+        el.querySelector('.wb-remove').addEventListener('click', () => {
+            wbItems.splice(idx, 1); renderWhiteboard(); updateAddButtons();
+        });
+        /* Drag */
+        el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', idx); el.classList.add('wb-dragging'); });
+        el.addEventListener('dragend', () => el.classList.remove('wb-dragging'));
+        el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('wb-over'); });
+        el.addEventListener('dragleave', () => el.classList.remove('wb-over'));
+        el.addEventListener('drop', e => {
+            e.preventDefault(); el.classList.remove('wb-over');
+            var from = parseInt(e.dataTransfer.getData('text/plain'));
+            var to = parseInt(el.dataset.idx);
+            if (from === to) return;
+            var moved = wbItems.splice(from, 1)[0];
+            wbItems.splice(to, 0, moved);
+            renderWhiteboard();
+        });
+        /* Click ID to navigate */
+        el.querySelector('.wb-id').style.cursor = 'pointer';
+        el.querySelector('.wb-id').addEventListener('click', () => navigateToUC(item.id));
+        wb.appendChild(el);
+    });
+}
+
+function updateAddButtons() {
+    document.querySelectorAll('.qr-add').forEach(btn => {
+        var inWb = wbItems.some(w => w.id === btn.dataset.ucid);
+        btn.textContent = inWb ? '✓' : '+';
+        btn.style.background = inWb ? '#34C759' : 'rgba(52,199,89,0.12)';
+        btn.style.color = inWb ? 'white' : '#34C759';
+    });
+}
+
+function navigateToUC(ucId) {
+    /* Switch to catalogue tab */
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector('[data-tab="catalogue"]').classList.add('active');
+    document.getElementById('tab-catalogue').classList.add('active');
+    var card = document.getElementById('card-' + ucId);
+    if (card) {
+        card.scrollIntoView({behavior:'smooth', block:'center'});
+        card.classList.add('uc-highlight');
+        setTimeout(() => card.classList.remove('uc-highlight'), 2500);
+    }
+}
+
+/* Build QR grid */
+(function() {
+    var grid = document.getElementById('qrGrid');
+    if (!grid) return;
+    ucData.forEach(uc => {
+        var el = document.createElement('div');
+        el.className = 'qr-item';
+        el.dataset.bucket = uc.bucket;
+        el.dataset.ucid = uc.id;
+        el.style.borderLeftColor = BC[uc.bucket];
+        var scopeLbl = uc.scope === 'Team-wide' ? 'Team' : (uc.scope === 'Role-based' ? 'Role' : 'Indiv');
+        el.innerHTML =
+            '<span class="qr-id" style="color:'+BC[uc.bucket]+'">'+uc.id+'</span>' +
+            '<span class="qr-title">'+uc.title.slice(0,35)+'</span>' +
+            '<span class="qr-score">#'+uc.rank+'</span>' +
+            '<button class="qr-add" data-ucid="'+uc.id+'" title="Add to whiteboard">+</button>';
+
+        /* Hover → highlight on chart */
+        el.addEventListener('mouseenter', () => {
+            el.classList.add('qr-hover');
+            if (!theChart) return;
+            var active = [];
+            theChart.data.datasets.forEach((ds, dsi) => {
+                (ds.data||[]).forEach((pt, pi) => {
+                    if (pt && pt.uc && pt.uc.id === uc.id) active.push({datasetIndex:dsi,index:pi});
+                });
+            });
+            if (active.length) { theChart.setActiveElements(active); theChart.tooltip.setActiveElements(active,{x:0,y:0}); }
+            theChart.update('none');
+        });
+        el.addEventListener('mouseleave', () => {
+            el.classList.remove('qr-hover');
+            if (!theChart) return;
+            theChart.setActiveElements([]); theChart.tooltip.setActiveElements([],{x:0,y:0}); theChart.update('none');
+        });
+
+        /* Click title → navigate */
+        el.querySelector('.qr-title').addEventListener('click', () => navigateToUC(uc.id));
+        el.querySelector('.qr-id').addEventListener('click', () => navigateToUC(uc.id));
+
+        /* + button → add to whiteboard */
+        el.querySelector('.qr-add').addEventListener('click', e => {
+            e.stopPropagation();
+            var inWb = wbItems.some(w => w.id === uc.id);
+            if (inWb) {
+                wbItems = wbItems.filter(w => w.id !== uc.id);
+            } else {
+                wbItems.push({id:uc.id, title:uc.title, wsjf:uc.wsjf, bucket:uc.bucket, rank:uc.rank});
+            }
+            renderWhiteboard(); updateAddButtons();
+        });
+        grid.appendChild(el);
+    });
+})();
+
+/* ── UC-REF Popovers (hover on any .uc-ref or UC-XX text) ── */
+(function() {
+    var pop = document.createElement('div');
+    pop.className = 'uc-popover';
+    pop.id = 'ucPopover';
+    document.body.appendChild(pop);
+
+    function showPop(ucId, anchor) {
+        var uc = ucMap[ucId];
+        if (!uc) return;
+        pop.innerHTML =
+            '<div class="pop-title"><span class="pop-id">' + uc.id + '</span> ' + uc.title + '</div>' +
+            '<div class="pop-person">' + uc.person + ' &mdash; ' + uc.scope + '</div>' +
+            '<div class="pop-row"><span>Priority:</span> #' + uc.rank + ' &nbsp; <span>Effort:</span> ' + uc.jobSize + '/8</div>' +
+            '<div class="pop-row"><span>Deploy:</span> ' + uc.deployWeeks + ' &nbsp; <span>Hrs/yr:</span> ' + uc.hrsSaved + '</div>';
+        var r = anchor.getBoundingClientRect();
+        pop.style.left = (r.left + window.scrollX) + 'px';
+        pop.style.top = (r.top + window.scrollY - 8) + 'px';
+        pop.style.transform = 'translateY(-100%)';
+        pop.classList.add('visible');
+        requestAnimationFrame(() => {
+            var pr = pop.getBoundingClientRect();
+            if (pr.top < 8) { pop.style.top = (r.bottom + window.scrollY + 8) + 'px'; pop.style.transform = 'none'; }
+            if (pr.right > window.innerWidth - 8) pop.style.left = (window.innerWidth - pr.width - 8 + window.scrollX) + 'px';
+        });
+    }
+    function hidePop() { pop.classList.remove('visible'); }
+
+    /* Attach to existing .uc-ref elements */
+    document.querySelectorAll('.uc-ref').forEach(el => {
+        var ucId = el.dataset.ucid || el.textContent.trim();
+        el.addEventListener('mouseenter', () => showPop(ucId, el));
+        el.addEventListener('mouseleave', hidePop);
+        el.addEventListener('click', e => { e.preventDefault(); navigateToUC(ucId); });
+    });
+
+    /* Also handle UC-XX patterns in text */
+    document.querySelectorAll('.theme-ucs, .chart-desc').forEach(el => {
+        el.innerHTML = el.innerHTML.replace(/\b(UC-\d+[a-b]?)\b/g, '<span class="uc-ref" data-ucid="$1">$1</span>');
+    });
+    /* Re-attach events after innerHTML replace */
+    document.querySelectorAll('.uc-ref').forEach(el => {
+        var ucId = el.dataset.ucid || el.textContent.trim();
+        el.removeEventListener('mouseenter', null);
+        el.addEventListener('mouseenter', () => showPop(ucId, el));
+        el.addEventListener('mouseleave', hidePop);
+        el.addEventListener('click', e => { e.preventDefault(); navigateToUC(ucId); });
+    });
+})();
+
+</script>
+
+<script>
+document.querySelectorAll('.nav-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+</script>
+</body>
+</html>

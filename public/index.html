@@ -68,6 +68,11 @@
         <i class="ri-gamepad-line"></i><span>Quiz</span>
       </button>
       <!-- Admin-only tabs -->
+      <!-- EngSys-only tab -->
+      <button class="nav-btn engsys-only" data-tab="survey-report" style="display:none;">
+        <i class="ri-bar-chart-box-line"></i><span>Survey Report</span>
+      </button>
+      <!-- Admin-only tabs -->
       <button class="nav-btn admin-only" data-tab="admin-members" style="display:none;">
         <i class="ri-user-settings-line"></i><span>Members</span>
       </button>
@@ -96,7 +101,7 @@
       <div class="section-hero">
         <div class="hero-text">
           <h1>Welcome to <span class="gradient-text">AI CatalyESt</span></h1>
-          <p>Engineering Systems · 12-Month AI Learning Journey</p>
+          <p>Engineering Systems · AI Learning Journey</p>
         </div>
       </div>
 
@@ -105,7 +110,7 @@
         <div class="card card-countdown">
           <div class="card-header">
             <i class="ri-timer-flash-line"></i>
-            <h3>Next Session</h3>
+            <h3>Live Timer</h3>
           </div>
           <div id="countdown-body" class="countdown-body">
             <div class="countdown-event-title" id="countdown-title">Loading...</div>
@@ -124,7 +129,7 @@
         <div class="card card-activity">
           <div class="card-header">
             <i class="ri-lightbulb-flash-line"></i>
-            <h3>Current Activity</h3>
+            <h3>Upcoming Activity</h3>
           </div>
           <div id="activity-body" class="activity-body"></div>
         </div>
@@ -181,7 +186,7 @@
     <section id="tab-calendar" class="tab-content">
       <div class="section-header">
         <h2><i class="ri-calendar-line"></i> Event Calendar</h2>
-        <p>12-month syllabus timeline</p>
+        <p>Syllabus Timeline</p>
       </div>
       <div id="calendar-content"></div>
     </section>
@@ -190,7 +195,7 @@
     <section id="tab-team" class="tab-content">
       <div class="section-header">
         <h2><i class="ri-team-line"></i> The Team</h2>
-        <p>Engineering Systems — 16 members across 4 domains</p>
+        <p id="team-subtitle">Engineering Systems</p>
       </div>
       <div class="domain-filter" id="domain-filter"></div>
       <div id="team-content" class="team-grid"></div>
@@ -203,6 +208,11 @@
         <p>Join a live quiz session</p>
       </div>
       <div id="quiz-content"></div>
+    </section>
+
+    <!-- ── SURVEY REPORT (engsys-only) ── -->
+    <section id="tab-survey-report" class="tab-content engsys-only">
+      <div id="survey-report-content"></div>
     </section>
 
     <!-- ═══ ADMIN TABS ═══ -->
@@ -250,8 +260,8 @@
     <div class="modal">
       <div class="modal-close" id="closeLogin"><i class="ri-close-line"></i></div>
       <div class="modal-icon"><i class="ri-shield-user-line"></i></div>
-      <h2>Admin Access</h2>
-      <p>Sign in to manage the AI CatalyESt initiative</p>
+      <h2>Sign In</h2>
+      <p>Access the AI CatalyESt platform</p>
       <form id="loginForm">
         <div class="input-group">
           <i class="ri-user-line"></i>
@@ -291,6 +301,8 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

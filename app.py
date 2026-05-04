@@ -10,6 +10,8 @@ import string
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_socketio import SocketIO, emit, join_room
+from PIL import Image
+import io
 
 # ─── App Setup ───
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -59,8 +61,13 @@ def login():
     data = request.get_json()
     db = read_db()
     cfg = db.get('config', {}).get('admin', {})
+    # Admin login
     if data.get('username') == cfg.get('username') and data.get('password') == cfg.get('password'):
-        return jsonify(success=True, token='ai-catalyst-admin-token')
+        return jsonify(success=True, token='ai-catalyst-admin-token', role='admin')
+    # EngSys login
+    engsys = db.get('config', {}).get('engsys', {'username': 'engsys', 'password': 'engsys'})
+    if data.get('username') == engsys.get('username') and data.get('password') == engsys.get('password'):
+        return jsonify(success=True, token='ai-catalyst-engsys-token', role='engsys')
     return jsonify(success=False, message='Invalid credentials'), 401
 
 
@@ -114,10 +121,24 @@ def upload_avatar(member_id):
     if 'avatar' not in request.files:
         return jsonify(error='No file uploaded'), 400
     file = request.files['avatar']
-    ext = os.path.splitext(file.filename)[1] or '.png'
-    filename = f"{member_id}{ext}"
-    filepath = os.path.join(UPLOAD_DIR, filename)
-    file.save(filepath)
+    # Compress image before saving
+    try:
+        img = Image.open(file.stream)
+        img = img.convert('RGB')
+        # Resize if larger than 400px on any side
+        max_dim = 400
+        if img.width > max_dim or img.height > max_dim:
+            img.thumbnail((max_dim, max_dim), Image.LANCZOS)
+        filename = f"{member_id}.jpg"
+        filepath = os.path.join(UPLOAD_DIR, filename)
+        img.save(filepath, 'JPEG', quality=80, optimize=True)
+    except Exception as e:
+        # Fallback: save raw file
+        ext = os.path.splitext(file.filename)[1] or '.png'
+        filename = f"{member_id}{ext}"
+        filepath = os.path.join(UPLOAD_DIR, filename)
+        file.seek(0)
+        file.save(filepath)
 
     db = read_db()
     for i, m in enumerate(db['members']):
