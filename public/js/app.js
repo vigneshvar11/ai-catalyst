@@ -689,7 +689,8 @@ function renderSurveyReport() {
       <button class="sr-tab" data-srtab="impact"><i class="ri-bar-chart-line"></i> Impact</button>
       <button class="sr-tab" data-srtab="rawdata"><i class="ri-database-2-line"></i> Raw Data</button>
     </div>
-    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:hidden;display:block;min-height:800px;"></iframe>
+    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:hidden;display:block;min-height:600px;"></iframe>
+    <button class="sr-back-to-top" id="sr-back-to-top" title="Back to top"><i class="ri-arrow-up-line"></i></button>
   `;
 
   // Auto-resize iframe to content height — no scrollbar
@@ -711,6 +712,21 @@ function renderSurveyReport() {
       }
     });
   });
+
+  // Back-to-top button — scroll to survey report section top
+  const bttBtn = document.getElementById('sr-back-to-top');
+  if (bttBtn) {
+    window.addEventListener('scroll', () => {
+      const section = document.getElementById('tab-survey-report');
+      if (!section || section.style.display === 'none') { bttBtn.style.display = 'none'; return; }
+      const rect = section.getBoundingClientRect();
+      bttBtn.style.display = (window.scrollY > 300 && rect.top < window.innerHeight) ? 'flex' : 'none';
+    });
+    bttBtn.addEventListener('click', () => {
+      const section = document.getElementById('tab-survey-report');
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 }
 
 // ════════════════════ ADMIN: MEMBERS ════════════════════

@@ -243,7 +243,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 /* ══ EMBED MODE ══ */
 .nav-bar{display:none!important}
 .hero{display:none!important}
-body{background:transparent!important;margin:0!important;padding:0!important;overflow-x:hidden!important}
+html{height:auto!important;overflow:hidden!important}
+body{background:transparent!important;margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
 .main{padding-top:0!important}
 
 </style>
@@ -1287,11 +1288,13 @@ document.querySelectorAll('.nav-tab').forEach(function(tab) {
 
 /* ── Embed: post height to parent ── */
 function postHeight(){
-  window.parent.postMessage({type:'sr-height',height:document.documentElement.scrollHeight},'*');
+  var main=document.querySelector('.main');
+  var h=main?main.scrollHeight+main.offsetTop:document.body.scrollHeight;
+  window.parent.postMessage({type:'sr-height',height:h},'*');
 }
-if(window.ResizeObserver){new ResizeObserver(postHeight).observe(document.body);}
+if(window.ResizeObserver){new ResizeObserver(postHeight).observe(document.querySelector('.main')||document.body);}
 window.addEventListener('load',function(){setTimeout(postHeight,400);});
-setInterval(postHeight,1000);
+setInterval(postHeight,2000);
 
 /* ── Embed: receive tab-switch from parent ── */
 window.addEventListener('message',function(e){
