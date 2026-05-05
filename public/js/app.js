@@ -690,7 +690,7 @@ function renderSurveyReport() {
       <button class="sr-tab" data-srtab="impact"><i class="ri-bar-chart-line"></i> Impact</button>
       <button class="sr-tab" data-srtab="rawdata"><i class="ri-database-2-line"></i> Raw Data</button>
     </div>
-    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:hidden;display:block;min-height:600px;"></iframe>
+    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:visible;display:block;min-height:600px;"></iframe>
     <button class="sr-back-to-top" id="sr-back-to-top" title="Back to top"><i class="ri-arrow-up-line"></i></button>
   `;
 

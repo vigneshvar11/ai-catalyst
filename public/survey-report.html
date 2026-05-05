@@ -245,7 +245,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .hero{display:none!important}
 html{height:auto!important;overflow:visible!important}
 body{background:transparent!important;margin:0!important;padding:0!important;overflow:visible!important;height:auto!important}
-.main{padding-top:0!important}
+.main{padding:0!important;max-width:100%!important}
 
 </style>
 </head>
@@ -1019,12 +1019,18 @@ function ttHandler(ctx) {
     let left = rect.left + tooltip.caretX;
     let top  = rect.top  + tooltip.caretY;
     el.style.opacity = '1'; el.style.left = left + 'px'; el.style.top = top + 'px';
+    el.style.transform = 'translate(-50%, calc(-100% - 16px))';
     requestAnimationFrame(() => {
         const r = el.getBoundingClientRect();
-        if (r.right > window.innerWidth - 12) el.style.left = (left - r.width) + 'px';
-        if (r.left < 12) el.style.left = '12px';
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        /* Horizontal: keep within viewport */
+        if (r.right > vw - 12) el.style.left = Math.max(12, left - (r.right - vw + 12)) + 'px';
+        if (r.left < 12) el.style.left = (r.width / 2 + 12) + 'px';
+        /* Vertical: if clipped at top, show below the point */
         if (r.top < 12) { el.style.top = (top + 24) + 'px'; el.style.transform = 'translate(-50%, 0)'; }
-        else { el.style.transform = 'translate(-50%, calc(-100% - 16px))'; }
+        /* If clipped at bottom, show above */
+        if (r.bottom > vh - 12) { el.style.top = (top - 16) + 'px'; el.style.transform = 'translate(-50%, -100%)'; }
     });
 }
 document.addEventListener('mousemove', e => {
