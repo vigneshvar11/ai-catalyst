@@ -35,29 +35,31 @@ if MONGODB_URI:
         mongo_client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
         mongo_client.admin.command('ping')
         mongo_db = mongo_client['aicatalyst']
-        print("✅ Connected to MongoDB Atlas")
+        print("[MongoDB] Connected to MongoDB Atlas")
 
         # Auto-seed: if members collection is empty, load from db.json
         if mongo_db['members'].count_documents({}) == 0:
-            print("📦 Seeding MongoDB from db.json...")
+            print("[MongoDB] Seeding from db.json...")
             with open(DB_PATH, 'r', encoding='utf-8') as f:
                 seed = json.load(f)
             for col in COLLECTIONS:
                 docs = seed.get(col, [])
                 if docs:
-                    # Use 'id' field as '_id' for easy lookup
+                    to_insert = []
                     for d in docs:
-                        d['_id'] = d['id']
-                    mongo_db[col].insert_many(docs)
-                    print(f"   → {col}: {len(docs)} docs")
+                        doc = dict(d)  # copy to avoid mutating original
+                        doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
+                        to_insert.append(doc)
+                    mongo_db[col].insert_many(to_insert)
+                    print(f"   {col}: {len(to_insert)} docs")
             # Seed config as a single doc
-            cfg = seed.get('config', {})
+            cfg = dict(seed.get('config', {}))
             cfg['_id'] = 'app_config'
             mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
-            print("   → config: seeded")
-            print("✅ Seeding complete")
+            print("   config: seeded")
+            print("[MongoDB] Seeding complete")
     except Exception as e:
-        print(f"⚠️ MongoDB connection failed, falling back to db.json: {e}")
+        print(f"[MongoDB] Connection failed, falling back to db.json: {e}")
         mongo_db = None
 
 
@@ -83,16 +85,17 @@ def read_db():
 
 def write_db(data):
     if mongo_db:
-        # Sync all collections to MongoDB
         for col in COLLECTIONS:
             mongo_db[col].delete_many({})
             docs = data.get(col, [])
             if docs:
+                to_insert = []
                 for d in docs:
-                    d['_id'] = d.get('id', str(uuid.uuid4().hex[:8]))
-                mongo_db[col].insert_many(docs)
-        # Sync config
-        cfg = data.get('config', {})
+                    doc = dict(d)  # copy
+                    doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
+                    to_insert.append(doc)
+                mongo_db[col].insert_many(to_insert)
+        cfg = dict(data.get('config', {}))
         cfg['_id'] = 'app_config'
         mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
         return
