@@ -23,13 +23,79 @@ DB_PATH = os.path.join(BASE_DIR, 'data', 'db.json')
 UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads', 'avatars')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# ─── MongoDB Setup (if MONGODB_URI env var is set) ───
+MONGODB_URI = os.environ.get('MONGODB_URI')
+mongo_db = None
+COLLECTIONS = ['members', 'events', 'points', 'quizzes', 'surveys', 'teams']
+
+if MONGODB_URI:
+    try:
+        from pymongo import MongoClient
+        from pymongo.server_api import ServerApi
+        mongo_client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
+        mongo_client.admin.command('ping')
+        mongo_db = mongo_client['aicatalyst']
+        print("✅ Connected to MongoDB Atlas")
+
+        # Auto-seed: if members collection is empty, load from db.json
+        if mongo_db['members'].count_documents({}) == 0:
+            print("📦 Seeding MongoDB from db.json...")
+            with open(DB_PATH, 'r', encoding='utf-8') as f:
+                seed = json.load(f)
+            for col in COLLECTIONS:
+                docs = seed.get(col, [])
+                if docs:
+                    # Use 'id' field as '_id' for easy lookup
+                    for d in docs:
+                        d['_id'] = d['id']
+                    mongo_db[col].insert_many(docs)
+                    print(f"   → {col}: {len(docs)} docs")
+            # Seed config as a single doc
+            cfg = seed.get('config', {})
+            cfg['_id'] = 'app_config'
+            mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
+            print("   → config: seeded")
+            print("✅ Seeding complete")
+    except Exception as e:
+        print(f"⚠️ MongoDB connection failed, falling back to db.json: {e}")
+        mongo_db = None
+
 
 # ─── Database Helpers ───
+def _mongo_list(collection):
+    """Get all docs from a collection, stripping _id."""
+    docs = list(mongo_db[collection].find())
+    for d in docs:
+        d.pop('_id', None)
+    return docs
+
 def read_db():
+    if mongo_db:
+        data = {}
+        for col in COLLECTIONS:
+            data[col] = _mongo_list(col)
+        cfg = mongo_db['config'].find_one({'_id': 'app_config'}) or {}
+        cfg.pop('_id', None)
+        data['config'] = cfg
+        return data
     with open(DB_PATH, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def write_db(data):
+    if mongo_db:
+        # Sync all collections to MongoDB
+        for col in COLLECTIONS:
+            mongo_db[col].delete_many({})
+            docs = data.get(col, [])
+            if docs:
+                for d in docs:
+                    d['_id'] = d.get('id', str(uuid.uuid4().hex[:8]))
+                mongo_db[col].insert_many(docs)
+        # Sync config
+        cfg = data.get('config', {})
+        cfg['_id'] = 'app_config'
+        mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
+        return
     with open(DB_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
