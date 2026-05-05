@@ -23,22 +23,36 @@ DB_PATH = os.path.join(BASE_DIR, 'data', 'db.json')
 UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads', 'avatars')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ─── MongoDB Setup (if MONGODB_URI env var is set) ───
+# ─── MongoDB Setup (lazy init — deferred until first use) ───
 MONGODB_URI = os.environ.get('MONGODB_URI')
-mongo_db = None
 COLLECTIONS = ['members', 'events', 'points', 'quizzes', 'surveys', 'teams']
+_mongo_db = None
+_mongo_initialized = False
 
-if MONGODB_URI:
+
+def _get_mongo():
+    """Lazy-init MongoDB connection. Called on first DB access after gevent monkey-patches."""
+    global _mongo_db, _mongo_initialized
+    if _mongo_initialized:
+        return _mongo_db
+    _mongo_initialized = True
+    if not MONGODB_URI:
+        return None
     try:
         from pymongo import MongoClient
         from pymongo.server_api import ServerApi
-        mongo_client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
-        mongo_client.admin.command('ping')
-        mongo_db = mongo_client['aicatalyst']
+        client = MongoClient(
+            MONGODB_URI,
+            server_api=ServerApi('1'),
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=5000,
+        )
+        client.admin.command('ping')
+        _mongo_db = client['aicatalyst']
         print("[MongoDB] Connected to MongoDB Atlas")
 
         # Auto-seed: if members collection is empty, load from db.json
-        if mongo_db['members'].count_documents({}) == 0:
+        if _mongo_db['members'].count_documents({}) == 0:
             print("[MongoDB] Seeding from db.json...")
             with open(DB_PATH, 'r', encoding='utf-8') as f:
                 seed = json.load(f)
@@ -47,36 +61,37 @@ if MONGODB_URI:
                 if docs:
                     to_insert = []
                     for d in docs:
-                        doc = dict(d)  # copy to avoid mutating original
+                        doc = dict(d)
                         doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
                         to_insert.append(doc)
-                    mongo_db[col].insert_many(to_insert)
+                    _mongo_db[col].insert_many(to_insert)
                     print(f"   {col}: {len(to_insert)} docs")
-            # Seed config as a single doc
             cfg = dict(seed.get('config', {}))
             cfg['_id'] = 'app_config'
-            mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
+            _mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
             print("   config: seeded")
             print("[MongoDB] Seeding complete")
     except Exception as e:
-        print(f"[MongoDB] Connection failed, falling back to db.json: {e}")
-        mongo_db = None
+        print(f"[MongoDB] Failed, using db.json fallback: {e}")
+        _mongo_db = None
+    return _mongo_db
 
 
 # ─── Database Helpers ───
-def _mongo_list(collection):
+def _mongo_list(db, collection):
     """Get all docs from a collection, stripping _id."""
-    docs = list(mongo_db[collection].find())
+    docs = list(db[collection].find())
     for d in docs:
         d.pop('_id', None)
     return docs
 
 def read_db():
-    if mongo_db:
+    db = _get_mongo()
+    if db:
         data = {}
         for col in COLLECTIONS:
-            data[col] = _mongo_list(col)
-        cfg = mongo_db['config'].find_one({'_id': 'app_config'}) or {}
+            data[col] = _mongo_list(db, col)
+        cfg = db['config'].find_one({'_id': 'app_config'}) or {}
         cfg.pop('_id', None)
         data['config'] = cfg
         return data
@@ -84,20 +99,21 @@ def read_db():
         return json.load(f)
 
 def write_db(data):
-    if mongo_db:
+    db = _get_mongo()
+    if db:
         for col in COLLECTIONS:
-            mongo_db[col].delete_many({})
+            db[col].delete_many({})
             docs = data.get(col, [])
             if docs:
                 to_insert = []
                 for d in docs:
-                    doc = dict(d)  # copy
+                    doc = dict(d)
                     doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
                     to_insert.append(doc)
-                mongo_db[col].insert_many(to_insert)
+                db[col].insert_many(to_insert)
         cfg = dict(data.get('config', {}))
         cfg['_id'] = 'app_config'
-        mongo_db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
+        db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
         return
     with open(DB_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
