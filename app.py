@@ -132,12 +132,38 @@ def short_id():
 @app.route('/api/health')
 def health():
     db = _get_mongo()
-    return jsonify({
+    info = {
         'status': 'ok',
         'mongo': db is not None,
         'mongo_uri_set': MONGODB_URI is not None,
         'initialized': _mongo_initialized,
-    })
+    }
+    if db:
+        try:
+            for col in COLLECTIONS:
+                info[f'count_{col}'] = db[col].count_documents({})
+            info['count_config'] = db['config'].count_documents({})
+        except Exception as e:
+            info['count_error'] = str(e)
+    return jsonify(info)
+
+@app.route('/api/debug-read')
+def debug_read():
+    """Temporary debug endpoint to see what read_db returns."""
+    try:
+        db = _get_mongo()
+        if not db:
+            return jsonify({'source': 'file', 'error': 'no mongo'})
+        result = {}
+        for col in COLLECTIONS:
+            docs = list(db[col].find())
+            for d in docs:
+                d.pop('_id', None)
+            result[col] = len(docs)
+        return jsonify({'source': 'mongo', 'counts': result})
+    except Exception as e:
+        import traceback
+        return jsonify({'error': str(e), 'trace': traceback.format_exc()})
 
 
 # ─── Static Files ───
