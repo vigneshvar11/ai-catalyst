@@ -88,38 +88,56 @@ def _mongo_list(db, collection):
 def read_db():
     db = _get_mongo()
     if db:
-        data = {}
-        for col in COLLECTIONS:
-            data[col] = _mongo_list(db, col)
-        cfg = db['config'].find_one({'_id': 'app_config'}) or {}
-        cfg.pop('_id', None)
-        data['config'] = cfg
-        return data
+        try:
+            data = {}
+            for col in COLLECTIONS:
+                data[col] = _mongo_list(db, col)
+            cfg = db['config'].find_one({'_id': 'app_config'}) or {}
+            cfg.pop('_id', None)
+            data['config'] = cfg
+            return data
+        except Exception as e:
+            print(f"[MongoDB] read_db error, falling back to db.json: {e}")
     with open(DB_PATH, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def write_db(data):
     db = _get_mongo()
     if db:
-        for col in COLLECTIONS:
-            db[col].delete_many({})
-            docs = data.get(col, [])
-            if docs:
-                to_insert = []
-                for d in docs:
-                    doc = dict(d)
-                    doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
-                    to_insert.append(doc)
-                db[col].insert_many(to_insert)
-        cfg = dict(data.get('config', {}))
-        cfg['_id'] = 'app_config'
-        db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
-        return
+        try:
+            for col in COLLECTIONS:
+                db[col].delete_many({})
+                docs = data.get(col, [])
+                if docs:
+                    to_insert = []
+                    for d in docs:
+                        doc = dict(d)
+                        doc['_id'] = doc.get('id', uuid.uuid4().hex[:8])
+                        to_insert.append(doc)
+                    db[col].insert_many(to_insert)
+            cfg = dict(data.get('config', {}))
+            cfg['_id'] = 'app_config'
+            db['config'].replace_one({'_id': 'app_config'}, cfg, upsert=True)
+            return
+        except Exception as e:
+            print(f"[MongoDB] write_db error, falling back to db.json: {e}")
     with open(DB_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def short_id():
     return uuid.uuid4().hex[:8]
+
+
+# ─── Health Check ───
+@app.route('/api/health')
+def health():
+    db = _get_mongo()
+    return jsonify({
+        'status': 'ok',
+        'mongo': db is not None,
+        'mongo_uri_set': MONGODB_URI is not None,
+        'initialized': _mongo_initialized,
+    })
 
 
 # ─── Static Files ───
