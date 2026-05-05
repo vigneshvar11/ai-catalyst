@@ -141,7 +141,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .chart-desc{font-size:12px;color:var(--text-s);margin-top:10px;line-height:1.5}
 
 /* TOOLTIP */
-#chart-tooltip{position:absolute;z-index:9999;pointer-events:none;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(24px);border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px 20px;box-shadow:0 12px 40px rgba(0,0,0,0.14),0 2px 8px rgba(0,0,0,0.06);max-width:360px;min-width:270px;opacity:0;transition:opacity 0.18s ease;transform:translate(-50%,calc(-100% - 16px));font-family:var(--font)}
+#chart-tooltip{position:fixed;z-index:9999;pointer-events:none;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(24px);border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px 20px;box-shadow:0 12px 40px rgba(0,0,0,0.14),0 2px 8px rgba(0,0,0,0.06);max-width:360px;min-width:270px;opacity:0;transition:opacity 0.18s ease;transform:translate(-50%,calc(-100% - 16px));font-family:var(--font)}
 .tt-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .tt-id{font-size:11px;font-weight:800;background:#000028;color:white;padding:3px 9px;border-radius:6px}
 .tt-bkt{font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px}
@@ -243,8 +243,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 /* ══ EMBED MODE ══ */
 .nav-bar{display:none!important}
 .hero{display:none!important}
-html{height:auto!important;overflow:hidden!important}
-body{background:transparent!important;margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
+html{height:auto!important;overflow:visible!important}
+body{background:transparent!important;margin:0!important;padding:0!important;overflow:visible!important;height:auto!important}
 .main{padding-top:0!important}
 
 </style>
@@ -1016,8 +1016,8 @@ function ttHandler(ctx) {
         '<tr><td>Tech</td><td colspan="3" class="tt-tech">' + uc.techStack + '</td></tr>' +
         '</table>';
     const rect = chart.canvas.getBoundingClientRect();
-    let left = rect.left + window.scrollX + tooltip.caretX;
-    let top  = rect.top  + window.scrollY + tooltip.caretY;
+    let left = rect.left + tooltip.caretX;
+    let top  = rect.top  + tooltip.caretY;
     el.style.opacity = '1'; el.style.left = left + 'px'; el.style.top = top + 'px';
     requestAnimationFrame(() => {
         const r = el.getBoundingClientRect();

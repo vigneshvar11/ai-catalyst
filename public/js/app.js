@@ -340,6 +340,7 @@ function renderSeminarCard() {
   if (!event) return;
   const presenter = getMember(event.seminarPresenter);
   const presenterName = presenter ? presenter.name : 'TBD (To be drawn)';
+  const topic = event.seminarTopic || event.title || 'Topic to be announced';
   document.getElementById('seminar-body').innerHTML = `
     <div class="seminar-presenter">
       <div class="presenter-avatar">
@@ -352,7 +353,7 @@ function renderSeminarCard() {
     </div>
     <div class="seminar-topic">
       <i class="ri-chat-quote-line" style="color:var(--siemens-petrol);margin-right:4px;"></i>
-      ${event.seminarTopic}
+      ${topic}
     </div>
   `;
 }
