@@ -87,7 +87,7 @@ def _mongo_list(db, collection):
 
 def read_db():
     db = _get_mongo()
-    if db:
+    if db is not None:
         try:
             data = {}
             for col in COLLECTIONS:
@@ -103,7 +103,7 @@ def read_db():
 
 def write_db(data):
     db = _get_mongo()
-    if db:
+    if db is not None:
         try:
             for col in COLLECTIONS:
                 db[col].delete_many({})
@@ -138,7 +138,7 @@ def health():
         'mongo_uri_set': MONGODB_URI is not None,
         'initialized': _mongo_initialized,
     }
-    if db:
+    if db is not None:
         try:
             for col in COLLECTIONS:
                 info[f'count_{col}'] = db[col].count_documents({})
@@ -152,7 +152,7 @@ def debug_read():
     """Temporary debug endpoint to see what read_db returns."""
     try:
         db = _get_mongo()
-        if not db:
+        if db is None:
             return jsonify({'source': 'file', 'error': 'no mongo'})
         result = {}
         for col in COLLECTIONS:
