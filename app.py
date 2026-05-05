@@ -147,25 +147,6 @@ def health():
             info['count_error'] = str(e)
     return jsonify(info)
 
-@app.route('/api/debug-read')
-def debug_read():
-    """Temporary debug endpoint to see what read_db returns."""
-    try:
-        db = _get_mongo()
-        if db is None:
-            return jsonify({'source': 'file', 'error': 'no mongo'})
-        result = {}
-        for col in COLLECTIONS:
-            docs = list(db[col].find())
-            for d in docs:
-                d.pop('_id', None)
-            result[col] = len(docs)
-        return jsonify({'source': 'mongo', 'counts': result})
-    except Exception as e:
-        import traceback
-        return jsonify({'error': str(e), 'trace': traceback.format_exc()})
-
-
 # ─── Static Files ───
 @app.route('/')
 def index():
