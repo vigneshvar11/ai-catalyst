@@ -273,34 +273,41 @@ def chart_architecture():
     ax.set_facecolor('white')
 
     boxes = [
-        (0.5, 1.5, 3, 2.5, 'BROWSER\n(User Interface)', '#E3F2FD', '#1565C0'),
-        (5,   1.5, 3, 2.5, 'FLASK SERVER\n(Python Backend)', '#E8F5E9', '#2E7D32'),
-        (9.5, 1.5, 3, 2.5, 'db.json\n(JSON Database)', '#FFF3E0', '#E65100'),
+        (0.3, 1.5, 2.8, 2.5, 'BROWSER\n(User Interface)', '#E3F2FD', '#1565C0'),
+        (4.4, 1.5, 2.8, 2.5, 'FLASK SERVER\n(Python Backend)', '#E8F5E9', '#2E7D32'),
+        (8.5, 2.8, 3.2, 1.8, 'MongoDB Atlas\n(Cloud Database)', '#FFF3E0', '#E65100'),
+        (8.5, 0.5, 3.2, 1.8, 'db.json\n(Local Fallback)', '#F3E5F5', '#7B1FA2'),
     ]
     for x, y, w, h, label, bg, ec in boxes:
         rect = FancyBboxPatch((x, y), w, h, boxstyle='round,pad=0.15',
             facecolor=bg, edgecolor=ec, linewidth=2.5)
         ax.add_patch(rect)
         ax.text(x + w/2, y + h/2, label, ha='center', va='center',
-                fontsize=12, fontweight='bold', color='#333', family='sans-serif')
+                fontsize=11, fontweight='bold', color='#333', family='sans-serif')
 
     # Arrows
     arrow_style = 'Simple,tail_width=3,head_width=12,head_length=8'
     for x1, x2, y_off, label, clr in [
-        (3.5, 5.0, 3.3, 'HTTP REST API', '#1565C0'),
-        (5.0, 3.5, 2.2, 'JSON Response', '#1565C0'),
-        (8.0, 9.5, 3.3, 'Read File', '#2E7D32'),
-        (9.5, 8.0, 2.2, 'JSON Data', '#2E7D32'),
+        (3.1, 4.4, 3.3, 'HTTP REST API', '#1565C0'),
+        (4.4, 3.1, 2.2, 'JSON Response', '#1565C0'),
+        (7.2, 8.5, 3.9, 'pymongo', '#2E7D32'),
+        (8.5, 7.2, 3.2, 'Documents', '#2E7D32'),
     ]:
         ax.annotate('', xy=(x2, y_off), xytext=(x1, y_off),
             arrowprops=dict(arrowstyle='->', color=clr, lw=2))
         ax.text((x1+x2)/2, y_off + 0.3, label, ha='center', fontsize=8.5,
                 color=clr, fontweight='bold', family='sans-serif')
 
+    # Fallback arrow (server to db.json)
+    ax.annotate('', xy=(8.5, 1.4), xytext=(7.2, 1.8),
+        arrowprops=dict(arrowstyle='<->', color='#7B1FA2', lw=1.5, linestyle='dashed'))
+    ax.text(7.5, 1.0, 'Fallback\n(if no MongoDB)', ha='center', fontsize=7,
+            color='#7B1FA2', fontweight='bold', style='italic')
+
     # WebSocket label
-    ax.annotate('', xy=(5.0, 1.7), xytext=(3.5, 1.7),
+    ax.annotate('', xy=(4.4, 1.7), xytext=(3.1, 1.7),
         arrowprops=dict(arrowstyle='<->', color='#009999', lw=2, linestyle='dashed'))
-    ax.text(4.25, 1.2, 'WebSocket\n(Real-time)', ha='center', fontsize=8,
+    ax.text(3.75, 1.2, 'WebSocket\n(Real-time)', ha='center', fontsize=8,
             color='#009999', fontweight='bold', style='italic')
 
     ax.set_title('System Architecture — How the Parts Connect',
@@ -315,7 +322,7 @@ def chart_tech_stack():
 
     # Pie: Lines of code by language
     labels = ['Python\n(Backend)', 'JavaScript\n(Frontend)', 'HTML\n(Structure)', 'CSS\n(Styling)', 'JSON\n(Database)']
-    sizes = [468, 1234, 271, 1207, 430]
+    sizes = [4410, 1981, 1656, 1378, 290]
     clrs = ['#009999', '#FFB300', '#FF6B6B', '#7C4DFF', '#00BCD4']
     explode = (0, 0.06, 0, 0, 0)
     wedges, texts, autotexts = ax1.pie(sizes, labels=labels, autopct='%1.0f%%',
@@ -329,7 +336,7 @@ def chart_tech_stack():
 
     # Bar: Files by type
     file_types = ['Python', 'JavaScript', 'HTML', 'CSS', 'JSON', 'Config']
-    counts = [3, 1, 1, 1, 2, 5]
+    counts = [4, 2, 2, 1, 2, 7]
     bar_colors = ['#009999', '#FFB300', '#FF6B6B', '#7C4DFF', '#00BCD4', '#78909C']
     bars = ax2.barh(file_types, counts, color=bar_colors, height=0.55, edgecolor='white', linewidth=1.5)
     ax2.set_xlabel('Number of Files', fontsize=10)
@@ -354,21 +361,22 @@ def chart_project_structure():
 
     tree = [
         (0, '[DIR]  AI-CatalyESt/', '#000028', True, 17),
-        (1, '[PY]   app.py  --  Python Flask backend (468 lines)', '#009999', False, 16),
-        (1, '[JS]   server.js  --  Node.js backend mirror (420 lines)', '#009999', False, 15),
-        (1, '[CFG]  requirements.txt  --  Python dependencies', '#78909C', False, 14),
+        (1, '[PY]   app.py  --  Python Flask backend (684 lines)', '#009999', False, 16),
+        (1, '[JS]   server.js  --  Node.js backend mirror (489 lines)', '#009999', False, 15),
+        (1, '[CFG]  requirements.txt  --  Python dependencies (10 packages)', '#78909C', False, 14),
         (1, '[CFG]  package.json  --  Node.js dependencies', '#78909C', False, 13),
         (1, '[CFG]  Procfile  --  Deployment startup command', '#78909C', False, 12),
-        (1, '[CFG]  render.yaml  --  Cloud config', '#78909C', False, 11),
+        (1, '[CFG]  render.yaml  --  Render cloud config + env vars', '#78909C', False, 11),
         (1, '[DIR]  public/  --  Frontend files', '#1565C0', True, 10),
-        (2, '[HTML] index.html  --  Main page (271 lines)', '#FF6B6B', False, 9),
-        (2, '[DIR]  js/', '#FFB300', True, 8),
-        (3, '[JS]   app.js  --  All frontend logic (1,234 lines)', '#FFB300', False, 7),
-        (2, '[DIR]  css/', '#7C4DFF', True, 6),
-        (3, '[CSS]  styles.css  --  All styling (1,207 lines)', '#7C4DFF', False, 5),
-        (1, '[DIR]  data/  --  Database', '#00BCD4', True, 4),
-        (2, '[JSON] db.json  --  JSON database (430 lines)', '#00BCD4', False, 3),
-        (1, '[DIR]  uploads/avatars/  --  User photos', '#78909C', True, 2),
+        (2, '[HTML] index.html  --  Main SPA page (308 lines)', '#FF6B6B', False, 9),
+        (2, '[HTML] survey-report.html  --  Survey dashboard (1,348 lines)', '#FF6B6B', False, 8.2),
+        (2, '[DIR]  js/', '#FFB300', True, 7.4),
+        (3, '[JS]   app.js  --  All frontend logic (1,492 lines)', '#FFB300', False, 6.6),
+        (2, '[DIR]  css/', '#7C4DFF', True, 5.8),
+        (3, '[CSS]  styles.css  --  All styling (1,378 lines)', '#7C4DFF', False, 5),
+        (1, '[DIR]  data/  --  Database', '#00BCD4', True, 4.2),
+        (2, '[JSON] db.json  --  Local fallback database (274 lines)', '#00BCD4', False, 3.4),
+        (1, '[DIR]  uploads/avatars/  --  User photos', '#78909C', True, 2.6),
     ]
     for indent, label, color, is_bold, y in tree:
         x = 0.3 + indent * 0.8
@@ -757,7 +765,8 @@ def build_ch1(S):
         '2. THE WAITER (Backend Server) — Takes orders from the customer and brings food from the '
         'kitchen. This is our Python Flask server — it receives requests and sends back data.\n'
         '3. THE KITCHEN (Database) — Where all the ingredients (data) are stored. '
-        'Our kitchen is a simple JSON file called db.json.',
+        'In production, our kitchen is MongoDB Atlas (a cloud database). For local development, '
+        'we also have a simple JSON file called db.json as a fallback.',
         INFO_BG, INFO_BORDER, '🍽️'))
     story.append(Spacer(1, 14))
 
@@ -845,8 +854,10 @@ def build_ch3(S):
 
     story.append(Paragraph(
         'Most websites use complex database systems like PostgreSQL or MongoDB. '
-        'We chose something much simpler: a <b>single JSON file</b>. This makes it easy '
-        'to understand, edit, and debug — perfect for a team dashboard.', S['body']))
+        'We started with something much simpler: a <b>single JSON file</b> for local development. '
+        'Later, we upgraded to <b>MongoDB Atlas</b> (a free cloud database) for production, while '
+        'keeping db.json as a fallback. This gives us the best of both worlds — easy debugging '
+        'locally and reliable cloud storage in production.', S['body']))
 
     story.append(ColoredBox('What is JSON?',
         'JSON (JavaScript Object Notation) is a way to store data as text. It looks like a '
@@ -907,6 +918,85 @@ def build_ch3(S):
         'from their names (e.g., "Vigneshvar SA" → "vigneshvar-sa"). For other items like events '
         'or quizzes, we use a prefix + random characters (e.g., "event-a1b2c3d4").',
         TIP_BG, TIP_BORDER, '🔑'))
+    story.append(Spacer(1, 12))
+
+    # --- MongoDB Atlas Section ---
+    story.append(Paragraph('<b>Upgrading to MongoDB Atlas (Cloud Database)</b>', S['h2']))
+    story.append(Paragraph(
+        'While db.json works perfectly for local development, it has limitations in production: '
+        'file writes can conflict under concurrent requests, and data resets on every Render deploy. '
+        'To solve this, we added <b>MongoDB Atlas</b> — a free cloud-hosted database.', S['body']))
+
+    story.append(ColoredBox('What is MongoDB Atlas?',
+        'MongoDB is a NoSQL database that stores data as JSON-like "documents" — very similar '
+        'to our db.json format! Atlas is MongoDB\'s free cloud service. Think of it as moving '
+        'your filing cabinet from your office (local file) to a secure warehouse (cloud) that\'s '
+        'always available and never loses data.',
+        INFO_BG, INFO_BORDER, '☁️'))
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph('<b>Setting Up MongoDB Atlas (Free M0 Tier)</b>', S['h3']))
+    atlas_steps = [
+        ('Create an Account', 'Go to mongodb.com/cloud/atlas and sign up for free. No credit card needed.'),
+        ('Create a Cluster', 'Click "Build a Cluster" → Choose the FREE M0 tier → Pick a region close to your Render server.'),
+        ('Create a Database User', 'Go to Security → Database Access → Add a user with read/write permissions. Save the password!'),
+        ('Whitelist All IPs', 'Go to Security → Network Access → Add 0.0.0.0/0 to allow connections from Render.'),
+        ('Get Connection String', 'Click "Connect" → "Connect your application" → Copy the connection string. '
+         'Replace <password> with your database user\'s password.'),
+    ]
+    for i, (title, desc) in enumerate(atlas_steps, 1):
+        story.append(StepBox(i, title, desc))
+        story.append(Spacer(1, 5))
+    story.append(Spacer(1, 8))
+
+    story.append(Paragraph('<b>How the Code Connects to MongoDB</b>', S['h3']))
+    story.append(Paragraph(
+        'The server uses a <b>lazy-initialization</b> pattern — it only connects to MongoDB when '
+        'the first request arrives, not at startup. This avoids crashes if MongoDB is temporarily '
+        'unavailable:', S['body']))
+    story.append(CodeBlock(
+        'import os\n'
+        'from pymongo import MongoClient\n'
+        'from pymongo.server_api import ServerApi\n\n'
+        'MONGODB_URI = os.environ.get("MONGODB_URI")  # From env var\n'
+        '_mongo_db = None  # Lazy-initialized\n\n'
+        'def _get_mongo():\n'
+        '    global _mongo_db\n'
+        '    if _mongo_db is None and MONGODB_URI:\n'
+        '        client = MongoClient(MONGODB_URI, server_api=ServerApi("1"))\n'
+        '        _mongo_db = client["aicatalyst"]\n'
+        '        # Auto-seed from db.json if database is empty\n'
+        '        if _mongo_db["members"].count_documents({}) == 0:\n'
+        '            seed = json.load(open(DB_PATH))\n'
+        '            for col in seed:\n'
+        '                if isinstance(seed[col], list) and seed[col]:\n'
+        '                    _mongo_db[col].insert_many(seed[col])\n'
+        '    return _mongo_db', 'python'))
+    story.append(Spacer(1, 8))
+
+    story.append(ColoredBox('Auto-Seeding Magic',
+        'When the server connects to MongoDB for the first time and finds it empty, it '
+        'automatically copies all data from db.json into MongoDB. This means you never have to '
+        'manually import data — just deploy and your cloud database is populated!',
+        TIP_BG, TIP_BORDER, '✨'))
+    story.append(Spacer(1, 8))
+
+    story.append(Paragraph(
+        'The updated <b>read_db()</b> and <b>write_db()</b> functions now try MongoDB first '
+        'and fall back to the JSON file if MongoDB is not configured:', S['body']))
+    story.append(CodeBlock(
+        'def read_db():\n'
+        '    mongo = _get_mongo()\n'
+        '    if mongo:  # MongoDB available → use it\n'
+        '        db = {}\n'
+        '        for col in ["config","members","events","points",\n'
+        '                     "quizzes","surveys","teams"]:\n'
+        '            docs = list(mongo[col].find({}, {"_id": 0}))\n'
+        '            db[col] = docs[0] if col == "config" else docs\n'
+        '        return db\n'
+        '    # Fallback → read from db.json\n'
+        '    with open(DB_PATH) as f:\n'
+        '        return json.load(f)', 'python'))
 
     story.append(PageBreak())
     return story
@@ -931,14 +1021,17 @@ def build_ch4(S):
         'Flask is a Python library that turns your Python script into a web server. '
         'Install it along with the other packages we need:', S['body']))
     story.append(CodeBlock(
-        'pip install flask flask-socketio gunicorn gevent gevent-websocket', 'terminal'))
+        'pip install flask flask-socketio gunicorn gevent gevent-websocket\n'
+        'pip install pymongo dnspython   # For MongoDB Atlas', 'terminal'))
     story.append(Spacer(1, 8))
 
     story.append(Paragraph(
         'Save these to a <b>requirements.txt</b> file so anyone can install them later:', S['body']))
     story.append(CodeBlock(
         'flask>=3.0.0\nflask-socketio>=5.3.0\ngunicorn>=21.2.0\n'
-        'gevent>=24.2.1\ngevent-websocket>=0.10.1', 'txt'))
+        'gevent>=24.2.1\ngevent-websocket>=0.10.1\n'
+        'pymongo>=4.7.0\ndnspython>=2.6.0\n'
+        'python-docx>=0.6.23\npython-pptx>=0.6.23\nPillow>=10.0.0', 'txt'))
     story.append(Spacer(1, 10))
 
     story.append(Paragraph('<b>Step 2: Create app.py — The Heart of the Server</b>', S['h3']))
@@ -952,29 +1045,58 @@ def build_ch4(S):
     story.append(CodeBlock(
         'import os, json, uuid\n'
         'from flask import Flask, request, jsonify, send_from_directory\n'
-        'from flask_socketio import SocketIO, emit, join_room\n\n'
+        'from flask_socketio import SocketIO, emit, join_room\n'
+        'from pymongo import MongoClient\n'
+        'from pymongo.server_api import ServerApi\n\n'
         'app = Flask(__name__, static_folder="public", static_url_path="")\n'
         'app.config["SECRET_KEY"] = "ai-catalyst-secret"\n'
         'socketio = SocketIO(app, cors_allowed_origins="*")\n\n'
-        'DB_PATH = os.path.join(os.path.dirname(__file__), "data", "db.json")', 'python'))
+        'DB_PATH = os.path.join(os.path.dirname(__file__), "data", "db.json")\n'
+        'MONGODB_URI = os.environ.get("MONGODB_URI")  # Set in Render dashboard', 'python'))
     story.append(Spacer(1, 6))
     story.append(Paragraph(
         'This sets up Flask to serve your website files from the <b>public/</b> folder '
-        'and enables WebSocket support for real-time features.', S['body']))
+        'and enables WebSocket support for real-time features. The <b>MONGODB_URI</b> '
+        'environment variable connects to MongoDB Atlas in production.', S['body']))
 
-    story.append(Paragraph('<b>Part B: Database Helpers</b>', S['h3']))
+    story.append(Paragraph('<b>Part B: Database Helpers (with MongoDB)</b>', S['h3']))
     story.append(CodeBlock(
+        '# Lazy MongoDB connection (see Chapter 3)\n'
+        '_mongo_db = None\n\n'
+        'def _get_mongo():\n'
+        '    global _mongo_db\n'
+        '    if _mongo_db is None and MONGODB_URI:\n'
+        '        client = MongoClient(MONGODB_URI,\n'
+        '                             server_api=ServerApi("1"))\n'
+        '        _mongo_db = client["aicatalyst"]\n'
+        '    return _mongo_db\n\n'
         'def read_db():\n'
-        '    with open(DB_PATH, "r") as f:\n'
+        '    mongo = _get_mongo()\n'
+        '    if mongo:  # Use MongoDB in production\n'
+        '        db = {}\n'
+        '        for col in ["config","members","events",\n'
+        '                     "points","quizzes","surveys","teams"]:\n'
+        '            docs = list(mongo[col].find({}, {"_id": 0}))\n'
+        '            db[col] = docs[0] if col == "config" else docs\n'
+        '        return db\n'
+        '    with open(DB_PATH) as f:  # Fallback to local file\n'
         '        return json.load(f)\n\n'
         'def write_db(data):\n'
+        '    mongo = _get_mongo()\n'
+        '    if mongo:\n'
+        '        for col, val in data.items():\n'
+        '            mongo[col].delete_many({})\n'
+        '            items = [val] if col == "config" else val\n'
+        '            if items:\n'
+        '                mongo[col].insert_many(items)\n'
         '    with open(DB_PATH, "w") as f:\n'
         '        json.dump(data, f, indent=2)', 'python'))
     story.append(Spacer(1, 6))
-    story.append(ColoredBox('Why Two Functions?',
-        'read_db() opens the JSON file and converts it into a Python dictionary (like a labeled box). '
-        'write_db() takes a dictionary and saves it back to the file. Every API route uses these two '
-        'functions to interact with the database. Simple!',
+    story.append(ColoredBox('Why Two Functions? (Now with MongoDB!)',
+        'read_db() first checks if MongoDB Atlas is available. If yes, it reads from the cloud '
+        'database. If not (e.g., running locally without MONGODB_URI), it falls back to the '
+        'db.json file. write_db() saves to BOTH MongoDB and db.json — so your local file '
+        'stays in sync. This dual-write approach means you always have a backup!',
         TIP_BG, TIP_BORDER, '💡'))
     story.append(Spacer(1, 10))
 
@@ -1457,10 +1579,48 @@ def build_ch10(S):
         '    startCommand: gunicorn -k geventwebsocket...\n'
         '    envVars:\n'
         '      - key: PYTHON_VERSION\n'
-        '        value: 3.12.3', 'yaml'))
+        '        value: 3.12.3\n'
+        '      - key: RENDER\n'
+        '        value: true', 'yaml'))
     story.append(Spacer(1, 10))
 
-    story.append(Paragraph('<b>Step 2: Sign Up on Render.com</b>', S['h3']))
+    story.append(Paragraph('<b>Step 2: Set Environment Variables on Render</b>', S['h3']))
+    story.append(Paragraph(
+        'Environment variables are secrets and settings that your code reads at runtime. '
+        'They keep sensitive data (like database passwords) OUT of your code. Set these '
+        'in the Render dashboard under your service\'s "Environment" tab:', S['body']))
+
+    env_data = [
+        ['Variable', 'Value', 'Purpose'],
+        ['MONGODB_URI', 'mongodb+srv://user:pass@cluster...', 'Connects to MongoDB Atlas cloud database'],
+        ['PYTHON_VERSION', '3.12.3', 'Tells Render which Python to use'],
+        ['RENDER', 'true', 'Lets the app detect it is running on Render'],
+    ]
+    t = Table(env_data, colWidths=[110, 190, 165])
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), PETROL),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 8.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
+        ('TOPPADDING', (0, 0), (-1, -1), 7),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E5EA')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, LIGHT_BG]),
+        ('TEXTCOLOR', (0, 1), (0, -1), PETROL),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 8))
+
+    story.append(ColoredBox('Never Commit Secrets!',
+        'The MONGODB_URI contains your database password. NEVER put it in your code or push it '
+        'to GitHub. Always use environment variables (set in the Render dashboard) to keep '
+        'secrets safe. Our code reads it with: os.environ.get("MONGODB_URI")',
+        WARN_BG, WARN_BORDER, '🔒'))
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph('<b>Step 3: Sign Up on Render.com</b>', S['h3']))
     steps = [
         ('Go to render.com', 'Click "Get Started for Free" and sign up with your GitHub account.'),
         ('Create New Web Service', 'Click "New +" → "Web Service". Connect your GitHub repository.'),
@@ -1472,7 +1632,7 @@ def build_ch10(S):
         story.append(Spacer(1, 6))
 
     story.append(Spacer(1, 8))
-    story.append(Paragraph('<b>Step 3: Auto-Deploy from GitHub</b>', S['h3']))
+    story.append(Paragraph('<b>Step 4: Auto-Deploy from GitHub</b>', S['h3']))
     story.append(Paragraph(
         'The best part: Render watches your GitHub repository. Every time you push code to GitHub, '
         'Render automatically deploys the update. Just push and wait 2-3 minutes!', S['body']))
@@ -1508,8 +1668,8 @@ def build_ch11(S):
     # Key metrics boxes
     metrics = [
         ['Total Lines of Code', 'Project Files', 'API Endpoints', 'Team Members'],
-        ['3,610', '13+', '18', '16'],
-        ['Across 5 languages', 'Python, JS, HTML, CSS, JSON', '6 resources × 3 CRUD ops', 'In 5 domains'],
+        ['9,700+', '18+', '20+', '16'],
+        ['Across 5 languages', 'Python, JS, HTML, CSS, JSON', 'REST + WebSocket events', 'In 5 domains'],
     ]
     t = Table(metrics, colWidths=[115] * 4, rowHeights=[24, 36, 24])
     t.setStyle(TableStyle([
@@ -1548,7 +1708,8 @@ def build_ch11(S):
         ['Python + Flask', 'Backend server', 'Easy to learn, minimal boilerplate, great for APIs'],
         ['Socket.IO', 'Real-time comms', 'Handles WebSockets with automatic reconnection'],
         ['Vanilla JS', 'Frontend logic', 'No framework complexity — simple and fast'],
-        ['JSON file', 'Database', 'No setup needed — just a text file anyone can read'],
+        ['MongoDB Atlas', 'Cloud database', 'Free M0 tier, JSON-like documents, auto-scales'],
+        ['JSON file', 'Local fallback DB', 'No setup needed — fallback if MongoDB is unavailable'],
         ['CSS Variables', 'Theming', 'One-place brand color changes, maintainable design'],
         ['Render.com', 'Hosting', 'Free tier, auto-deploy from GitHub, supports Python'],
         ['GitHub', 'Version control', 'Free, industry standard, enables auto-deploy'],
@@ -1592,6 +1753,10 @@ def build_troubleshooting(S):
          'API calls are failing — either the server isn\'t ready or db.json is corrupted.',
          'Check the browser console (F12 → Console tab) for error messages. '
          'Validate your db.json at jsonlint.com. Our api() function retries 3 times automatically.'),
+        ('"ServerSelectionTimeoutError" or MongoDB connection fails',
+         'The MONGODB_URI environment variable is missing or incorrect, or your IP is not whitelisted.',
+         'Check MONGODB_URI in Render\'s Environment tab. In MongoDB Atlas, go to Network Access '
+         'and make sure 0.0.0.0/0 is allowed. The app will fall back to db.json if MongoDB fails.'),
         ('"ModuleNotFoundError: No module named flask"',
          'Python packages are not installed or virtual environment is not active.',
          'Run: pip install -r requirements.txt. Make sure (.venv) appears in your terminal prompt.'),
@@ -1646,8 +1811,8 @@ def build_glossary(S):
          'The language that controls how a webpage LOOKS — colors, fonts, spacing, animations. '
          'It\'s the paint and wallpaper of your house.'),
         ('Database',
-         'Where data is stored permanently. Ours is a simple JSON text file (db.json). '
-         'Professional apps use databases like PostgreSQL or MongoDB.'),
+         'Where data is stored permanently. We use MongoDB Atlas (cloud) as the primary database '
+         'and db.json (a local JSON file) as a fallback.'),
         ('Deployment',
          'The process of putting your website on a server so anyone on the internet can access it.'),
         ('Flask',
@@ -1680,6 +1845,12 @@ def build_glossary(S):
         ('REST (Representational State Transfer)',
          'A design pattern for APIs where each URL represents a resource and HTTP methods '
          '(GET, POST, PUT, DELETE) represent actions on it.'),
+        ('MongoDB Atlas',
+         'A free cloud-hosted NoSQL database service. Stores data as JSON-like "documents" '
+         'instead of rows and columns. Our production database runs on MongoDB Atlas M0 (free tier).'),
+        ('Environment Variable',
+         'A setting stored outside your code (on the server), not in files. Used for secrets '
+         'like database passwords. Read in Python with os.environ.get("VARIABLE_NAME").'),
         ('SPA (Single-Page Application)',
          'A web app that loads ONE HTML page and dynamically updates content using JavaScript, '
          'instead of loading new pages. Feel faster and smoother.'),
