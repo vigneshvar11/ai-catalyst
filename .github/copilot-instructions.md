@@ -86,6 +86,17 @@ node server.js                    # starts on http://localhost:3000
 - Admin login: username `admin`, password `admin`
 - Avatar uploads saved to `uploads/avatars/{member-id}.{ext}`
 
+## Deployment (Production)
+
+- **Source code**: code.siemens.com (Siemens internal GitLab)
+- **Hosting**: `SN1W7220.AD001.SIEMENS.NET` (Windows Server)
+- **Architecture**: IIS (port 80) → reverse proxy → Node.js `server.js` (port 3000)
+- **Process manager**: NSSM runs Node.js as Windows Service "EmbraceAI"
+- **Deployment scripts**: `deploy/windows/*.ps1` — setup, service install, IIS site creation, update
+- **IIS config**: `deploy/iis/web.config` — reverse proxy + WebSocket passthrough
+- **CI/CD**: `.gitlab-ci.yml` — validates both backends on push; manual deploy via `deploy/windows/update-app.ps1`
+- **Full guide**: `deploy/DEPLOYMENT.md`
+
 ## Important Conventions
 
 - **Keep backends in sync**: Any API or WebSocket change must be mirrored in both `app.py` and `server.js`

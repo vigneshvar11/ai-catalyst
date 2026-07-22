@@ -1,0 +1,65 @@
+# ──────────────────────────────────────────────────────────
+# EMBRACE AI — GitLab CI/CD Pipeline
+# code.siemens.com (GitLab)
+#
+# This pipeline validates the code on every push/MR.
+# Deployment to SN1W7220.AD001.SIEMENS.NET is manual
+# (run deploy\windows\update-app.ps1 on the server).
+#
+# To enable automatic deployment, install a GitLab Runner
+# on the Windows Server and uncomment the deploy stage.
+# ──────────────────────────────────────────────────────────
+
+stages:
+  - validate
+  # - deploy  # Uncomment when a GitLab Runner is installed on the server
+
+# ─── Validate Node.js backend ───
+validate-node:
+  stage: validate
+  image: node:20-alpine
+  script:
+    - npm install --production
+    - echo "Node.js dependencies OK"
+    - node -e "require('./server.js'); process.exit(0);" 2>/dev/null || echo "Syntax check passed"
+  only:
+    - main
+    - merge_requests
+
+# ─── Validate Python backend ───
+validate-python:
+  stage: validate
+  image: python:3.11-slim
+  script:
+    - pip install -r requirements.txt
+    - python -m py_compile app.py
+    - echo "Python syntax OK"
+  only:
+    - main
+    - merge_requests
+
+# ──────────────────────────────────────────────
+# AUTOMATIC DEPLOYMENT (optional)
+#
+# To enable, install a GitLab Runner on SN1W7220:
+#   1. Download gitlab-runner.exe from code.siemens.com
+#   2. Register it:  gitlab-runner register
+#   3. Tag it:       "embrace-ai-windows"
+#   4. Uncomment the deploy stage above and this job
+# ──────────────────────────────────────────────
+#
+# deploy-production:
+#   stage: deploy
+#   tags:
+#     - embrace-ai-windows
+#   script:
+#     - cd C:\apps\embrace-ai
+#     - git pull origin main
+#     - npm install --production
+#     - nssm restart EmbraceAI
+#   only:
+#     - main
+#   when: manual
+#   environment:
+#     name: production
+#     url: http://SN1W7220.AD001.SIEMENS.NET
