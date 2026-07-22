@@ -12,6 +12,7 @@
 
 stages:
   - validate
+  - pages
   # - deploy  # Uncomment when a GitLab Runner is installed on the server
 
 # ─── Validate Node.js backend ───
@@ -23,7 +24,7 @@ validate-node:
     - echo "Node.js dependencies OK"
     - node -e "require('./server.js'); process.exit(0);" 2>/dev/null || echo "Syntax check passed"
   only:
-    - main
+    - master
     - merge_requests
 
 # ─── Validate Python backend ───
@@ -35,8 +36,23 @@ validate-python:
     - python -m py_compile app.py
     - echo "Python syntax OK"
   only:
-    - main
+    - master
     - merge_requests
+
+# ─── GitLab Pages — redirect page ───
+# Serves a redirect at https://engsys.code.siemens.com/ai_catalyest
+# that sends visitors to the actual server.
+pages:
+  stage: pages
+  image: alpine:latest
+  script:
+    - mkdir -p public
+    - cp public-pages/index.html public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
 
 # ──────────────────────────────────────────────
 # AUTOMATIC DEPLOYMENT (optional)
