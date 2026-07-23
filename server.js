@@ -20,7 +20,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const DB_PATH = path.join(__dirname, 'data', 'db.json');
 
 function readDB() {
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  // Be tolerant of UTF-8 BOM so manual/scripted file writes never break parsing.
+  const raw = fs.readFileSync(DB_PATH, 'utf-8').replace(/^\uFEFF/, '');
+  return JSON.parse(raw);
 }
 
 function writeDB(data) {

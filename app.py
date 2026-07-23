@@ -54,7 +54,7 @@ def _get_mongo():
         # Auto-seed: if members collection is empty, load from db.json
         if _mongo_db['members'].count_documents({}) == 0:
             print("[MongoDB] Seeding from db.json...")
-            with open(DB_PATH, 'r', encoding='utf-8') as f:
+            with open(DB_PATH, 'r', encoding='utf-8-sig') as f:
                 seed = json.load(f)
             for col in COLLECTIONS:
                 docs = seed.get(col, [])
@@ -98,7 +98,7 @@ def read_db():
             return data
         except Exception as e:
             print(f"[MongoDB] read_db error, falling back to db.json: {e}")
-    with open(DB_PATH, 'r', encoding='utf-8') as f:
+    with open(DB_PATH, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
 
 def write_db(data):
