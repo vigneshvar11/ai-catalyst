@@ -4,12 +4,12 @@
 
 This guide migrates the EMBRACE AI dashboard from Render (third-party) to:
 - **Source code**: code.siemens.com (Siemens GitLab)
-- **Hosting**: `SN1W7220.AD001.SIEMENS.NET` (Windows Server + IIS)
+- **Hosting**: `SN1W7220.AD001.SIEMENS.NET` (Windows Server + direct Node.js service)
 
 Architecture on the server:
 ```
-Browser → IIS (port 80) → reverse proxy → Node.js (port 3000) → data/db.json
-                         → WebSocket proxy → Socket.IO
+Browser → Node.js (port 80) → data/db.json
+   → Socket.IO (same process)
 ```
 
 ---
@@ -40,7 +40,7 @@ cd "c:\Users\z00557hk\Downloads\NorthStar'25\EmbraceAI"
 git remote add siemens https://code.siemens.com/YOUR_GROUP/embrace-ai.git
 
 # Push all branches and tags
-git push siemens main --tags
+git push siemens master --tags
 git push siemens --all
 
 # Verify on https://code.siemens.com/YOUR_GROUP/embrace-ai
@@ -76,15 +76,12 @@ cd apps
 git clone https://code.siemens.com/YOUR_GROUP/embrace-ai.git
 cd embrace-ai
 
-# Run the setup script (installs IIS features, Node.js, NSSM, URL Rewrite, ARR)
+# Run the setup script (installs Node.js and NSSM)
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\setup-server.ps1
 ```
 
 This installs:
-- IIS with WebSocket support
 - Node.js 20 LTS
-- IIS URL Rewrite module
-- Application Request Routing (ARR)
 - NSSM (service manager)
 
 ### Step 3: Install Dependencies & Create the Service
@@ -102,13 +99,13 @@ This creates a service called **EmbraceAI** that:
 - Restarts on crashes (5-second delay)
 - Logs to `C:\apps\embrace-ai\logs\`
 
-### Step 4: Create the IIS Site
+### Step 4: Switch to Direct Hosting
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\deploy\windows\create-iis-site.ps1
+cmd /c .\deploy\windows\switch-to-direct.bat
 ```
 
-This creates an IIS website that reverse-proxies to Node.js, including WebSocket support.
+This stops IIS, moves the service to port 80, and exposes the app directly.
 
 ### Step 5: Verify
 
@@ -141,17 +138,32 @@ powershell -ExecutionPolicy Bypass -File C:\apps\embrace-ai\deploy\windows\updat
 **Option B — Automatic (requires GitLab Runner)**
 See `.gitlab-ci.yml` — uncomment the deploy stage after installing a GitLab Runner on the server.
 
+### Data Safety
+
+Before every manual update, the server script creates a timestamped backup under `C:\apps\embrace-ai\backups\`.
+
+To restore a previous snapshot:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\apps\embrace-ai\deploy\windows\restore-data.ps1
+```
+
+To restore a specific backup folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\apps\embrace-ai\deploy\windows\restore-data.ps1 -BackupPath C:\apps\embrace-ai\backups\YYYYMMDD-HHMMSS
+```
+
 ---
 
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| App not loading via IIS | `nssm status EmbraceAI` — if not Running, check `C:\apps\embrace-ai\logs\` |
-| WebSocket not connecting | Verify IIS WebSocket feature: `Get-WindowsFeature Web-WebSockets` |
-| 502 Bad Gateway | Node.js service crashed — `nssm restart EmbraceAI` |
-| Port 80 conflict | Stop "Default Web Site" in IIS Manager |
-| ARR not proxying | Open IIS Manager → Server → Application Request Routing → enable proxy |
+| App not loading | `nssm status EmbraceAI` — if not Running, check `C:\apps\embrace-ai\logs\` |
+| Port 80 conflict | Run `switch-to-direct.bat` again to stop IIS services |
+| Port 80 still busy | Check `netstat -ano | findstr ":80 "` and stop the conflicting process |
+| WebSocket not connecting | Confirm the service is running on port 80 and the browser is using the same origin |
 | `db.json` permissions | Ensure the service account has read/write on `C:\apps\embrace-ai\data\` |
 
 ### Useful Commands
@@ -161,7 +173,7 @@ nssm status EmbraceAI       # Check if running
 nssm restart EmbraceAI      # Restart after code changes
 nssm stop EmbraceAI         # Stop the service
 Get-Content C:\apps\embrace-ai\logs\embrace-ai-stderr.log -Tail 50  # Recent errors
-iisreset                    # Restart IIS (rarely needed)
+cmd /c deploy\windows\switch-to-direct.bat  # Reapply direct hosting settings
 ```
 
 ---

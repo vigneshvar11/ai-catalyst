@@ -8,11 +8,14 @@ echo.
 echo  === Switching to Node.js direct on port 80 ===
 echo.
 
-REM ─── Stop IIS site so it frees port 80 ───
-echo [1/5] Stopping IIS site...
-powershell -Command "Import-Module WebAdministration -ErrorAction SilentlyContinue; Stop-Website -Name 'EmbraceAI' -ErrorAction SilentlyContinue; Stop-Website -Name 'Default Web Site' -ErrorAction SilentlyContinue"
+REM ─── Stop IIS services so they release port 80 ───
+echo [1/5] Disabling IIS services...
+sc stop W3SVC >nul 2>&1
+sc stop WAS >nul 2>&1
+sc config W3SVC start= disabled >nul 2>&1
+sc config WAS start= disabled >nul 2>&1
 iisreset /stop >nul 2>&1
-echo       IIS stopped.
+echo       IIS stopped and disabled.
 
 REM ─── Stop existing service ───
 echo [2/5] Stopping EmbraceAI service...
@@ -29,6 +32,10 @@ echo [4/5] Starting service on port 80...
 C:\tools\nssm\nssm.exe start EmbraceAI
 timeout /t 4 /nobreak >nul
 C:\tools\nssm\nssm.exe status EmbraceAI
+
+REM ─── Open firewall for HTTP ───
+echo       Ensuring firewall allows port 80...
+netsh advfirewall firewall add rule name="EmbraceAI HTTP" dir=in action=allow protocol=TCP localport=80 >nul 2>&1
 
 REM ─── Verify ───
 echo [5/5] Verifying...

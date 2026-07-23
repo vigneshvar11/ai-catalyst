@@ -17,22 +17,34 @@ Write-Host "`n=== Updating EMBRACE AI ===" -ForegroundColor Cyan
 
 Push-Location $AppDir
 
-# Pull latest changes
-Write-Host "  Pulling latest from code.siemens.com..." -ForegroundColor Yellow
-git pull origin main
+try {
+    # Back up live data before pulling new code
+    Write-Host "  Creating data backup..." -ForegroundColor Yellow
+    & powershell -ExecutionPolicy Bypass -File .\deploy\windows\backup-data.ps1
 
-# Install any new dependencies
-Write-Host "  Installing dependencies..." -ForegroundColor Yellow
-npm install --production
+    # Pull latest changes
+    $upstream = (git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null).Trim()
+    if (-not $upstream) {
+        $upstream = 'origin/master'
+    }
 
-# Restart the service
-Write-Host "  Restarting service..." -ForegroundColor Yellow
-& $NssmPath restart $ServiceName
+    Write-Host ("  Pulling latest from " + $upstream + "...") -ForegroundColor Yellow
+    git pull --ff-only $upstream
 
-Start-Sleep -Seconds 3
-$svc = Get-Service -Name $ServiceName
-Write-Host "  Service status: $($svc.Status)" -ForegroundColor $(if ($svc.Status -eq "Running") { "Green" } else { "Red" })
+    # Install any new dependencies
+    Write-Host "  Installing dependencies..." -ForegroundColor Yellow
+    npm install --production
 
-Pop-Location
+    # Restart the service
+    Write-Host "  Restarting service..." -ForegroundColor Yellow
+    & $NssmPath restart $ServiceName
+
+    Start-Sleep -Seconds 3
+    $svc = Get-Service -Name $ServiceName
+    Write-Host "  Service status: $($svc.Status)" -ForegroundColor $(if ($svc.Status -eq "Running") { "Green" } else { "Red" })
+}
+finally {
+    Pop-Location
+}
 
 Write-Host "`n  Update complete!`n" -ForegroundColor Cyan
