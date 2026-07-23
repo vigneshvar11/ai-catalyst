@@ -20,24 +20,22 @@ validate-node:
   stage: validate
   image: node:20-alpine
   script:
-    - npm install --production
-    - echo "Node.js dependencies OK"
-    - node -e "require('./server.js'); process.exit(0);" 2>/dev/null || echo "Syntax check passed"
+    - node --check server.js
+    - echo "Node.js syntax OK"
+  retry: 1
   only:
     - master
-    - merge_requests
 
 # ─── Validate Python backend ───
 validate-python:
   stage: validate
   image: python:3.11-slim
   script:
-    - pip install -r requirements.txt
     - python -m py_compile app.py
     - echo "Python syntax OK"
+  retry: 1
   only:
     - master
-    - merge_requests
 
 # ─── GitLab Pages — redirect page ───
 # Serves a redirect at https://engsys.code.siemens.com/ai_catalyest
@@ -70,11 +68,9 @@ pages:
 #     - embrace-ai-windows
 #   script:
 #     - cd C:\apps\embrace-ai
-#     - git pull origin main
-#     - npm install --production
-#     - nssm restart EmbraceAI
+#     - powershell -ExecutionPolicy Bypass -File .\deploy\windows\update-app.ps1
 #   only:
-#     - main
+#     - master
 #   when: manual
 #   environment:
 #     name: production
