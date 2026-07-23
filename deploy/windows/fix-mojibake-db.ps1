@@ -43,7 +43,7 @@ function Repair-String {
 
 function Repair-Object {
     param(
-        [Parameter(Mandatory=$true)]$Value,
+        [AllowNull()]$Value,
         [ref]$FixCount
     )
 
