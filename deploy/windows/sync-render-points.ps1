@@ -43,7 +43,19 @@ if (-not ($db.PSObject.Properties.Name -contains 'points')) {
 }
 
 $db.points = @($renderPoints)
-$db | ConvertTo-Json -Depth 100 | Set-Content $DbPath -Encoding UTF8
+# Normalize expected numeric fields to keep leaderboard math stable.
+foreach ($p in $db.points) {
+    if ($p.PSObject.Properties.Name -contains 'points') {
+        $p.points = [int]$p.points
+    }
+    if ($p.PSObject.Properties.Name -contains 'month') {
+        $p.month = [int]$p.month
+    }
+}
+
+$json = $db | ConvertTo-Json -Depth 100
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($DbPath, $json, $utf8NoBom)
 Write-Host ('Imported points entries: ' + @($db.points).Count) -ForegroundColor Green
 
 # 4) Restart service
@@ -54,8 +66,31 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ('Service restarted: ' + $ServiceName) -ForegroundColor Green
 
 # 5) Verify leaderboard and points endpoints
-$lb = Invoke-WebRequest -Uri 'http://localhost/api/leaderboard' -UseBasicParsing -TimeoutSec 15
-$pts = Invoke-WebRequest -Uri 'http://localhost/api/points' -UseBasicParsing -TimeoutSec 15
+try {
+    $lb = Invoke-WebRequest -Uri 'http://localhost/api/leaderboard' -UseBasicParsing -TimeoutSec 15
+    $pts = Invoke-WebRequest -Uri 'http://localhost/api/points' -UseBasicParsing -TimeoutSec 15
+}
+catch {
+    Write-Host 'Verification failed. Attempting to print server error details...' -ForegroundColor Yellow
+    try {
+        $resp = $_.Exception.Response
+        if ($resp -and $resp.GetResponseStream()) {
+            $reader = New-Object System.IO.StreamReader($resp.GetResponseStream())
+            $body = $reader.ReadToEnd()
+            if ($body) {
+                Write-Host ('API error body: ' + $body.Substring(0, [Math]::Min($body.Length, 1000))) -ForegroundColor Red
+            }
+        }
+    }
+    catch {}
+
+    $stderr = Join-Path $AppDir 'logs\stderr.log'
+    if (Test-Path $stderr) {
+        Write-Host 'Last 40 lines of server stderr.log:' -ForegroundColor Yellow
+        Get-Content $stderr -Tail 40
+    }
+    throw
+}
 
 $lbCount = @(($lb.Content | ConvertFrom-Json)).Count
 $ptsCount = @(($pts.Content | ConvertFrom-Json)).Count
