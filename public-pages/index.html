@@ -2,21 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Primary redirect: instant meta refresh -->
   <meta http-equiv="refresh" content="0; url=http://SN1W7220.AD001.SIEMENS.NET">
   <title>EMBRACE AI — Redirecting...</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #000028; color: #fff; }
-    .container { text-align: center; }
-    h1 { color: #009999; margin-bottom: 8px; }
-    p { color: #ccc; }
-    a { color: #009999; }
+    .container { text-align: center; max-width: 420px; padding: 24px; }
+    h1 { color: #009999; margin-bottom: 8px; letter-spacing: 1px; }
+    p { color: #ccc; line-height: 1.5; }
+    a.btn { display: inline-block; margin-top: 16px; padding: 12px 24px; background: #009999; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; }
+    a.btn:hover { background: #00b3b3; }
+    .spinner { margin: 20px auto; width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.15); border-top-color: #009999; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>EMBRACE AI</h1>
-    <p>Redirecting to the dashboard...</p>
-    <p><a href="http://SN1W7220.AD001.SIEMENS.NET">Click here if not redirected</a></p>
+    <div class="spinner"></div>
+    <p>Redirecting to the dashboard&hellip;</p>
+    <p>If you are not redirected automatically:</p>
+    <a class="btn" href="http://SN1W7220.AD001.SIEMENS.NET">Open EMBRACE AI</a>
   </div>
+  <!-- Fallback redirect: JS in case meta refresh is blocked -->
+  <script>
+    setTimeout(function () {
+      window.location.replace('http://SN1W7220.AD001.SIEMENS.NET');
+    }, 300);
+  </script>
 </body>
 </html>

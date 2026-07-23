@@ -38,14 +38,18 @@ validate-python:
     - master
 
 # ─── GitLab Pages — redirect page ───
-# Serves a redirect at https://engsys.code.siemens.com/ai_catalyest
-# that sends visitors to the actual server.
+# Publishes a static redirect page on GitLab Pages. GitLab assigns the
+# public URL automatically (shown below as $CI_PAGES_URL) — no custom
+# DNS is required. Share that URL; it forwards visitors to the server.
 pages:
   stage: pages
   image: alpine:latest
   script:
     - mkdir -p public
     - cp public-pages/index.html public/index.html
+    - echo "============================================"
+    - echo "Shareable GitLab Pages URL -> $CI_PAGES_URL"
+    - echo "============================================"
   artifacts:
     paths:
       - public
