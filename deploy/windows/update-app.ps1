@@ -21,6 +21,9 @@ try {
     # Back up live data before pulling new code
     Write-Host "  Creating data backup..." -ForegroundColor Yellow
     & powershell -ExecutionPolicy Bypass -File .\deploy\windows\backup-data.ps1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Data backup failed. Aborting update."
+    }
 
     # Pull latest changes
     $upstream = (git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null).Trim()
@@ -28,16 +31,33 @@ try {
         $upstream = 'origin/master'
     }
 
+    $remote = 'origin'
+    $branch = 'master'
+    if ($upstream -match '/') {
+        $parts = $upstream.Split('/', 2)
+        $remote = $parts[0]
+        $branch = $parts[1]
+    }
+
     Write-Host ("  Pulling latest from " + $upstream + "...") -ForegroundColor Yellow
-    git pull --ff-only $upstream
+    git pull --ff-only $remote $branch
+    if ($LASTEXITCODE -ne 0) {
+        throw ("git pull failed for " + $remote + " " + $branch)
+    }
 
     # Install any new dependencies
     Write-Host "  Installing dependencies..." -ForegroundColor Yellow
     npm install --production
+    if ($LASTEXITCODE -ne 0) {
+        throw "npm install failed"
+    }
 
     # Restart the service
     Write-Host "  Restarting service..." -ForegroundColor Yellow
     & $NssmPath restart $ServiceName
+    if ($LASTEXITCODE -ne 0) {
+        throw ("Failed to restart service " + $ServiceName)
+    }
 
     Start-Sleep -Seconds 3
     $svc = Get-Service -Name $ServiceName
