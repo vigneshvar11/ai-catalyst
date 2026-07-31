@@ -169,10 +169,23 @@ def migrate_db():
     if changed:
         write_db(db)
 
-try:
-    migrate_db()
-except Exception as _e:
-    print(f"[migrate_db] skipped: {_e}")
+# IMPORTANT: do NOT run migrate_db() at import time. Under gunicorn's gevent
+# worker, importing the app happens BEFORE monkey.patch_all(); touching the DB
+# here would connect PyMongo (spawning real threads/locks) pre-patch and crash
+# gevent's _patch_existing_locks. Instead we migrate lazily on the first request,
+# which runs after patching is complete.
+_migrated = False
+
+@app.before_request
+def _run_migration_once():
+    global _migrated
+    if _migrated:
+        return
+    _migrated = True
+    try:
+        migrate_db()
+    except Exception as _e:
+        print(f"[migrate_db] skipped: {_e}")
 
 
 # ─── Health Check ───
