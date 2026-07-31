@@ -237,7 +237,64 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 @media(max-width:768px){.nav-inner{padding:0 12px}.nav-tab{padding:6px 12px;font-size:12px}.hero{padding:32px 16px 24px}.hero h1{font-size:22px}.main{padding:20px 16px 40px}.method-grid{grid-template-columns:repeat(2,1fr)}.chart-wrap{height:300px}.chart-wrap-tall{height:400px}}
 @media print{.nav-bar{position:static}.tab-content{display:block!important;page-break-before:always}}
 
-#scrollTopBtn{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;border:none;background:#1B6B93;color:#fff;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:9999;display:flex;align-items:center;justify-content:center}#scrollTopBtn.show{opacity:1;pointer-events:auto}#scrollTopBtn:hover{transform:translateY(-3px);background:#155a7a}
+#scrollTopBtn{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;border:none;background:linear-gradient(135deg,#009999,#00b3b3);color:#fff;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:9999;display:flex;align-items:center;justify-content:center}#scrollTopBtn.show{opacity:1;pointer-events:auto}#scrollTopBtn:hover{transform:translateY(-3px);filter:brightness(1.1)}
+
+/* ══ DTS DARK THEME (matches dashboard body[data-side=dts]) ══ */
+:root{
+  --bg:#05060f;--surface:rgba(255,255,255,0.05);--glass:rgba(10,14,30,0.82);
+  --card-bg:rgba(255,255,255,0.05);--card-border:rgba(255,255,255,0.10);
+  --card-shadow:0 6px 20px rgba(0,0,0,0.45),0 0 1px rgba(255,255,255,0.06);
+  --text:#f4f6fb;--text-s:#a8b0c4;--text-xs:#6b7488;--divider:rgba(255,255,255,0.10);
+  --shadow:0 6px 20px rgba(0,0,0,0.45);--shadow-lg:0 18px 50px rgba(0,0,0,0.55);
+  --accent:#22c7d4;--accent-light:rgba(34,199,212,0.14);
+  --teal:#2ac7d4;--sky:#4FC0D0;--blue:#4C9FFF;
+}
+body{color:var(--text);
+  background:radial-gradient(1100px 600px at 12% -10%,rgba(0,153,153,0.20),transparent 60%),
+            radial-gradient(1000px 700px at 110% 10%,rgba(0,255,185,0.12),transparent 55%),
+            linear-gradient(160deg,#05060f 0%,#070a1c 45%,#05060f 100%);
+  background-attachment:fixed;}
+/* Glass cards on the dark bg */
+.kpi-card,.theme-card,.uc-card,.method-card,.chart-card,.glass-card,.whiteboard,.response-card{
+  background:var(--card-bg)!important;border:1px solid var(--card-border);
+  backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);}
+.kpi-card:hover,.uc-card:hover{border-color:rgba(255,255,255,0.18)}
+/* Tables */
+.rank-table thead th,.data-table thead th{background:#0e1a2e!important;color:#f4f6fb!important;border-bottom:1px solid rgba(255,255,255,0.12)}
+.rank-table tbody td,.data-table tbody td{background:transparent!important;border-bottom:1px solid var(--divider)}
+.rank-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.02)!important}
+.data-table tbody tr:hover,.rank-table tbody tr:hover{background:rgba(0,255,185,0.06)!important}
+/* Nav (standalone only — hidden in embed) */
+.nav-bar{background:var(--glass)!important;border-bottom:1px solid var(--divider)}
+.nav-logo{color:var(--text)}
+.nav-tab:hover{background:rgba(255,255,255,0.06)!important;color:var(--text)!important}
+.nav-tab.active{background:linear-gradient(120deg,#009999,#00b3b3)!important;color:#fff!important;box-shadow:0 2px 10px rgba(0,153,153,0.4)}
+/* Badges that used var(--text) as their background */
+.uc-id-badge{background:linear-gradient(120deg,#009999,#00b3b3)!important;color:#fff!important}
+.pop-id,.tt-id{background:#009999!important;color:#fff!important}
+/* Free-text response fields */
+.response-field{background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.06)}
+.role-badge{background:var(--accent-light)!important;color:var(--sky)!important}
+.avatar{box-shadow:0 3px 12px rgba(0,153,153,0.4)}
+/* Popover + chart tooltip → dark glass */
+.uc-popover,#chart-tooltip{background:rgba(14,18,32,0.97)!important;border:1px solid rgba(255,255,255,0.12)!important;box-shadow:0 12px 40px rgba(0,0,0,0.6)!important}
+.tt-ttl,.pop-title,.tt-tbl td{color:var(--text)!important}
+.tt-tbl td{border-color:rgba(255,255,255,0.08)}
+.tt-per,.pop-person,.pop-row span{color:var(--text-s)!important}
+/* Quick-ref + whiteboard */
+.qr-item{background:rgba(255,255,255,0.03)!important}
+.qr-item:hover,.qr-item.qr-hover{background:rgba(0,255,185,0.08)!important}
+.wb-item{background:rgba(255,255,255,0.04)!important}
+.wb-empty{color:var(--text-s)}
+/* Progress bars */
+.bar-bg{background:rgba(255,255,255,0.10)!important}
+/* Accent text that was too dark on light-on-dark */
+.kpi-val,.method-weight{color:var(--teal)!important}
+/* Legend chips: brighten dark ink to bucket hues */
+.legend-chip{color:var(--text-s)!important}
+.lc-a{color:#4ADE80!important}.lc-b{color:#4C9FFF!important}.lc-c{color:#FFB547!important}.lc-d{color:#FF6B61!important}
+/* Blue-tinted badges → brighter blue */
+.scope-role,.wsjf-med,.lc-b{color:#4C9FFF!important}
 
 /* ══ EMBED MODE ══ */
 .nav-bar{display:none!important}
@@ -270,9 +327,9 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
 <div class="tab-content active" id="tab-overview"><div class="tab-header"><h2>Executive Overview</h2>
 <p class="subtitle">AI CatalyESt &mdash; SI EP NA DTS | Adoption &amp; Productivity | July 2026 | Team Survey (N=11)</p></div>
 <div class="kpi-row">
-  <div class="kpi-card" style="--accent:#1B6B93"><div class="kpi-icon">&#x1F465;</div><div class="kpi-val" style="color:#1B6B93">11</div><div class="kpi-lbl">Responses</div><div class="kpi-sub">DTS team survey</div></div>
+  <div class="kpi-card" style="--accent:#2AC7D4"><div class="kpi-icon">&#x1F465;</div><div class="kpi-val" style="color:#2AC7D4">11</div><div class="kpi-lbl">Responses</div><div class="kpi-sub">DTS team survey</div></div>
   <div class="kpi-card" style="--accent:#10B981"><div class="kpi-icon">&#x26A1;</div><div class="kpi-val" style="color:#10B981">73%</div><div class="kpi-lbl">Daily AI Users</div><div class="kpi-sub">8/11 use AI daily</div></div>
-  <div class="kpi-card" style="--accent:#3B82F6"><div class="kpi-icon">&#x23F1;</div><div class="kpi-val" style="color:#3B82F6">21h</div><div class="kpi-lbl">Weekly Hrs Saved</div><div class="kpi-sub">~967h/year</div></div>
+  <div class="kpi-card" style="--accent:#5B9DFF"><div class="kpi-icon">&#x23F1;</div><div class="kpi-val" style="color:#5B9DFF">21h</div><div class="kpi-lbl">Weekly Hrs Saved</div><div class="kpi-sub">~967h/year</div></div>
   <div class="kpi-card" style="--accent:#F59E0B"><div class="kpi-icon">&#x1F4C8;</div><div class="kpi-val" style="color:#F59E0B">+7h</div><div class="kpi-lbl">Projected Add'l/Wk</div><div class="kpi-sub">If solutions deployed</div></div>
   <div class="kpi-card" style="--accent:#8B5CF6"><div class="kpi-icon">&#x1F310;</div><div class="kpi-val" style="color:#8B5CF6">91%</div><div class="kpi-lbl">Scalable Ideas</div><div class="kpi-sub">10/11 scalable</div></div>
 </div>
@@ -296,7 +353,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
   <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Role-based</div></div>
   <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Theme Buckets</div></div>
 </div>
-<div class="section-block"><h3>Theme Buckets</h3><div class="theme-grid"><div class="theme-card" style="border-left:4px solid #34C759"><div class="theme-name">Knowledge &amp; Troubleshooting</div><div class="theme-ucs">UC-D08</div><div class="theme-note">1 use case &mdash; Process enhancement through knowledge access and intelligent diagnostics</div></div><div class="theme-card" style="border-left:4px solid #007AFF"><div class="theme-name">Automation</div><div class="theme-ucs">UC-D01, UC-D05, UC-D03, UC-D09, UC-D06</div><div class="theme-note">5 use cases &mdash; Scripted automation and assistant-driven productivity across the team</div></div><div class="theme-card" style="border-left:4px solid #FF9500"><div class="theme-name">AI/ML/RAG</div><div class="theme-ucs">UC-D07</div><div class="theme-note">1 use case &mdash; Advanced AI architectures: retrieval-augmented generation grounded in our docs</div></div><div class="theme-card" style="border-left:4px solid #FF3B30"><div class="theme-name">Testing &amp; Quality Validation</div><div class="theme-ucs">UC-D02, UC-D04</div><div class="theme-note">2 use cases &mdash; Faster, higher-quality testing and validation with AI assistance</div></div></div></div>
+<div class="section-block"><h3>Theme Buckets</h3><div class="theme-grid"><div class="theme-card" style="border-left:4px solid #34C759"><div class="theme-name">Knowledge &amp; Troubleshooting</div><div class="theme-ucs">UC-D08</div><div class="theme-note">1 use case &mdash; Process enhancement through knowledge access and intelligent diagnostics</div></div><div class="theme-card" style="border-left:4px solid #4C9FFF"><div class="theme-name">Automation</div><div class="theme-ucs">UC-D01, UC-D05, UC-D03, UC-D09, UC-D06</div><div class="theme-note">5 use cases &mdash; Scripted automation and assistant-driven productivity across the team</div></div><div class="theme-card" style="border-left:4px solid #FF9500"><div class="theme-name">AI/ML/RAG</div><div class="theme-ucs">UC-D07</div><div class="theme-note">1 use case &mdash; Advanced AI architectures: retrieval-augmented generation grounded in our docs</div></div><div class="theme-card" style="border-left:4px solid #FF3B30"><div class="theme-name">Testing &amp; Quality Validation</div><div class="theme-ucs">UC-D02, UC-D04</div><div class="theme-note">2 use cases &mdash; Faster, higher-quality testing and validation with AI assistance</div></div></div></div>
 <div class="section-block"><h3 style="color:#34C759">Bucket A &mdash; Knowledge &amp; Troubleshooting (1)</h3><div class="uc-card" id="card-UC-D08" data-ucid="UC-D08">
         <div class="uc-header"><div class="uc-id-badge">UC-D08</div><span class="wsjf-badge wsjf-low">#7 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#34C75922;color:#34C759;border:1px solid #34C75944">Bucket A</span></div>
         <h4 class="uc-title">Network &amp; Firewall Troubleshooting Assistant</h4>
@@ -307,8 +364,8 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
             <div class="uc-meta"><span class="meta-label">Deploy Estimate</span><span class="meta-val">3-5 weeks</span></div>
             <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val-sm">SiemensGPT, log parsing, runbook knowledge base</span></div>
             <div class="uc-meta"><span class="meta-label">Risk / Notes</span><span class="meta-val-sm">Medium. Security review required for infrastructure actions.</span></div>
-        </div></div></div><div class="section-block"><h3 style="color:#007AFF">Bucket B &mdash; Automation (5)</h3><div class="uc-card" id="card-UC-D01" data-ucid="UC-D01">
-        <div class="uc-header"><div class="uc-id-badge">UC-D01</div><span class="wsjf-badge wsjf-high">#1 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+        </div></div></div><div class="section-block"><h3 style="color:#4C9FFF">Bucket B &mdash; Automation (5)</h3><div class="uc-card" id="card-UC-D01" data-ucid="UC-D01">
+        <div class="uc-header"><div class="uc-id-badge">UC-D01</div><span class="wsjf-badge wsjf-high">#1 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#4C9FFF22;color:#4C9FFF;border:1px solid #4C9FFF44">Bucket B</span></div>
         <h4 class="uc-title">Calendar &amp; Time-Management Assistant</h4>
         <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Ryan Tong &mdash; <span class="uc-role">Solutions Architect</span></div>
         <p class="uc-outline">AI assistant that organises calendars, prioritises tasks and manages time across the day.</p>
@@ -318,7 +375,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
             <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val-sm">M365 Copilot, Outlook/Graph API, Power Automate</span></div>
             <div class="uc-meta"><span class="meta-label">Risk / Notes</span><span class="meta-val-sm">Low. Uses existing M365 Copilot capabilities.</span></div>
         </div></div><div class="uc-card" id="card-UC-D05" data-ucid="UC-D05">
-        <div class="uc-header"><div class="uc-id-badge">UC-D05</div><span class="wsjf-badge wsjf-high">#2 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+        <div class="uc-header"><div class="uc-id-badge">UC-D05</div><span class="wsjf-badge wsjf-high">#2 Do First</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#4C9FFF22;color:#4C9FFF;border:1px solid #4C9FFF44">Bucket B</span></div>
         <h4 class="uc-title">AI Email Triage &amp; Management</h4>
         <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MVOLO EVINA ALEGUE ELA &mdash; <span class="uc-role">DTS Site Lead</span></div>
         <p class="uc-outline">AI analyses, sorts and summarises incoming email, surfacing what needs action first.</p>
@@ -328,7 +385,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
             <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val-sm">M365 Copilot in Outlook, Graph API rules</span></div>
             <div class="uc-meta"><span class="meta-label">Risk / Notes</span><span class="meta-val-sm">Low. Built on existing Outlook Copilot.</span></div>
         </div></div><div class="uc-card" id="card-UC-D03" data-ucid="UC-D03">
-        <div class="uc-header"><div class="uc-id-badge">UC-D03</div><span class="wsjf-badge wsjf-high">#3 Do First</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+        <div class="uc-header"><div class="uc-id-badge">UC-D03</div><span class="wsjf-badge wsjf-high">#3 Do First</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#4C9FFF22;color:#4C9FFF;border:1px solid #4C9FFF44">Bucket B</span></div>
         <h4 class="uc-title">Automated Monthly Report Generation</h4>
         <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>David DeRoche &mdash; <span class="uc-role">Solution Engineer</span></div>
         <p class="uc-outline">Turn collected monthly data into a formatted report automatically, from a single prompt.</p>
@@ -338,7 +395,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
             <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val-sm">M365 Copilot in Excel, Power BI, Power Automate</span></div>
             <div class="uc-meta"><span class="meta-label">Risk / Notes</span><span class="meta-val-sm">Low. Data must be clean and consistently structured.</span></div>
         </div></div><div class="uc-card" id="card-UC-D09" data-ucid="UC-D09">
-        <div class="uc-header"><div class="uc-id-badge">UC-D09</div><span class="wsjf-badge wsjf-med">#4 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+        <div class="uc-header"><div class="uc-id-badge">UC-D09</div><span class="wsjf-badge wsjf-med">#4 Do Next</span><span class="scope-badge scope-team">Team-wide</span><span class="bucket-badge" style="background:#4C9FFF22;color:#4C9FFF;border:1px solid #4C9FFF44">Bucket B</span></div>
         <h4 class="uc-title">AI Writing Assistant</h4>
         <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Eugene De Guzman &mdash; <span class="uc-role">Advance MFG Solution Engineer</span></div>
         <p class="uc-outline">General-purpose AI writing support for documents, notes and communication.</p>
@@ -348,7 +405,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
             <div class="uc-meta"><span class="meta-label">Tech Stack</span><span class="meta-val-sm">M365 Copilot, SiemensGPT</span></div>
             <div class="uc-meta"><span class="meta-label">Risk / Notes</span><span class="meta-val-sm">Low. Existing tools; needs review of output.</span></div>
         </div></div><div class="uc-card" id="card-UC-D06" data-ucid="UC-D06">
-        <div class="uc-header"><div class="uc-id-badge">UC-D06</div><span class="wsjf-badge wsjf-low">#8 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#007AFF22;color:#007AFF;border:1px solid #007AFF44">Bucket B</span></div>
+        <div class="uc-header"><div class="uc-id-badge">UC-D06</div><span class="wsjf-badge wsjf-low">#8 Plan Ahead</span><span class="scope-badge scope-role">Role-based</span><span class="bucket-badge" style="background:#4C9FFF22;color:#4C9FFF;border:1px solid #4C9FFF44">Bucket B</span></div>
         <h4 class="uc-title">Team Touchpoint &amp; Alignment Planner</h4>
         <div class="uc-person"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Cheryl Kiolbassa &mdash; <span class="uc-role">Manager</span></div>
         <p class="uc-outline">AI recommends the right number and agenda of team touchpoints to keep alignment without micromanaging.</p>
@@ -400,7 +457,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
   <div class="method-card"><div class="method-weight">Effort</div><div class="method-name">Job Size</div><div class="method-desc">Work to implement</div></div>
 </div></div>
 <div class="section-block"><h3>Priority Chart</h3>
-<div class="chart-legend-bar"><div class="legend-chip lc-a active" data-bucket="A"><span class="lc-dot" style="background:#34C759"></span>A &mdash; Knowledge &amp; Troubleshooting</div><div class="legend-chip lc-b active" data-bucket="B"><span class="lc-dot" style="background:#007AFF"></span>B &mdash; Automation</div><div class="legend-chip lc-c active" data-bucket="C"><span class="lc-dot" style="background:#FF9500"></span>C &mdash; AI/ML/RAG</div><div class="legend-chip lc-d active" data-bucket="D"><span class="lc-dot" style="background:#FF3B30"></span>D &mdash; Testing &amp; Quality Validation</div></div>
+<div class="chart-legend-bar"><div class="legend-chip lc-a active" data-bucket="A"><span class="lc-dot" style="background:#34C759"></span>A &mdash; Knowledge &amp; Troubleshooting</div><div class="legend-chip lc-b active" data-bucket="B"><span class="lc-dot" style="background:#4C9FFF"></span>B &mdash; Automation</div><div class="legend-chip lc-c active" data-bucket="C"><span class="lc-dot" style="background:#FF9500"></span>C &mdash; AI/ML/RAG</div><div class="legend-chip lc-d active" data-bucket="D"><span class="lc-dot" style="background:#FF3B30"></span>D &mdash; Testing &amp; Quality Validation</div></div>
 <div class="chart-card chart-card-full"><div class="chart-wrap"><canvas id="cCon"></canvas></div>
 <div class="chart-desc">Bubble size = Cost of Delay. X-axis = effort to implement, Y-axis = WSJF priority. Hover any bubble for full detail, or click a bubble to jump to its catalogue card. Toggle buckets with the chips above.</div></div>
 <div class="uc-quick-ref"><h4>Use-Case Quick Reference <span class="qr-hint">(hover to highlight on chart &middot; click to jump to catalogue card &middot; press <strong>+</strong> to add to whiteboard)</span></h4><div class="qr-grid" id="qrGrid"></div></div>
@@ -411,19 +468,19 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
 <div class="section-block"><h3>Full Ranking Table</h3><div class="table-scroll"><table class="rank-table">
 <thead><tr><th>#</th><th>Use Case</th><th>Bucket</th><th>Value</th><th>Urgency</th><th>Effort</th><th>WSJF</th><th>Deploy</th><th>Hrs/Year</th></tr></thead>
 <tbody><tr><td class="rank-num">1</td><td class="rank-title">Calendar &amp; Time-Management Assistant<div style="font-size:11px;color:var(--text-s)">Ryan Tong</div></td>
-    <td class="center"><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+    <td class="center"><span class="bucket-dot" style="background:#4C9FFF"></span>B</td>
     <td class="center">3</td><td class="center">3</td><td class="center">1</td>
     <td class="score-cell"><div class="score-bar" style="width:100%"></div><span>8.0</span></td>
     <td class="center">1-2 weeks</td><td class="center">50-150</td></tr><tr><td class="rank-num">2</td><td class="rank-title">AI Email Triage &amp; Management<div style="font-size:11px;color:var(--text-s)">MVOLO EVINA ALEGUE ELA</div></td>
-    <td class="center"><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+    <td class="center"><span class="bucket-dot" style="background:#4C9FFF"></span>B</td>
     <td class="center">3</td><td class="center">3</td><td class="center">1</td>
     <td class="score-cell"><div class="score-bar" style="width:100%"></div><span>8.0</span></td>
     <td class="center">1-2 weeks</td><td class="center">50-150</td></tr><tr><td class="rank-num">3</td><td class="rank-title">Automated Monthly Report Generation<div style="font-size:11px;color:var(--text-s)">David DeRoche</div></td>
-    <td class="center"><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+    <td class="center"><span class="bucket-dot" style="background:#4C9FFF"></span>B</td>
     <td class="center">3</td><td class="center">2</td><td class="center">1</td>
     <td class="score-cell"><div class="score-bar" style="width:88%"></div><span>7.0</span></td>
     <td class="center">1-2 weeks</td><td class="center">40-80</td></tr><tr><td class="rank-num">4</td><td class="rank-title">AI Writing Assistant<div style="font-size:11px;color:var(--text-s)">Eugene De Guzman</div></td>
-    <td class="center"><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+    <td class="center"><span class="bucket-dot" style="background:#4C9FFF"></span>B</td>
     <td class="center">3</td><td class="center">2</td><td class="center">1</td>
     <td class="score-cell"><div class="score-bar" style="width:88%"></div><span>7.0</span></td>
     <td class="center">1 week</td><td class="center">50-150</td></tr><tr><td class="rank-num">5</td><td class="rank-title">AI-Assisted Application Testing<div style="font-size:11px;color:var(--text-s)">Eric Castaneda</div></td>
@@ -439,7 +496,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
     <td class="center">4</td><td class="center">4</td><td class="center">2</td>
     <td class="score-cell"><div class="score-bar" style="width:69%"></div><span>5.5</span></td>
     <td class="center">3-5 weeks</td><td class="center">50-150</td></tr><tr><td class="rank-num">8</td><td class="rank-title">Team Touchpoint &amp; Alignment Planner<div style="font-size:11px;color:var(--text-s)">Cheryl Kiolbassa</div></td>
-    <td class="center"><span class="bucket-dot" style="background:#007AFF"></span>B</td>
+    <td class="center"><span class="bucket-dot" style="background:#4C9FFF"></span>B</td>
     <td class="center">4</td><td class="center">3</td><td class="center">2</td>
     <td class="score-cell"><div class="score-bar" style="width:56%"></div><span>4.5</span></td>
     <td class="center">2-4 weeks</td><td class="center">150-250</td></tr><tr><td class="rank-num">9</td><td class="rank-title">RAG Knowledge Assistant for Internal Docs<div style="font-size:11px;color:var(--text-s)">Brandon Holton</div></td>
@@ -609,7 +666,7 @@ body{background:transparent!important;margin:0!important;padding:0!important;ove
 const ucData = [{"id": "UC-D01", "title": "Calendar & Time-Management Assistant", "person": "Ryan Tong", "role": "Solutions Architect", "bucket": "B", "bizValue": 3, "timeCrit": 3, "rroe": 2, "jobSize": 1, "feasibility": 5, "deployWeeks": "1-2 weeks", "deployWeeksMid": 1.5, "hrsSaved": "50-150", "hrsSavedMid": 100, "scalability": 5, "scope": "Team-wide", "techStack": "M365 Copilot, Outlook/Graph API, Power Automate", "outline": "AI assistant that organises calendars, prioritises tasks and manages time across the day.", "risk": "Low. Uses existing M365 Copilot capabilities.", "costOfDelay": 8, "wsjf": 8.0, "complexity": 1, "rank": 1}, {"id": "UC-D05", "title": "AI Email Triage & Management", "person": "MVOLO EVINA ALEGUE ELA", "role": "DTS Site Lead", "bucket": "B", "bizValue": 3, "timeCrit": 3, "rroe": 2, "jobSize": 1, "feasibility": 5, "deployWeeks": "1-2 weeks", "deployWeeksMid": 1.5, "hrsSaved": "50-150", "hrsSavedMid": 100, "scalability": 5, "scope": "Team-wide", "techStack": "M365 Copilot in Outlook, Graph API rules", "outline": "AI analyses, sorts and summarises incoming email, surfacing what needs action first.", "risk": "Low. Built on existing Outlook Copilot.", "costOfDelay": 8, "wsjf": 8.0, "complexity": 1, "rank": 2}, {"id": "UC-D03", "title": "Automated Monthly Report Generation", "person": "David DeRoche", "role": "Solution Engineer", "bucket": "B", "bizValue": 3, "timeCrit": 2, "rroe": 2, "jobSize": 1, "feasibility": 5, "deployWeeks": "1-2 weeks", "deployWeeksMid": 1.5, "hrsSaved": "40-80", "hrsSavedMid": 60, "scalability": 4, "scope": "Role-based", "techStack": "M365 Copilot in Excel, Power BI, Power Automate", "outline": "Turn collected monthly data into a formatted report automatically, from a single prompt.", "risk": "Low. Data must be clean and consistently structured.", "costOfDelay": 7, "wsjf": 7.0, "complexity": 1, "rank": 3}, {"id": "UC-D09", "title": "AI Writing Assistant", "person": "Eugene De Guzman", "role": "Advance MFG Solution Engineer", "bucket": "B", "bizValue": 3, "timeCrit": 2, "rroe": 2, "jobSize": 1, "feasibility": 5, "deployWeeks": "1 week", "deployWeeksMid": 1, "hrsSaved": "50-150", "hrsSavedMid": 100, "scalability": 5, "scope": "Team-wide", "techStack": "M365 Copilot, SiemensGPT", "outline": "General-purpose AI writing support for documents, notes and communication.", "risk": "Low. Existing tools; needs review of output.", "costOfDelay": 7, "wsjf": 7.0, "complexity": 1, "rank": 4}, {"id": "UC-D02", "title": "AI-Assisted Application Testing", "person": "Eric Castaneda", "role": "Solution Engineering Manager", "bucket": "D", "bizValue": 5, "timeCrit": 4, "rroe": 3, "jobSize": 2, "feasibility": 4, "deployWeeks": "3-5 weeks", "deployWeeksMid": 4, "hrsSaved": "250-400", "hrsSavedMid": 325, "scalability": 5, "scope": "Team-wide", "techStack": "Copilot, TestRail AI, test-automation frameworks", "outline": "AI accelerates application testing \u2014 generating cases, running checks and flagging defects faster.", "risk": "Medium. Requires validated test data & review of AI-suggested cases.", "costOfDelay": 12, "wsjf": 6.0, "complexity": 2, "rank": 5}, {"id": "UC-D04", "title": "AI Test-Case & Script Generation", "person": "Pedro Daniel Vazquez", "role": "GPR Site Lead / Solution Engineer", "bucket": "D", "bizValue": 4, "timeCrit": 4, "rroe": 3, "jobSize": 2, "feasibility": 4, "deployWeeks": "2-4 weeks", "deployWeeksMid": 3, "hrsSaved": "150-250", "hrsSavedMid": 200, "scalability": 4, "scope": "Role-based", "techStack": "TestRail AI, Copilot, requirement docs as context", "outline": "Generate test scripts and cases from requirements, cutting the most time-consuming testing prep.", "risk": "Medium. AI-generated cases need engineer validation.", "costOfDelay": 11, "wsjf": 5.5, "complexity": 2, "rank": 6}, {"id": "UC-D08", "title": "Network & Firewall Troubleshooting Assistant", "person": "Michael Kaylor", "role": "IT/OT Infrastructure Manager", "bucket": "A", "bizValue": 4, "timeCrit": 4, "rroe": 3, "jobSize": 2, "feasibility": 4, "deployWeeks": "3-5 weeks", "deployWeeksMid": 4, "hrsSaved": "50-150", "hrsSavedMid": 100, "scalability": 4, "scope": "Role-based", "techStack": "SiemensGPT, log parsing, runbook knowledge base", "outline": "AI assists firewall management and network troubleshooting \u2014 parsing logs and suggesting fixes.", "risk": "Medium. Security review required for infrastructure actions.", "costOfDelay": 11, "wsjf": 5.5, "complexity": 2, "rank": 7}, {"id": "UC-D06", "title": "Team Touchpoint & Alignment Planner", "person": "Cheryl Kiolbassa", "role": "Manager", "bucket": "B", "bizValue": 4, "timeCrit": 3, "rroe": 2, "jobSize": 2, "feasibility": 4, "deployWeeks": "2-4 weeks", "deployWeeksMid": 3, "hrsSaved": "150-250", "hrsSavedMid": 200, "scalability": 4, "scope": "Role-based", "techStack": "Copilot, Teams, Planner, Graph API", "outline": "AI recommends the right number and agenda of team touchpoints to keep alignment without micromanaging.", "risk": "Low. Suggestions augment, not replace, manager judgement.", "costOfDelay": 9, "wsjf": 4.5, "complexity": 2, "rank": 8}, {"id": "UC-D07", "title": "RAG Knowledge Assistant for Internal Docs", "person": "Brandon Holton", "role": "Solution Architect - PLM", "bucket": "C", "bizValue": 4, "timeCrit": 3, "rroe": 3, "jobSize": 3, "feasibility": 4, "deployWeeks": "4-6 weeks", "deployWeeksMid": 5, "hrsSaved": "50-150", "hrsSavedMid": 100, "scalability": 5, "scope": "Team-wide", "techStack": "RAG pipeline, SiemensGPT, SharePoint/Confluence index", "outline": "Retrieval-augmented assistant that finds internal documentation & past cases instantly, with sources.", "risk": "Medium. Needs curated, access-controlled document sources.", "costOfDelay": 10, "wsjf": 3.3, "complexity": 3, "rank": 9}];
 Chart.register(ChartDataLabels);
 Chart.defaults.set('plugins.datalabels', {display:false});
-const BC = {A:'#34C759',B:'#007AFF',C:'#FF9500',D:'#FF3B30'};
+const BC = {A:'#34C759',B:'#4C9FFF',C:'#FF9500',D:'#FF3B30'};
 const BB = {A:'rgba(52,199,89,0.28)',B:'rgba(0,122,255,0.28)',C:'rgba(255,149,0,0.28)',D:'rgba(255,59,48,0.28)'};
 const BN = {"A": "Knowledge & Troubleshooting", "B": "Automation", "C": "AI/ML/RAG", "D": "Testing & Quality Validation"};
 const buckets = ['A','B','C','D'];

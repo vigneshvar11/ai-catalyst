@@ -942,7 +942,7 @@ function renderSurveyReport() {
   if (container.querySelector('.sr-subtabs') && container.dataset.srSide === state.side) return;
   container.dataset.srSide = state.side;
 
-  const src = isDts ? '/survey-report-dts.html' : '/survey-report.html';
+  const src = (isDts ? '/survey-report-dts.html' : '/survey-report.html') + '?v=20260801b';
   const desc = isDts
     ? 'SI EP NA DTS AI adoption survey — 9 use cases from 11 respondents'
     : 'AI CatalyESt adoption survey — 21 use cases from 15 respondents';
