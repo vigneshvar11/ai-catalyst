@@ -166,6 +166,12 @@ def migrate_db():
     if not cfg.get('engsysTeamName'):
         cfg['engsysTeamName'] = cfg.get('teamName', 'Engineering Systems')
         changed = True
+    if not cfg.get('dts'):
+        cfg['dts'] = {'username': 'dts', 'password': 'dts'}
+        changed = True
+    if not cfg.get('engsys'):
+        cfg['engsys'] = {'username': 'engsys', 'password': 'engsys'}
+        changed = True
     if changed:
         write_db(db)
 
@@ -238,6 +244,10 @@ def login():
     engsys = db.get('config', {}).get('engsys', {'username': 'engsys', 'password': 'engsys'})
     if data.get('username') == engsys.get('username') and data.get('password') == engsys.get('password'):
         return jsonify(success=True, token='ai-catalyst-engsys-token', role='engsys')
+    # DTS login
+    dts = db.get('config', {}).get('dts', {'username': 'dts', 'password': 'dts'})
+    if data.get('username') == dts.get('username') and data.get('password') == dts.get('password'):
+        return jsonify(success=True, token='ai-catalyst-dts-token', role='dts')
     return jsonify(success=False, message='Invalid credentials'), 401
 
 

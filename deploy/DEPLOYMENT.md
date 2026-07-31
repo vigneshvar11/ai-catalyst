@@ -117,6 +117,7 @@ This stops IIS, moves the service to port 80, and exposes the app directly.
    - [ ] Calendar shows 12-month plan
    - [ ] Team directory loads with domain filter
    - [ ] Admin login works (admin/admin)
+   - [ ] Team logins work: `engsys/engsys` opens the EngSys Survey Report; `dts/dts` switches to the DTS side and opens the DTS Survey Report
    - [ ] Admin: add/edit/delete members
    - [ ] Admin: assign points
    - [ ] Admin: create & run a quiz (real-time WebSocket)

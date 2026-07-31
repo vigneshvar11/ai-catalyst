@@ -289,6 +289,10 @@
       "username": "engsys",
       "password": "engsys"
     },
+    "dts": {
+      "username": "dts",
+      "password": "dts"
+    },
     "appName": "AI CatalyESt",
     "teamName": "Engineering Systems",
     "company": "Siemens",

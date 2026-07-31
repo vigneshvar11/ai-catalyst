@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260731c">
+  <link rel="stylesheet" href="/css/styles.css?v=20260801a">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
   <style>
     /* Critical inline styles to prevent FOUC */
@@ -71,8 +71,8 @@
         <i class="ri-book-open-line"></i><span>Knowledge</span>
       </button>
       <!-- Admin-only tabs -->
-      <!-- EngSys-only tab -->
-      <button class="nav-btn engsys-only" data-tab="survey-report" style="display:none;">
+      <!-- Survey Report tab (per-side: EngSys or DTS, shown after team login) -->
+      <button class="nav-btn survey-only" data-tab="survey-report" style="display:none;">
         <i class="ri-bar-chart-box-line"></i><span>Survey Report</span>
       </button>
       <!-- Admin-only tabs -->
@@ -226,8 +226,8 @@
       <div id="knowledge-content"></div>
     </section>
 
-    <!-- ── SURVEY REPORT (engsys-only) ── -->
-    <section id="tab-survey-report" class="tab-content engsys-only">
+    <!-- ── SURVEY REPORT (per-side, shown after team login) ── -->
+    <section id="tab-survey-report" class="tab-content survey-only">
       <div id="survey-report-content"></div>
     </section>
 
@@ -319,6 +319,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <script src="/js/app.js?v=20260731c"></script>
+  <script src="/js/app.js?v=20260801a"></script>
 </body>
 </html>

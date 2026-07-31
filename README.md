@@ -67,6 +67,20 @@ Click the **profile icon** (top right) and enter:
 - **Username:** `admin`
 - **Password:** `admin`
 
+### Team Logins (Survey Report)
+
+Two team logins reveal a side-specific **Survey Report** tab (an embedded, interactive
+4-tab report — Overview / Catalogue / Impact / Raw Data):
+
+| Credentials | Lands on side | Shows |
+|-------------|---------------|-------|
+| `engsys` / `engsys` | EngSys | EngSys Survey Report (`/survey-report.html`) |
+| `dts` / `dts` | SI EP NA DTS | DTS Survey Report (`/survey-report-dts.html`) |
+
+Logging in with either credential automatically switches the dashboard to that team's
+side and opens its Survey Report. `admin`/`admin` sees the Survey Report of whichever
+side is currently active.
+
 ---
 
 ## Project Structure

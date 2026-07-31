@@ -6,6 +6,7 @@
 const state = {
   isAdmin: false,
   isEngSys: false,
+  isDts: false,
   side: localStorage.getItem('aic-side') === 'dts' ? 'dts' : 'engsys',
   currentTab: 'dashboard',
   members: [],
@@ -207,18 +208,22 @@ function applySideTheme() {
     : 'Engineering Systems · AI Learning Journey';
 }
 
-// Show/hide side-specific nav + tabs. DTS has no survey features.
+// Show/hide side-specific nav + tabs.
+// Survey Report is available on BOTH sides but is tied to the matching team login:
+//   • EngSys side → visible when logged in as EngSys (or Admin) → EngSys report
+//   • DTS side    → visible when logged in as DTS (or Admin)    → DTS report
 function applySideVisibility() {
   const isDts = state.side === 'dts';
-  // Survey report (EngSys-only) and admin survey are hidden entirely on DTS.
-  document.querySelectorAll('[data-tab="survey-report"], [data-tab="admin-survey"]').forEach(el => {
-    if (isDts) {
-      el.style.display = 'none';
-    } else {
-      // Restore per existing auth rules.
-      if (el.classList.contains('engsys-only')) el.style.display = state.isEngSys ? '' : 'none';
-      else if (el.classList.contains('admin-only')) el.style.display = state.isAdmin ? '' : 'none';
-    }
+  // Admin survey builder stays EngSys-only (survey feature not used on DTS).
+  document.querySelectorAll('[data-tab="admin-survey"]').forEach(el => {
+    if (isDts) el.style.display = 'none';
+    else el.style.display = state.isAdmin ? '' : 'none';
+  });
+  // Survey Report tab + section — shown for the team that matches the active side.
+  const showSurvey = (state.side === 'engsys' && (state.isEngSys || state.isAdmin))
+                  || (state.side === 'dts' && (state.isDts || state.isAdmin));
+  document.querySelectorAll('.survey-only').forEach(el => {
+    el.style.display = showSurvey ? '' : 'none';
   });
   // Hide the active dashboard survey card on DTS.
   if (isDts) {
@@ -235,13 +240,14 @@ function setupAuth() {
   const loginForm = document.getElementById('loginForm');
 
   profileBtn.addEventListener('click', () => {
-    if (state.isAdmin || state.isEngSys) {
+    if (state.isAdmin || state.isEngSys || state.isDts) {
       state.isAdmin = false;
       state.isEngSys = false;
+      state.isDts = false;
       profileBtn.classList.remove('admin-active');
       profileBtn.innerHTML = '<i class="ri-user-line"></i>';
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.survey-only').forEach(el => el.style.display = 'none');
       applySideVisibility();
       switchTab('dashboard');
       toast('Logged out');
@@ -270,21 +276,35 @@ function setupAuth() {
       if (res.role === 'admin') {
         state.isAdmin = true;
         state.isEngSys = false;
+        state.isDts = false;
         profileBtn.innerHTML = '<i class="ri-shield-user-line"></i>';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
-        document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
         applySideVisibility();
         toast('Welcome, Admin!', 'success');
+        renderCurrentTab();
       } else if (res.role === 'engsys') {
         state.isEngSys = true;
         state.isAdmin = false;
+        state.isDts = false;
         profileBtn.innerHTML = '<i class="ri-team-line"></i>';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.engsys-only').forEach(el => el.style.display = '');
+        // EngSys login always lands on the EngSys side and opens its Survey Report.
+        if (state.side !== 'engsys') { await switchSide('engsys'); }
         applySideVisibility();
         toast('Welcome, EngSys!', 'success');
+        switchTab('survey-report');
+      } else if (res.role === 'dts') {
+        state.isDts = true;
+        state.isAdmin = false;
+        state.isEngSys = false;
+        profileBtn.innerHTML = '<i class="ri-team-line"></i>';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+        // DTS login always lands on the DTS side and opens its Survey Report.
+        if (state.side !== 'dts') { await switchSide('dts'); }
+        applySideVisibility();
+        toast('Welcome, SI EP NA DTS!', 'success');
+        switchTab('survey-report');
       }
-      renderCurrentTab();
     } else {
       document.getElementById('loginError').textContent = 'Invalid credentials';
     }
@@ -917,12 +937,20 @@ window.deleteKnowledge = async function(id) {
 function renderSurveyReport() {
   const container = document.getElementById('survey-report-content');
   if (!container) return;
-  if (container.querySelector('.sr-subtabs')) return; // already built
+  const isDts = state.side === 'dts';
+  // Rebuild only when empty or when the active side changed (EngSys ⇄ DTS).
+  if (container.querySelector('.sr-subtabs') && container.dataset.srSide === state.side) return;
+  container.dataset.srSide = state.side;
+
+  const src = isDts ? '/survey-report-dts.html' : '/survey-report.html';
+  const desc = isDts
+    ? 'SI EP NA DTS AI adoption survey — 9 use cases from 11 respondents'
+    : 'AI CatalyESt adoption survey — 21 use cases from 15 respondents';
 
   container.innerHTML = `
     <div class="section-header">
       <h2><i class="ri-bar-chart-box-line"></i> Survey Report</h2>
-      <p>AI CatalyESt adoption survey — 21 use cases from 15 respondents</p>
+      <p>${desc}</p>
     </div>
     <div class="sr-subtabs" id="sr-subtabs">
       <button class="sr-tab active" data-srtab="overview"><i class="ri-pie-chart-line"></i> Overview</button>
@@ -930,7 +958,7 @@ function renderSurveyReport() {
       <button class="sr-tab" data-srtab="impact"><i class="ri-bar-chart-line"></i> Impact</button>
       <button class="sr-tab" data-srtab="rawdata"><i class="ri-database-2-line"></i> Raw Data</button>
     </div>
-    <iframe id="sr-iframe" src="/survey-report.html" style="width:100%;border:none;overflow:visible;display:block;min-height:600px;"></iframe>
+    <iframe id="sr-iframe" src="${src}" style="width:100%;border:none;overflow:visible;display:block;min-height:600px;"></iframe>
     <button class="sr-back-to-top" id="sr-back-to-top" title="Back to top"><i class="ri-arrow-up-line"></i></button>
   `;
 

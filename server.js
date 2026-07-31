@@ -61,6 +61,8 @@ function migrateDB() {
   db.config = db.config || {};
   if (!db.config.dtsTeamName) { db.config.dtsTeamName = 'SI EP NA DTS'; changed = true; }
   if (!db.config.engsysTeamName) { db.config.engsysTeamName = db.config.teamName || 'Engineering Systems'; changed = true; }
+  if (!db.config.dts) { db.config.dts = { username: 'dts', password: 'dts' }; changed = true; }
+  if (!db.config.engsys) { db.config.engsys = { username: 'engsys', password: 'engsys' }; changed = true; }
 
   if (changed) writeDB(db);
 }
@@ -95,6 +97,11 @@ app.post('/api/auth/login', (req, res) => {
   const engsys = db.config.engsys || { username: 'engsys', password: 'engsys' };
   if (username === engsys.username && password === engsys.password) {
     return res.json({ success: true, token: 'ai-catalyst-engsys-token', role: 'engsys' });
+  }
+  // DTS login
+  const dts = db.config.dts || { username: 'dts', password: 'dts' };
+  if (username === dts.username && password === dts.password) {
+    return res.json({ success: true, token: 'ai-catalyst-dts-token', role: 'dts' });
   }
   res.status(401).json({ success: false, message: 'Invalid credentials' });
 });
