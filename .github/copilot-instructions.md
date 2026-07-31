@@ -30,29 +30,36 @@ Browser (public/index.html + app.js)  ◄──HTTP REST──►  Flask or Expr
 
 ## Data Model (db.json)
 
-The database has these top-level collections: `config`, `members`, `events`, `points`, `quizzes`, `surveys`, `teams`.
+The database has these top-level collections: `config`, `members`, `events`, `points`, `quizzes`, `surveys`, `teams`, `knowledgeBoard`.
 
 - **Member IDs** are slug-derived from names: `"vigneshvar-sa"`, `"balaji-m"` — generated via `name.lower().replace(' ', '-')`
-- **Entity IDs** use prefixed short UUIDs: `"event-a1b2c3d4"`, `"quiz-..."`, `"pts-..."`, `"survey-..."`
+- **Entity IDs** use prefixed short UUIDs: `"event-a1b2c3d4"`, `"quiz-..."`, `"pts-..."`, `"survey-..."`, `"kb-..."`
 - **Points** reference `memberId` and `month` (1–12 integer); leaderboard is computed on read, not stored
 - **Events** represent the 12-month plan; each has `month`, `phase` (SPARK/BUILD/APPLY/DELIVER), `seminarPresenter` (member ID), and `status`
+- **`side` discriminator** (`"engsys"` | `"dts"`) tags `members`, `events`, `points`, `quizzes`, `surveys`. Legacy records are migrated to `"engsys"`; DTS starts empty. A startup migration (`migrateDB`/`migrate_db`) is idempotent and also creates `knowledgeBoard` + `config.dtsTeamName`.
+- **Quizzes** have a `type` (`"live"` | `"self-paced"` | `"ms-forms"`), per-question `explanation`, self-paced `opensAt`/`closesAt`, `formsUrl`, and a `responses[]` log.
+- **`knowledgeBoard`** items `{id,label,url,icon,category,order}` are **shared across both sides** (no `side` field).
+- **Render runs on MongoDB Atlas** (`MONGODB_URI`); `app.py` `read_db`/`write_db` auto-fall back to `db.json` locally. `COLLECTIONS` must include every collection (incl. `knowledgeBoard`).
 
 ## API Conventions
 
 All routes are under `/api/`. Standard CRUD pattern:
 
 ```
-GET    /api/{resource}          → list all
-POST   /api/{resource}          → create (JSON body)
+GET    /api/{resource}          → list all (accepts ?side=engsys|dts)
+POST   /api/{resource}          → create (JSON body, include side)
 PUT    /api/{resource}/:id      → update (JSON body, spread-merge)
 DELETE /api/{resource}/:id      → delete
 ```
 
-Resources: `members`, `events`, `points`, `quizzes`, `surveys`, `teams`. Special endpoints:
-- `GET /api/leaderboard` — computed aggregation of points by member
+Resources: `members`, `events`, `points`, `quizzes`, `surveys`, `teams`, `knowledge`. Special endpoints:
+- `GET /api/leaderboard?side=` — computed aggregation of points by member, per side
+- `POST /api/quizzes/:id/submit` — self-paced grading, returns `{score,total,review[]}`
+- `GET /api/quizzes/:id/answers` — MS-Forms answer reveal
+- `GET/POST/PUT/DELETE /api/knowledge` — shared knowledge board CRUD
 - `POST /api/members/:id/avatar` — multipart file upload to `uploads/avatars/`
 - `POST /api/surveys/:id/vote` — anonymous rating submission
-- `POST /api/auth/login` — hardcoded admin check against `db.config.admin`
+- `POST /api/auth/login` — checks `db.config.admin` then `db.config.engsys`
 
 ## WebSocket Events (Quiz & Survey)
 
@@ -64,11 +71,14 @@ Real-time features use Socket.IO with a `quiz:` and `survey:` event namespace pa
 
 ## Frontend Patterns
 
-- **SPA routing**: Tab switching via `data-tab` attributes; `switchTab(tab)` shows `#tab-{name}` sections
-- **Global state**: `const state = { members, events, points, leaderboard, quizzes, surveys, ... }` loaded at startup via `loadAllData()`
-- **Admin auth**: Token stored in `localStorage`; admin-only nav buttons have class `.admin-only` toggled via `style.display`
-- **Rendering**: Each tab has a dedicated `render*()` function (e.g., `renderLeaderboard()`, `renderCalendar()`); all generate HTML strings via template literals
-- **API helper**: `api(url, options)` wraps `fetch()` with auth token injection
+- **SPA routing**: Tab switching via `data-tab` attributes; `switchTab(tab)` shows `#tab-{name}` sections; `renderCurrentTab()` dispatches to the right `render*()`
+- **Side switching**: `state.side` (persisted in `localStorage['aic-side']`) drives `body[data-side]`. Header `#sideToggle` calls `switchSide()` which reloads side-scoped data and re-themes. `applySideVisibility()` hides survey features on DTS. EngSys = light theme, DTS = dark glassmorphism.
+- **Global state**: `const state = { side, members, events, points, leaderboard, quizzes, surveys, knowledge, ... }` loaded per-side via `loadAllData()` (uses `?side=`)
+- **Public quiz**: the Quiz tab (`#nav-quiz`) is always visible without login and sits after Team. Knowledge tab (`#nav-knowledge`) is shared.
+- **Admin auth**: admin-only nav buttons have class `.admin-only`, engsys-only `.engsys-only`, toggled via `style.display`. One shared `admin/admin` edits whichever side is active.
+- **Rendering**: Each tab has a dedicated `render*()` function; all generate HTML strings via template literals. Use `escapeHtml`/`escapeAttr` for user-entered content (knowledge links, quiz text).
+- **Modals**: `openModal(html, size)` where size is `'sm'|'lg'|'xl'`; `.modal` is scrollable (`max-height:88vh`).
+- **API helper**: `api(url, options)` wraps `fetch()` with retries
 
 ## Development Workflow
 
@@ -100,7 +110,9 @@ node server.js                    # starts on http://localhost:3000
 ## Important Conventions
 
 - **Keep backends in sync**: Any API or WebSocket change must be mirrored in both `app.py` and `server.js`
-- **db.json is the database**: Never introduce a separate database without migrating. All writes use the `write_db()`/`writeDB()` helpers that pretty-print with 2-space indent
-- **No frontend framework**: Use vanilla JS with template-literal HTML. Follow the existing `render*()` function pattern in `app.js`
+- **Side-awareness**: New per-team collections must carry a `side` field and be filtered via `?side=`; the knowledge board is the exception (shared). Extend the startup migration when adding collections. When adding a collection, also add it to Flask `COLLECTIONS` (MongoDB path).
+- **db.json is the database**: Never introduce a separate database without migrating. All writes use the `write_db()`/`writeDB()` helpers that pretty-print with 2-space indent. Note: Render runs on MongoDB Atlas; the helpers auto-fall back to `db.json` locally.
+- **No frontend framework**: Use vanilla JS with template-literal HTML. Follow the existing `render*()` function pattern in `app.js`. Escape user-entered content with `escapeHtml`/`escapeAttr`.
 - **ID generation**: Members get slug IDs from names; all other entities use `{prefix}-{8-char-uuid}`
 - **Update pattern**: Both backends use spread-merge (`{...existing, ...newData}`) for PUT operations, preserving the `id` field
+- **Cache-busting**: bump `?v=YYYYMMDD` on the `styles.css` and `app.js` links in `index.html` after frontend edits
