@@ -55,6 +55,7 @@ DELETE /api/{resource}/:id      → delete
 Resources: `members`, `events`, `points`, `quizzes`, `surveys`, `teams`, `knowledge`. Special endpoints:
 - `GET /api/leaderboard?side=` — computed aggregation of points by member, per side
 - `POST /api/quizzes/:id/submit` — self-paced grading, returns `{score,total,review[]}`
+- `POST /api/quizzes/:id/clone` — copy a quiz to the other side (`{targetSide}`); fresh id/roomCode, reset responses/results
 - `GET /api/quizzes/:id/answers` — MS-Forms answer reveal
 - `GET/POST/PUT/DELETE /api/knowledge` — shared knowledge board CRUD
 - `POST /api/members/:id/avatar` — multipart file upload to `uploads/avatars/`

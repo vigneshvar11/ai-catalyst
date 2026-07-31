@@ -276,6 +276,30 @@ app.delete('/api/quizzes/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Clone a quiz to the other side (engsys <-> dts). Copies questions/config with
+// a fresh id + room code; resets responses/results/status so each side keeps its
+// own independent copy, schedule, and scoring.
+app.post('/api/quizzes/:id/clone', (req, res) => {
+  const db = readDB();
+  const src = db.quizzes.find(q => q.id === req.params.id);
+  if (!src) return res.status(404).json({ error: 'Quiz not found' });
+  const targetSide = normalizeSide(req.body.targetSide) === 'dts' ? 'dts' : 'engsys';
+  const clone = {
+    ...src,
+    id: `quiz-${uuidv4().slice(0, 8)}`,
+    side: targetSide,
+    roomCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+    status: 'waiting',
+    participants: [],
+    responses: [],
+    results: [],
+    createdAt: new Date().toISOString(),
+  };
+  db.quizzes.push(clone);
+  writeDB(db);
+  res.json(clone);
+});
+
 // Self-paced quiz submission — grades answers and returns a Udemy-style review.
 app.post('/api/quizzes/:id/submit', (req, res) => {
   const db = readDB();

@@ -1228,6 +1228,7 @@ function renderAdminQuiz() {
 
 function renderAdminQuizCard(q) {
   const type = q.type || 'live';
+  const otherSideLabel = state.side === 'dts' ? 'EngSys' : 'DTS';
   const typeBadge = {
     'live': '<span class="quiz-type-badge qtb-live"><i class="ri-live-line"></i> Live</span>',
     'self-paced': '<span class="quiz-type-badge qtb-self-paced"><i class="ri-timer-line"></i> Self-paced</span>',
@@ -1261,12 +1262,29 @@ function renderAdminQuizCard(q) {
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
           ${actions}
+          <button class="btn-icon btn-xs" title="Clone to ${otherSideLabel}" onclick="cloneQuiz('${q.id}')"><i class="ri-file-copy-line"></i></button>
           <button class="btn-icon btn-xs" title="Delete quiz" onclick="deleteQuiz('${q.id}')"><i class="ri-delete-bin-line"></i></button>
         </div>
       </div>
     </div>
   `;
 }
+
+// Clone a quiz to the opposite side, then confirm.
+window.cloneQuiz = async function(quizId) {
+  const targetSide = state.side === 'dts' ? 'engsys' : 'dts';
+  const targetLabel = targetSide === 'dts' ? 'SI EP NA DTS' : 'EngSys';
+  if (!confirm(`Clone this quiz to ${targetLabel}? A fresh copy (questions + settings) will be created on that side with its own schedule and results.`)) return;
+  const res = await api(`/api/quizzes/${quizId}/clone`, {
+    method: 'POST',
+    body: JSON.stringify({ targetSide }),
+  });
+  if (res && res.id) {
+    toast(`Cloned to ${targetLabel} ✓ Switch sides to schedule it.`, 'success');
+  } else {
+    toast('Clone failed', 'error');
+  }
+};
 
 // Human-readable schedule / open-window text for self-paced quizzes.
 function scheduleText(q) {

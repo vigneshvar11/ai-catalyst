@@ -464,6 +464,30 @@ def delete_quiz(quiz_id):
     write_db(db)
     return jsonify(success=True)
 
+@app.route('/api/quizzes/<quiz_id>/clone', methods=['POST'])
+def clone_quiz(quiz_id):
+    db = read_db()
+    data = request.get_json() or {}
+    src = next((q for q in db.get('quizzes', []) if q['id'] == quiz_id), None)
+    if not src:
+        return jsonify(error='Quiz not found'), 404
+    target_side = 'dts' if normalize_side(data.get('targetSide')) == 'dts' else 'engsys'
+    room_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    clone = {
+        **src,
+        'id': f"quiz-{short_id()}",
+        'side': target_side,
+        'roomCode': room_code,
+        'status': 'waiting',
+        'participants': [],
+        'responses': [],
+        'results': [],
+        'createdAt': datetime.now().isoformat(),
+    }
+    db['quizzes'].append(clone)
+    write_db(db)
+    return jsonify(clone)
+
 @app.route('/api/quizzes/<quiz_id>/submit', methods=['POST'])
 def submit_quiz(quiz_id):
     db = read_db()
