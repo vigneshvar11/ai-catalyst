@@ -25,7 +25,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ─── MongoDB Setup (lazy init — deferred until first use) ───
 MONGODB_URI = os.environ.get('MONGODB_URI')
-COLLECTIONS = ['members', 'events', 'points', 'quizzes', 'surveys', 'teams']
+COLLECTIONS = ['members', 'events', 'points', 'quizzes', 'surveys', 'teams', 'knowledgeBoard']
 _mongo_db = None
 _mongo_initialized = False
 
@@ -128,6 +128,53 @@ def short_id():
     return uuid.uuid4().hex[:8]
 
 
+# ─── Sides (EngSys / DTS) ───
+SIDES = ['engsys', 'dts']
+
+def normalize_side(side):
+    return side if side in SIDES else 'engsys'
+
+def filter_by_side(items, side):
+    s = normalize_side(side)
+    return [it for it in (items or []) if it.get('side', 'engsys') == s]
+
+def _maybe_side(data):
+    return normalize_side((data or {}).get('side'))
+
+def migrate_db():
+    """Idempotent: tag legacy records as EngSys, ensure knowledgeBoard + DTS config."""
+    db = read_db()
+    changed = False
+    for col in ['members', 'events', 'points', 'quizzes', 'surveys']:
+        if not isinstance(db.get(col), list):
+            db[col] = []
+            changed = True
+        for item in db[col]:
+            if not item.get('side'):
+                item['side'] = 'engsys'
+                changed = True
+    if not isinstance(db.get('knowledgeBoard'), list):
+        db['knowledgeBoard'] = []
+        changed = True
+    if not isinstance(db.get('teams'), list):
+        db['teams'] = []
+        changed = True
+    cfg = db.setdefault('config', {})
+    if not cfg.get('dtsTeamName'):
+        cfg['dtsTeamName'] = 'SI EP NA DTS'
+        changed = True
+    if not cfg.get('engsysTeamName'):
+        cfg['engsysTeamName'] = cfg.get('teamName', 'Engineering Systems')
+        changed = True
+    if changed:
+        write_db(db)
+
+try:
+    migrate_db()
+except Exception as _e:
+    print(f"[migrate_db] skipped: {_e}")
+
+
 # ─── Health Check ───
 @app.route('/api/health')
 def health():
@@ -184,7 +231,9 @@ def login():
 # ─── MEMBERS CRUD ───
 @app.route('/api/members', methods=['GET'])
 def get_members():
-    return jsonify(read_db()['members'])
+    members = read_db()['members']
+    side = request.args.get('side')
+    return jsonify(filter_by_side(members, side) if side else members)
 
 @app.route('/api/members', methods=['POST'])
 def add_member():
@@ -197,6 +246,7 @@ def add_member():
         'email': data.get('email', ''),
         'role': data.get('role', ''),
         'domain': data.get('domain', 'Cross-Functional'),
+        'side': _maybe_side(data),
         'avatar': None,
         'joinedDate': datetime.now().strftime('%Y-%m-%d'),
     }
@@ -262,13 +312,15 @@ def upload_avatar(member_id):
 # ─── EVENTS CRUD ───
 @app.route('/api/events', methods=['GET'])
 def get_events():
-    return jsonify(read_db()['events'])
+    events = read_db()['events']
+    side = request.args.get('side')
+    return jsonify(filter_by_side(events, side) if side else events)
 
 @app.route('/api/events', methods=['POST'])
 def add_event():
     db = read_db()
     data = request.get_json()
-    event = {'id': f"event-{short_id()}", **data}
+    event = {'id': f"event-{short_id()}", **data, 'side': _maybe_side(data)}
     db['events'].append(event)
     write_db(db)
     return jsonify(event)
@@ -295,13 +347,15 @@ def delete_event(event_id):
 # ─── POINTS CRUD ───
 @app.route('/api/points', methods=['GET'])
 def get_points():
-    return jsonify(read_db()['points'])
+    points = read_db()['points']
+    side = request.args.get('side')
+    return jsonify(filter_by_side(points, side) if side else points)
 
 @app.route('/api/points', methods=['POST'])
 def add_points():
     db = read_db()
     data = request.get_json()
-    entry = {'id': f"pts-{short_id()}", **data, 'date': datetime.now().isoformat()}
+    entry = {'id': f"pts-{short_id()}", **data, 'side': _maybe_side(data), 'date': datetime.now().isoformat()}
     db['points'].append(entry)
     write_db(db)
     return jsonify(entry)
@@ -327,9 +381,12 @@ def delete_points(point_id):
 @app.route('/api/leaderboard', methods=['GET'])
 def get_leaderboard():
     db = read_db()
+    side = request.args.get('side')
+    members = filter_by_side(db['members'], side) if side else db['members']
+    points = filter_by_side(db['points'], side) if side else db['points']
     board = []
-    for m in db['members']:
-        member_points = [p for p in db['points'] if p.get('memberId') == m['id']]
+    for m in members:
+        member_points = [p for p in points if p.get('memberId') == m['id']]
         monthly = {}
         for p in member_points:
             mo = p.get('month', 0)
@@ -343,21 +400,30 @@ def get_leaderboard():
 # ─── QUIZZES ───
 @app.route('/api/quizzes', methods=['GET'])
 def get_quizzes():
-    return jsonify(read_db().get('quizzes', []))
+    quizzes = read_db().get('quizzes', [])
+    side = request.args.get('side')
+    return jsonify(filter_by_side(quizzes, side) if side else quizzes)
 
 @app.route('/api/quizzes', methods=['POST'])
 def create_quiz():
     db = read_db()
     data = request.get_json()
     room_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    qtype = data.get('type') if data.get('type') in ['live', 'self-paced', 'ms-forms'] else 'live'
     quiz = {
         'id': f"quiz-{short_id()}",
         'title': data.get('title', 'Quiz'),
         'month': data.get('month', 1),
+        'side': _maybe_side(data),
+        'type': qtype,
         'questions': data.get('questions', []),
         'roomCode': room_code,
+        'opensAt': data.get('opensAt'),
+        'closesAt': data.get('closesAt'),
+        'formsUrl': data.get('formsUrl', ''),
         'status': 'waiting',
         'participants': [],
+        'responses': [],
         'results': [],
         'createdAt': datetime.now().isoformat(),
     }
@@ -378,11 +444,127 @@ def update_quiz(quiz_id):
             return jsonify(db['quizzes'][i])
     return jsonify(error='Quiz not found'), 404
 
+@app.route('/api/quizzes/<quiz_id>', methods=['DELETE'])
+def delete_quiz(quiz_id):
+    db = read_db()
+    db['quizzes'] = [q for q in db.get('quizzes', []) if q['id'] != quiz_id]
+    write_db(db)
+    return jsonify(success=True)
+
+@app.route('/api/quizzes/<quiz_id>/submit', methods=['POST'])
+def submit_quiz(quiz_id):
+    db = read_db()
+    data = request.get_json() or {}
+    quiz = next((q for q in db.get('quizzes', []) if q['id'] == quiz_id), None)
+    if not quiz:
+        return jsonify(error='Quiz not found'), 404
+    now = datetime.now()
+    if quiz.get('opensAt'):
+        try:
+            if now < datetime.fromisoformat(quiz['opensAt'].replace('Z', '+00:00')).replace(tzinfo=None):
+                return jsonify(error='This quiz has not opened yet.'), 403
+        except Exception:
+            pass
+    if quiz.get('closesAt'):
+        try:
+            if now > datetime.fromisoformat(quiz['closesAt'].replace('Z', '+00:00')).replace(tzinfo=None):
+                return jsonify(error='This quiz has closed.'), 403
+        except Exception:
+            pass
+    name = (data.get('name') or '').strip() or 'Anonymous'
+    answers = data.get('answers', {})
+    score = 0
+    review = []
+    for q in quiz.get('questions', []):
+        given = answers.get(q['id'])
+        is_correct = given == q.get('correctAnswer')
+        if is_correct:
+            score += 1
+        review.append({
+            'id': q['id'],
+            'question': q.get('question', ''),
+            'options': q.get('options', {}),
+            'yourAnswer': given,
+            'correctAnswer': q.get('correctAnswer'),
+            'explanation': q.get('explanation', ''),
+            'isCorrect': is_correct,
+        })
+    total = len(quiz.get('questions', []))
+    for i, q in enumerate(db['quizzes']):
+        if q['id'] == quiz_id:
+            db['quizzes'][i].setdefault('responses', []).append({
+                'name': name, 'answers': answers, 'score': score,
+                'total': total, 'submittedAt': now.isoformat(),
+            })
+            break
+    write_db(db)
+    return jsonify(name=name, score=score, total=total, review=review)
+
+@app.route('/api/quizzes/<quiz_id>/answers', methods=['GET'])
+def quiz_answers(quiz_id):
+    db = read_db()
+    quiz = next((q for q in db.get('quizzes', []) if q['id'] == quiz_id), None)
+    if not quiz:
+        return jsonify(error='Quiz not found'), 404
+    review = [{
+        'id': q['id'],
+        'question': q.get('question', ''),
+        'options': q.get('options', {}),
+        'correctAnswer': q.get('correctAnswer'),
+        'explanation': q.get('explanation', ''),
+    } for q in quiz.get('questions', [])]
+    return jsonify(title=quiz.get('title', ''), review=review)
+
+
+# ─── KNOWLEDGE BOARD (shared) ───
+@app.route('/api/knowledge', methods=['GET'])
+def get_knowledge():
+    items = read_db().get('knowledgeBoard', [])
+    return jsonify(sorted(items, key=lambda x: x.get('order', 0)))
+
+@app.route('/api/knowledge', methods=['POST'])
+def add_knowledge():
+    db = read_db()
+    data = request.get_json() or {}
+    if 'knowledgeBoard' not in db:
+        db['knowledgeBoard'] = []
+    item = {
+        'id': f"kb-{short_id()}",
+        'label': data.get('label', 'Untitled'),
+        'url': data.get('url', '#'),
+        'icon': data.get('icon', 'ri-links-line'),
+        'category': data.get('category', 'Resources'),
+        'order': data.get('order', len(db['knowledgeBoard'])),
+    }
+    db['knowledgeBoard'].append(item)
+    write_db(db)
+    return jsonify(item)
+
+@app.route('/api/knowledge/<item_id>', methods=['PUT'])
+def update_knowledge(item_id):
+    db = read_db()
+    data = request.get_json() or {}
+    for i, k in enumerate(db.get('knowledgeBoard', [])):
+        if k['id'] == item_id:
+            db['knowledgeBoard'][i] = {**k, **{kk: vv for kk, vv in data.items() if kk != 'id'}}
+            write_db(db)
+            return jsonify(db['knowledgeBoard'][i])
+    return jsonify(error='Item not found'), 404
+
+@app.route('/api/knowledge/<item_id>', methods=['DELETE'])
+def delete_knowledge(item_id):
+    db = read_db()
+    db['knowledgeBoard'] = [k for k in db.get('knowledgeBoard', []) if k['id'] != item_id]
+    write_db(db)
+    return jsonify(success=True)
+
 
 # ─── SURVEYS ───
 @app.route('/api/surveys', methods=['GET'])
 def get_surveys():
-    return jsonify(read_db().get('surveys', []))
+    surveys = read_db().get('surveys', [])
+    side = request.args.get('side')
+    return jsonify(filter_by_side(surveys, side) if side else surveys)
 
 @app.route('/api/surveys', methods=['POST'])
 def create_survey():
@@ -392,6 +574,7 @@ def create_survey():
         'id': f"survey-{short_id()}",
         'presenterId': data.get('presenterId', ''),
         'month': data.get('month', 1),
+        'side': _maybe_side(data),
         'topic': data.get('topic', ''),
         'status': 'active',
         'votes': [],

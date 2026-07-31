@@ -6,6 +6,7 @@
 const state = {
   isAdmin: false,
   isEngSys: false,
+  side: localStorage.getItem('aic-side') === 'dts' ? 'dts' : 'engsys',
   currentTab: 'dashboard',
   members: [],
   events: [],
@@ -13,9 +14,11 @@ const state = {
   leaderboard: [],
   quizzes: [],
   surveys: [],
+  knowledge: [],
   socket: null,
   quizState: null,       // participant quiz state
   adminQuizState: null,  // admin quiz room state
+  selfPacedState: null,  // participant self-paced quiz state
   selectedMonth: 1,
 };
 
@@ -23,11 +26,14 @@ const state = {
 document.addEventListener('DOMContentLoaded', async () => {
   showLoader('Connecting to server...');
   try {
+    applySideTheme();
     await loadAllData();
     state.socket = io({ reconnection: true, reconnectionAttempts: 10, reconnectionDelay: 1000 });
     setupNavigation();
+    setupSideToggle();
     setupAuth();
     setupSocketListeners();
+    applySideVisibility();
     renderCurrentTab();
     startCountdown();
     checkForActiveSurvey();
@@ -71,16 +77,19 @@ function hideLoader() {
 
 // ════════════════════ DATA LOADING ════════════════════
 async function loadAllData() {
-  const [members, events, points, leaderboard, quizzes, surveys] = await Promise.all([
-    api('/api/members'),
-    api('/api/events'),
-    api('/api/points'),
-    api('/api/leaderboard'),
-    api('/api/quizzes'),
-    api('/api/surveys'),
+  const q = `?side=${state.side}`;
+  const [members, events, points, leaderboard, quizzes, surveys, knowledge] = await Promise.all([
+    api('/api/members' + q),
+    api('/api/events' + q),
+    api('/api/points' + q),
+    api('/api/leaderboard' + q),
+    api('/api/quizzes' + q),
+    api('/api/surveys' + q),
+    api('/api/knowledge'),
   ]);
-  // Validate we got real data (not all empty from cold-start failures)
-  if (!members.length && !events.length) {
+  // Cold-start guard: EngSys always has seeded data, so empty means the server
+  // is still waking up. DTS legitimately starts empty, so skip the check there.
+  if (state.side === 'engsys' && !members.length && !events.length) {
     throw new Error('No data returned — server may still be starting');
   }
   state.members = members;
@@ -89,6 +98,7 @@ async function loadAllData() {
   state.leaderboard = leaderboard;
   state.quizzes = quizzes;
   state.surveys = surveys;
+  state.knowledge = knowledge;
 }
 
 async function api(url, options = {}) {
@@ -140,11 +150,80 @@ function renderCurrentTab() {
     case 'calendar': renderCalendar(); break;
     case 'team': renderTeam(); break;
     case 'quiz': renderQuizParticipant(); break;
+    case 'knowledge': renderKnowledge(); break;
     case 'survey-report': renderSurveyReport(); break;
     case 'admin-members': renderAdminMembers(); break;
     case 'admin-points': renderAdminPoints(); break;
     case 'admin-quiz': renderAdminQuiz(); break;
     case 'admin-survey': renderAdminSurvey(); break;
+  }
+}
+
+// ════════════════════ SIDE SWITCHING (EngSys ⇄ DTS) ════════════════════
+function setupSideToggle() {
+  document.querySelectorAll('.side-opt').forEach(btn => {
+    btn.addEventListener('click', () => switchSide(btn.dataset.side));
+  });
+}
+
+async function switchSide(side) {
+  if (side === state.side) return;
+  state.side = side === 'dts' ? 'dts' : 'engsys';
+  localStorage.setItem('aic-side', state.side);
+  // Reset any in-progress quiz/admin state that belongs to the other side.
+  state.quizState = null;
+  state.adminQuizState = null;
+  state.selfPacedState = null;
+  applySideTheme();
+  showLoader(`Loading ${state.side === 'dts' ? 'SI EP NA DTS' : 'EngSys'} homepage...`);
+  try {
+    await loadAllData();
+  } catch (e) {
+    console.warn('Side load issue:', e.message);
+  }
+  applySideVisibility();
+  hideLoader();
+  // If the current tab is hidden on this side, fall back to dashboard.
+  const activeBtn = document.querySelector(`.nav-btn[data-tab="${state.currentTab}"]`);
+  if (!activeBtn || activeBtn.style.display === 'none') {
+    switchTab('dashboard');
+  } else {
+    renderCurrentTab();
+  }
+  checkForActiveSurvey();
+  toast(state.side === 'dts' ? '🖥️ Switched to SI EP NA DTS' : '⚡ Switched to EngSys', 'success');
+}
+
+// Set the theme attribute + active state on the toggle.
+function applySideTheme() {
+  document.body.setAttribute('data-side', state.side);
+  document.querySelectorAll('.side-opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.side === state.side);
+  });
+  // Refresh hero + team wording to match the active side.
+  const heroSub = document.querySelector('.section-hero .hero-text p');
+  if (heroSub) heroSub.textContent = state.side === 'dts'
+    ? 'SI EP NA DTS · AI Learning Journey'
+    : 'Engineering Systems · AI Learning Journey';
+}
+
+// Show/hide side-specific nav + tabs. DTS has no survey features.
+function applySideVisibility() {
+  const isDts = state.side === 'dts';
+  // Survey report (EngSys-only) and admin survey are hidden entirely on DTS.
+  document.querySelectorAll('[data-tab="survey-report"], [data-tab="admin-survey"]').forEach(el => {
+    if (isDts) {
+      el.style.display = 'none';
+    } else {
+      // Restore per existing auth rules.
+      if (el.classList.contains('engsys-only')) el.style.display = state.isEngSys ? '' : 'none';
+      else if (el.classList.contains('admin-only')) el.style.display = state.isAdmin ? '' : 'none';
+    }
+  });
+  // Hide the active dashboard survey card on DTS.
+  if (isDts) {
+    const card = document.getElementById('active-survey-card');
+    if (card) card.style.display = 'none';
   }
 }
 
@@ -163,7 +242,7 @@ function setupAuth() {
       profileBtn.innerHTML = '<i class="ri-user-line"></i>';
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
-      document.getElementById('nav-quiz').style.display = '';
+      applySideVisibility();
       switchTab('dashboard');
       toast('Logged out');
     } else {
@@ -194,7 +273,7 @@ function setupAuth() {
         profileBtn.innerHTML = '<i class="ri-shield-user-line"></i>';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
         document.querySelectorAll('.engsys-only').forEach(el => el.style.display = 'none');
-        document.getElementById('nav-quiz').style.display = 'none';
+        applySideVisibility();
         toast('Welcome, Admin!', 'success');
       } else if (res.role === 'engsys') {
         state.isEngSys = true;
@@ -202,7 +281,7 @@ function setupAuth() {
         profileBtn.innerHTML = '<i class="ri-team-line"></i>';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.engsys-only').forEach(el => el.style.display = '');
-        document.getElementById('nav-quiz').style.display = '';
+        applySideVisibility();
         toast('Welcome, EngSys!', 'success');
       }
       renderCurrentTab();
@@ -223,6 +302,16 @@ function setupAuth() {
 // ════════════════════ HELPERS ════════════════════
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// Escape helpers for user-entered content (knowledge board links, etc.)
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+function escapeAttr(str) {
+  return escapeHtml(str).replace(/`/g, '&#96;');
 }
 
 function getMember(id) {
@@ -272,7 +361,9 @@ function toast(msg, type = '') {
   setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; setTimeout(() => t.remove(), 300); }, 3000);
 }
 
-function openModal(html) {
+function openModal(html, size = 'lg') {
+  const box = document.getElementById('genericModalBox');
+  if (box) box.className = `modal modal-${size === 'xl' ? 'xl' : size === 'sm' ? '' : 'lg'}`.trim();
   document.getElementById('genericModalContent').innerHTML = html;
   document.getElementById('genericModal').classList.add('show');
 }
@@ -560,6 +651,7 @@ window.addEventModal = function() {
         seminarTopic: document.getElementById('ae-topic').value,
         status: 'upcoming',
         comments: '',
+        side: state.side,
       }),
     });
     await loadAllData();
@@ -645,9 +737,21 @@ window.editEventModal = function(eventId) {
 
 // ════════════════════ TEAM ════════════════════
 function renderTeam() {
-  const domains = ['All', ...new Set(state.members.map(m => m.domain))];
+  const teamLabel = state.side === 'dts' ? 'SI EP NA DTS' : 'Engineering Systems';
   const subtitle = document.getElementById('team-subtitle');
-  if (subtitle) subtitle.textContent = `Engineering Systems \u2014 ${state.members.length} members across ${domains.length - 1} domains`;
+  if (!state.members.length) {
+    if (subtitle) subtitle.textContent = teamLabel;
+    const filterEl = document.getElementById('domain-filter');
+    if (filterEl) filterEl.innerHTML = '';
+    document.getElementById('team-content').innerHTML = `
+      <div class="empty-state" style="padding:48px 20px;text-align:center;">
+        <i class="ri-team-line" style="font-size:40px;color:var(--border);"></i>
+        <p style="margin-top:12px;color:var(--text-secondary);">Team roster coming soon for ${teamLabel}.</p>
+      </div>`;
+    return;
+  }
+  const domains = ['All', ...new Set(state.members.map(m => m.domain))];
+  if (subtitle) subtitle.textContent = `${teamLabel} \u2014 ${state.members.length} members across ${domains.length - 1} domains`;
   const filterEl = document.getElementById('domain-filter');
   filterEl.innerHTML = domains.map(d =>
     `<button class="filter-btn ${d === 'All' ? 'active' : ''}" onclick="filterTeam('${d}')">${d}</button>`
@@ -672,6 +776,142 @@ function renderTeamCards(domain) {
     </div>
   `).join('');
 }
+
+// ════════════════════ KNOWLEDGE BOARD (shared) ════════════════════
+function renderKnowledge() {
+  const container = document.getElementById('knowledge-content');
+  if (!container) return;
+  const items = [...state.knowledge].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  const adminBar = state.isAdmin
+    ? `<div class="admin-toolbar">
+         <span style="font-size:14px;color:var(--text-secondary);">${items.length} link${items.length !== 1 ? 's' : ''} · shared across EngSys & DTS</span>
+         <button class="btn btn-primary btn-sm" onclick="addKnowledgeModal()"><i class="ri-add-line"></i> Add Link</button>
+       </div>`
+    : '';
+
+  if (!items.length) {
+    container.innerHTML = `${adminBar}
+      <div class="empty-state" style="padding:48px 20px;text-align:center;">
+        <i class="ri-book-open-line" style="font-size:40px;color:var(--border);"></i>
+        <p style="margin-top:12px;color:var(--text-secondary);">No resources added yet.${state.isAdmin ? ' Click “Add Link” to create the first one.' : ''}</p>
+      </div>`;
+    return;
+  }
+
+  // Group by category.
+  const groups = {};
+  items.forEach(it => { (groups[it.category || 'Resources'] ||= []).push(it); });
+
+  const grouphtml = Object.entries(groups).map(([cat, list]) => `
+    <div class="kb-cat-group">
+      <div class="kb-cat-heading"><i class="ri-folder-3-line"></i> ${cat}</div>
+      <div class="kb-grid">
+        ${list.map(it => `
+          <a class="kb-tile" href="${escapeAttr(it.url)}" target="_blank" rel="noopener noreferrer">
+            ${state.isAdmin ? `<div class="kb-admin-actions">
+              <button class="btn-icon btn-xs" title="Edit" onclick="event.preventDefault();editKnowledgeModal('${it.id}')"><i class="ri-edit-line"></i></button>
+              <button class="btn-icon btn-xs" title="Remove" onclick="event.preventDefault();deleteKnowledge('${it.id}')"><i class="ri-delete-bin-line"></i></button>
+            </div>` : ''}
+            <div class="kb-icon"><i class="${escapeAttr(it.icon || 'ri-links-line')}"></i></div>
+            <div class="kb-cat">${cat}</div>
+            <div class="kb-label">${escapeHtml(it.label)}</div>
+            <div class="kb-open">Open <i class="ri-external-link-line"></i></div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = adminBar + grouphtml;
+}
+
+const KB_ICONS = [
+  ['ri-sharepoint-line', 'SharePoint'], ['ri-links-line', 'Link'], ['ri-file-text-line', 'Document'],
+  ['ri-video-line', 'Video'], ['ri-github-line', 'Repo'], ['ri-book-open-line', 'Guide'],
+  ['ri-slideshow-line', 'Slides'], ['ri-tools-line', 'Tool'], ['ri-graduation-cap-line', 'Course'],
+  ['ri-database-2-line', 'Data'], ['ri-lightbulb-line', 'Idea'], ['ri-team-line', 'Team'],
+];
+
+function kbIconOptions(selected) {
+  return KB_ICONS.map(([ic, label]) => `<option value="${ic}" ${ic === selected ? 'selected' : ''}>${label}</option>`).join('');
+}
+
+window.addKnowledgeModal = function() {
+  openModal(`
+    <h2 style="text-align:left;margin-bottom:20px;">Add Knowledge Link</h2>
+    <form id="addKnowledgeForm">
+      <label class="form-label">Label</label>
+      <div class="input-group"><i class="ri-text"></i><input id="kb-label" placeholder="e.g. Prompt Library (SharePoint)" required></div>
+      <label class="form-label">URL</label>
+      <div class="input-group"><i class="ri-links-line"></i><input id="kb-url" type="url" placeholder="https://..." required></div>
+      <div class="form-row">
+        <div><label class="form-label">Category</label><div class="input-group"><i class="ri-folder-3-line"></i><input id="kb-cat" placeholder="e.g. Resources" value="Resources"></div></div>
+        <div><label class="form-label">Icon</label><div class="input-group"><i class="ri-image-line"></i><select id="kb-icon">${kbIconOptions('ri-sharepoint-line')}</select></div></div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">Add Link</button>
+    </form>
+  `, 'sm');
+  document.getElementById('addKnowledgeForm').onsubmit = async (e) => {
+    e.preventDefault();
+    await api('/api/knowledge', {
+      method: 'POST',
+      body: JSON.stringify({
+        label: document.getElementById('kb-label').value,
+        url: document.getElementById('kb-url').value,
+        category: document.getElementById('kb-cat').value || 'Resources',
+        icon: document.getElementById('kb-icon').value,
+      }),
+    });
+    state.knowledge = await api('/api/knowledge');
+    closeModal();
+    renderKnowledge();
+    toast('Link added', 'success');
+  };
+};
+
+window.editKnowledgeModal = function(id) {
+  const it = state.knowledge.find(k => k.id === id);
+  if (!it) return;
+  openModal(`
+    <h2 style="text-align:left;margin-bottom:20px;">Edit Link</h2>
+    <form id="editKnowledgeForm">
+      <label class="form-label">Label</label>
+      <div class="input-group"><i class="ri-text"></i><input id="kbe-label" value="${escapeAttr(it.label)}" required></div>
+      <label class="form-label">URL</label>
+      <div class="input-group"><i class="ri-links-line"></i><input id="kbe-url" type="url" value="${escapeAttr(it.url)}" required></div>
+      <div class="form-row">
+        <div><label class="form-label">Category</label><div class="input-group"><i class="ri-folder-3-line"></i><input id="kbe-cat" value="${escapeAttr(it.category || 'Resources')}"></div></div>
+        <div><label class="form-label">Icon</label><div class="input-group"><i class="ri-image-line"></i><select id="kbe-icon">${kbIconOptions(it.icon)}</select></div></div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">Save</button>
+    </form>
+  `, 'sm');
+  document.getElementById('editKnowledgeForm').onsubmit = async (e) => {
+    e.preventDefault();
+    await api(`/api/knowledge/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        label: document.getElementById('kbe-label').value,
+        url: document.getElementById('kbe-url').value,
+        category: document.getElementById('kbe-cat').value || 'Resources',
+        icon: document.getElementById('kbe-icon').value,
+      }),
+    });
+    state.knowledge = await api('/api/knowledge');
+    closeModal();
+    renderKnowledge();
+    toast('Link updated', 'success');
+  };
+};
+
+window.deleteKnowledge = async function(id) {
+  if (!confirm('Remove this link?')) return;
+  await api(`/api/knowledge/${id}`, { method: 'DELETE' });
+  state.knowledge = await api('/api/knowledge');
+  renderKnowledge();
+  toast('Link removed');
+};
 
 // ════════════════════ SURVEY REPORT ════════════════════
 function renderSurveyReport() {
@@ -782,6 +1022,7 @@ window.addMemberModal = function() {
         email: document.getElementById('am-email').value,
         role: document.getElementById('am-role').value,
         domain: document.getElementById('am-domain').value,
+        side: state.side,
       }),
     });
     await loadAllData();
@@ -951,6 +1192,7 @@ window.addPointsModal = function(month) {
         month: month,
         category: category,
         points: parseInt(document.getElementById('ap-points').value),
+        side: state.side,
       }),
     });
     await loadAllData();
@@ -970,30 +1212,101 @@ window.deletePoints = async function(id) {
 
 // ════════════════════ ADMIN: QUIZ ════════════════════
 function renderAdminQuiz() {
+  const sideLabel = state.side === 'dts' ? 'SI EP NA DTS' : 'EngSys';
   document.getElementById('admin-quiz-content').innerHTML = `
     <div class="admin-toolbar">
-      <span style="font-size:14px;color:var(--text-secondary);">${state.quizzes.length} quizzes created</span>
+      <span style="font-size:14px;color:var(--text-secondary);">${state.quizzes.length} quizzes · ${sideLabel}</span>
       <button class="btn btn-primary btn-sm" onclick="createQuizModal()"><i class="ri-add-line"></i> Create Quiz</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      ${state.quizzes.map(q => `
-        <div class="quiz-builder">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div>
-              <h3 style="margin:0;">${q.title}</h3>
-              <span style="font-size:12px;color:var(--text-tertiary);">Room: <strong>${q.roomCode}</strong> · ${q.questions.length} questions · ${q.status}</span>
-            </div>
-            <div style="display:flex;gap:6px;">
-              ${q.status === 'waiting' ? `<button class="btn btn-primary btn-sm" onclick="startQuizRoom('${q.id}','${q.roomCode}')"><i class="ri-play-line"></i> Host</button>` : ''}
-              ${q.status === 'completed' && q.results?.length ? `<button class="btn btn-secondary btn-sm" onclick="viewQuizResults('${q.id}')"><i class="ri-bar-chart-line"></i> Results</button>` : ''}
-            </div>
-          </div>
-        </div>
-      `).join('')}
+      ${state.quizzes.length === 0 ? '<div class="empty-state" style="padding:40px;text-align:center;"><i class="ri-gamepad-line" style="font-size:36px;color:var(--border);"></i><p style="margin-top:10px;color:var(--text-secondary);">No quizzes yet. Create a live, self-paced, or MS-Forms quiz.</p></div>' : ''}
+      ${state.quizzes.map(q => renderAdminQuizCard(q)).join('')}
     </div>
     ${state.adminQuizState ? renderAdminQuizLive() : ''}
   `;
 }
+
+function renderAdminQuizCard(q) {
+  const type = q.type || 'live';
+  const typeBadge = {
+    'live': '<span class="quiz-type-badge qtb-live"><i class="ri-live-line"></i> Live</span>',
+    'self-paced': '<span class="quiz-type-badge qtb-self-paced"><i class="ri-timer-line"></i> Self-paced</span>',
+    'ms-forms': '<span class="quiz-type-badge qtb-ms-forms"><i class="ri-file-list-3-line"></i> MS Forms</span>',
+  }[type];
+
+  let meta = `${q.questions.length} question${q.questions.length !== 1 ? 's' : ''}`;
+  if (type === 'live') meta += ` · Room: <strong>${q.roomCode}</strong> · ${q.status}`;
+  if (type === 'self-paced') meta += ` · ${scheduleText(q)}`;
+  if (type === 'ms-forms') meta += ` · Forms linked`;
+
+  let actions = '';
+  if (type === 'live') {
+    actions = q.status === 'waiting'
+      ? `<button class="btn btn-primary btn-sm" onclick="startQuizRoom('${q.id}','${q.roomCode}')"><i class="ri-play-line"></i> Host</button>`
+      : (q.status === 'completed' && q.results?.length ? `<button class="btn btn-secondary btn-sm" onclick="viewQuizResults('${q.id}')"><i class="ri-bar-chart-line"></i> Results</button>` : '');
+  } else if (type === 'self-paced') {
+    actions = `<button class="btn btn-secondary btn-sm" onclick="viewSelfPacedResponses('${q.id}')"><i class="ri-bar-chart-line"></i> Responses (${(q.responses||[]).length})</button>`;
+  } else if (type === 'ms-forms') {
+    actions = `<a class="btn btn-secondary btn-sm" href="${escapeAttr(q.formsUrl || '#')}" target="_blank" rel="noopener"><i class="ri-external-link-line"></i> Open Form</a>`;
+  }
+
+  return `
+    <div class="quiz-builder">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <h3 style="margin:0;">${escapeHtml(q.title)}</h3>${typeBadge}
+          </div>
+          <span style="font-size:12px;color:var(--text-tertiary);">Month ${q.month} · ${meta}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${actions}
+          <button class="btn-icon btn-xs" title="Delete quiz" onclick="deleteQuiz('${q.id}')"><i class="ri-delete-bin-line"></i></button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Human-readable schedule / open-window text for self-paced quizzes.
+function scheduleText(q) {
+  const now = Date.now();
+  const opens = q.opensAt ? new Date(q.opensAt).getTime() : null;
+  const closes = q.closesAt ? new Date(q.closesAt).getTime() : null;
+  if (opens && now < opens) return `Opens ${new Date(opens).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}`;
+  if (closes && now > closes) return 'Closed';
+  if (closes) return `Closes ${new Date(closes).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}`;
+  return 'Always open';
+}
+
+window.deleteQuiz = async function(id) {
+  if (!confirm('Delete this quiz permanently?')) return;
+  await api(`/api/quizzes/${id}`, { method: 'DELETE' });
+  await loadAllData();
+  renderAdminQuiz();
+  toast('Quiz deleted');
+};
+
+window.viewSelfPacedResponses = function(quizId) {
+  const quiz = state.quizzes.find(q => q.id === quizId);
+  if (!quiz) return;
+  const responses = [...(quiz.responses || [])].sort((a, b) => b.score - a.score);
+  openModal(`
+    <h2 style="text-align:left;margin-bottom:16px;">Responses: ${escapeHtml(quiz.title)}</h2>
+    ${responses.length === 0 ? '<p style="color:var(--text-secondary);">No submissions yet.</p>' : `
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${responses.map((r, i) => `
+          <div class="points-entry">
+            <span style="font-weight:800;color:var(--text-tertiary);min-width:24px;">#${i+1}</span>
+            <span class="pe-member">${escapeHtml(r.name)}</span>
+            <span style="font-size:12px;color:var(--text-secondary);">${new Date(r.submittedAt).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</span>
+            <span class="pe-points">${r.score}/${r.total}</span>
+          </div>
+        `).join('')}
+      </div>
+    `}
+  `);
+};
 
 function renderAdminQuizLive() {
   return `
@@ -1012,57 +1325,107 @@ function renderAdminQuizLive() {
 }
 
 window.createQuizModal = function() {
+  const sideLabel = state.side === 'dts' ? 'SI EP NA DTS' : 'EngSys';
   openModal(`
-    <h2 style="text-align:left;margin-bottom:20px;">Create Quiz</h2>
+    <h2 style="text-align:left;margin-bottom:6px;">Create Quiz</h2>
+    <p style="color:var(--text-tertiary);font-size:13px;margin-bottom:18px;">For ${sideLabel} · pick how you want to run it</p>
     <form id="createQuizForm">
+      <label class="form-label">Quiz Mode</label>
+      <div class="quiz-mode-picker" id="cq-mode-picker">
+        <div class="quiz-mode-opt active" data-mode="live"><i class="ri-live-line"></i>Live<br><span style="font-weight:400;font-size:10px;">Real-time room</span></div>
+        <div class="quiz-mode-opt" data-mode="self-paced"><i class="ri-timer-line"></i>Self-paced<br><span style="font-weight:400;font-size:10px;">Scheduled window</span></div>
+        <div class="quiz-mode-opt" data-mode="ms-forms"><i class="ri-file-list-3-line"></i>MS Forms<br><span style="font-weight:400;font-size:10px;">External link</span></div>
+      </div>
+      <input type="hidden" id="cq-type" value="live">
+
       <label class="form-label">Quiz Title</label>
       <div class="input-group"><i class="ri-gamepad-line"></i><input id="cq-title" placeholder="e.g. Month 3 - GenAI Basics" required></div>
       <label class="form-label">Month</label>
       <div class="input-group"><i class="ri-calendar-line"></i>
         <select id="cq-month">${Array.from({length:12},(_,i)=>`<option value="${i+1}">Month ${i+1}</option>`).join('')}</select>
       </div>
-      <div id="cq-questions">
-        ${[1,2,3,4,5].map(i => `
-          <div class="question-builder">
-            <strong style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:8px;">Question ${i}</strong>
-            <div class="input-group"><i class="ri-question-line"></i><input id="cq-q${i}" placeholder="Question ${i}" required></div>
-            <div class="form-row">
-              <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input id="cq-q${i}a" placeholder="Option A" required></div>
-              <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input id="cq-q${i}b" placeholder="Option B" required></div>
-            </div>
-            <div class="form-row">
-              <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input id="cq-q${i}c" placeholder="Option C" required></div>
-              <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input id="cq-q${i}d" placeholder="Option D" required></div>
-            </div>
-            <label class="form-label">Correct Answer</label>
-            <div class="input-group"><i class="ri-check-line"></i>
-              <select id="cq-q${i}ans"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
-            </div>
-          </div>
-        `).join('')}
+
+      <!-- Self-paced scheduling -->
+      <div id="cq-schedule" style="display:none;">
+        <div class="form-row">
+          <div><label class="form-label">Opens At (optional)</label><div class="input-group"><i class="ri-calendar-check-line"></i><input type="datetime-local" id="cq-opens"></div></div>
+          <div><label class="form-label">Closes At (optional)</label><div class="input-group"><i class="ri-calendar-close-line"></i><input type="datetime-local" id="cq-closes"></div></div>
+        </div>
+        <p style="font-size:12px;color:var(--text-tertiary);margin:-4px 0 12px;">Leave blank to keep the quiz always open. Users see a live “time left” countdown.</p>
       </div>
-      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">Create Quiz</button>
+
+      <!-- MS Forms link -->
+      <div id="cq-forms" style="display:none;">
+        <label class="form-label">Microsoft Forms URL</label>
+        <div class="input-group"><i class="ri-links-line"></i><input type="url" id="cq-forms-url" placeholder="https://forms.office.com/..."></div>
+        <p style="font-size:12px;color:var(--text-tertiary);margin:-4px 0 12px;">Users fill the form externally, then return to reveal the answers below.</p>
+      </div>
+
+      <label class="form-label" style="margin-top:8px;">Questions <span style="color:var(--text-tertiary);text-transform:none;font-weight:400;">(answers + explanations)</span></label>
+      <div id="cq-questions"></div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="addQuestionRow()"><i class="ri-add-line"></i> Add Question</button>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:16px;">Create Quiz</button>
     </form>
-  `);
+  `, 'xl');
+
+  // Mode picker behaviour
+  document.querySelectorAll('#cq-mode-picker .quiz-mode-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#cq-mode-picker .quiz-mode-opt').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      const mode = opt.dataset.mode;
+      document.getElementById('cq-type').value = mode;
+      document.getElementById('cq-schedule').style.display = mode === 'self-paced' ? 'block' : 'none';
+      document.getElementById('cq-forms').style.display = mode === 'ms-forms' ? 'block' : 'none';
+    });
+  });
+
+  // Seed with 3 question rows
+  window._cqCount = 0;
+  addQuestionRow(); addQuestionRow(); addQuestionRow();
+
   document.getElementById('createQuizForm').onsubmit = async (e) => {
     e.preventDefault();
-    const questions = [1,2,3,4,5].map(i => ({
-      id: `q${i}`,
-      question: document.getElementById(`cq-q${i}`).value,
-      options: {
-        A: document.getElementById(`cq-q${i}a`).value,
-        B: document.getElementById(`cq-q${i}b`).value,
-        C: document.getElementById(`cq-q${i}c`).value,
-        D: document.getElementById(`cq-q${i}d`).value,
-      },
-      correctAnswer: document.getElementById(`cq-q${i}ans`).value,
-    }));
+    const type = document.getElementById('cq-type').value;
+    const rows = document.querySelectorAll('#cq-questions .qb-question');
+    const questions = [];
+    rows.forEach((row, idx) => {
+      const qText = row.querySelector('.qb-qtext').value.trim();
+      if (!qText) return;
+      const opts = {};
+      ['A','B','C','D'].forEach(k => { opts[k] = row.querySelector(`.qb-opt-${k}`).value.trim(); });
+      questions.push({
+        id: `q${idx + 1}`,
+        question: qText,
+        options: opts,
+        correctAnswer: row.querySelector('.qb-correct').value,
+        explanation: row.querySelector('.qb-explain').value.trim(),
+      });
+    });
+
+    if (type !== 'ms-forms' && questions.length === 0) {
+      toast('Add at least one question', 'error');
+      return;
+    }
+    const formsUrl = document.getElementById('cq-forms-url')?.value || '';
+    if (type === 'ms-forms' && !formsUrl) {
+      toast('Enter the Microsoft Forms URL', 'error');
+      return;
+    }
+
+    const toIso = (v) => v ? new Date(v).toISOString() : null;
     await api('/api/quizzes', {
       method: 'POST',
       body: JSON.stringify({
         title: document.getElementById('cq-title').value,
         month: parseInt(document.getElementById('cq-month').value),
+        side: state.side,
+        type,
         questions,
+        opensAt: type === 'self-paced' ? toIso(document.getElementById('cq-opens').value) : null,
+        closesAt: type === 'self-paced' ? toIso(document.getElementById('cq-closes').value) : null,
+        formsUrl,
       }),
     });
     await loadAllData();
@@ -1070,6 +1433,40 @@ window.createQuizModal = function() {
     renderAdminQuiz();
     toast('Quiz created!', 'success');
   };
+};
+
+// Add a single question builder row to the create-quiz modal.
+window.addQuestionRow = function() {
+  window._cqCount = (window._cqCount || 0) + 1;
+  const n = window._cqCount;
+  const wrap = document.createElement('div');
+  wrap.className = 'qb-question';
+  wrap.innerHTML = `
+    <div class="qb-question-head">
+      <strong style="font-size:13px;color:var(--text-secondary);">Question <span class="qb-num">${document.querySelectorAll('#cq-questions .qb-question').length + 1}</span></strong>
+      <button type="button" class="qb-remove" onclick="this.closest('.qb-question').remove();renumberQuestions();"><i class="ri-close-line"></i> Remove</button>
+    </div>
+    <div class="input-group"><i class="ri-question-line"></i><input class="qb-qtext" placeholder="Question text"></div>
+    <div class="form-row">
+      <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input class="qb-opt-A" placeholder="Option A"></div>
+      <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input class="qb-opt-B" placeholder="Option B"></div>
+    </div>
+    <div class="form-row">
+      <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input class="qb-opt-C" placeholder="Option C"></div>
+      <div class="input-group"><i class="ri-checkbox-blank-circle-line"></i><input class="qb-opt-D" placeholder="Option D"></div>
+    </div>
+    <div class="form-row">
+      <div><label class="form-label">Correct Answer</label><div class="input-group"><i class="ri-check-line"></i>
+        <select class="qb-correct"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+      </div></div>
+      <div><label class="form-label">Explanation (shown after)</label><div class="input-group"><i class="ri-lightbulb-line"></i><input class="qb-explain" placeholder="Why this is correct"></div></div>
+    </div>
+  `;
+  document.getElementById('cq-questions').appendChild(wrap);
+};
+
+window.renumberQuestions = function() {
+  document.querySelectorAll('#cq-questions .qb-question .qb-num').forEach((el, i) => { el.textContent = i + 1; });
 };
 
 window.startQuizRoom = function(quizId, roomCode) {
@@ -1098,15 +1495,16 @@ window.adminEndQuiz = function() {
 window.viewQuizResults = function(quizId) {
   const quiz = state.quizzes.find(q => q.id === quizId);
   if (!quiz || !quiz.results) return;
+  const totalQ = quiz.questions.length || 5;
   const sorted = [...quiz.results].sort((a, b) => b.finalScore - a.finalScore);
   openModal(`
-    <h2 style="text-align:left;margin-bottom:20px;">Quiz Results: ${quiz.title}</h2>
+    <h2 style="text-align:left;margin-bottom:20px;">Quiz Results: ${escapeHtml(quiz.title)}</h2>
     <div style="display:flex;flex-direction:column;gap:8px;">
       ${sorted.map((r, i) => `
         <div class="points-entry">
           <span style="font-weight:800;color:var(--text-tertiary);min-width:24px;">#${i+1}</span>
-          <span class="pe-member">${r.memberName}</span>
-          <span style="font-size:12px;color:var(--text-secondary);">Score: ${r.score}/5</span>
+          <span class="pe-member">${escapeHtml(r.memberName)}</span>
+          <span style="font-size:12px;color:var(--text-secondary);">Score: ${r.score}/${totalQ}</span>
           ${r.tabSwitches > 0 ? `<span style="font-size:12px;color:#ef4444;">-${r.tabSwitches} penalty</span>` : ''}
           <span class="pe-points">${r.finalScore}</span>
         </div>
@@ -1117,39 +1515,282 @@ window.viewQuizResults = function(quizId) {
 
 // ════════════════════ QUIZ: PARTICIPANT ════════════════════
 function renderQuizParticipant() {
-  if (state.quizState?.inProgress) {
-    renderQuizQuestion();
-    return;
-  }
-  if (state.quizState?.finished) {
-    renderQuizResult();
-    return;
-  }
-  document.getElementById('quiz-content').innerHTML = `
+  if (state.quizState?.inProgress) { renderQuizQuestion(); return; }
+  if (state.quizState?.finished) { renderQuizResult(); return; }
+  if (state.selfPacedState) { renderSelfPacedView(); return; }
+
+  const container = document.getElementById('quiz-content');
+  const liveQuizzes = state.quizzes.filter(q => (q.type || 'live') === 'live');
+  const selfPaced = state.quizzes.filter(q => q.type === 'self-paced');
+  const msForms = state.quizzes.filter(q => q.type === 'ms-forms');
+
+  // Name entry: dropdown when members exist (EngSys), free text otherwise (DTS).
+  const nameField = state.members.length
+    ? `<div class="input-group"><i class="ri-user-line"></i>
+         <select id="quiz-member-select">
+           <option value="">Select your name...</option>
+           ${state.members.map(m => `<option value="${m.id}" data-name="${escapeAttr(m.name)}">${escapeHtml(m.name)}</option>`).join('')}
+         </select>
+       </div>`
+    : `<div class="input-group"><i class="ri-user-line"></i><input id="quiz-name-input" placeholder="Enter your name"></div>`;
+
+  container.innerHTML = `
     <div class="quiz-join-wrap">
-      <div style="font-size:48px;margin-bottom:16px;">🎮</div>
-      <h3 style="margin-bottom:8px;">Join a Quiz Session</h3>
-      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:24px;">Enter the room code provided by the admin</p>
+      <div style="font-size:48px;margin-bottom:12px;">🎮</div>
+      <h3 style="margin-bottom:8px;">Join a Live Quiz</h3>
+      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">Enter the room code provided by the admin</p>
       <div class="input-group"><i class="ri-key-2-line"></i>
         <input id="quiz-room-code" placeholder="Room Code (e.g. ABC123)" style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;" maxlength="6">
       </div>
-      <div class="input-group"><i class="ri-user-line"></i>
-        <select id="quiz-member-select">
-          <option value="">Select your name...</option>
-          ${state.members.map(m => `<option value="${m.id}" data-name="${m.name}">${m.name}</option>`).join('')}
-        </select>
-      </div>
+      ${nameField}
       <button class="btn btn-primary btn-full" onclick="joinQuizRoom()"><i class="ri-login-box-line"></i> Join Quiz</button>
+    </div>
+
+    ${selfPaced.length ? `
+      <div class="section-header" style="margin-top:32px;"><h2 style="font-size:18px;"><i class="ri-timer-line"></i> Self-paced Quizzes</h2><p>Take these anytime within their window</p></div>
+      <div class="selfpaced-list">
+        ${selfPaced.map(q => renderSelfPacedCard(q)).join('')}
+      </div>` : ''}
+
+    ${msForms.length ? `
+      <div class="section-header" style="margin-top:32px;"><h2 style="font-size:18px;"><i class="ri-file-list-3-line"></i> Form Quizzes</h2><p>Answer on Microsoft Forms, then reveal the answers here</p></div>
+      <div class="selfpaced-list">
+        ${msForms.map(q => `
+          <div class="sp-card">
+            <div class="sp-meta">
+              <div class="sp-title">${escapeHtml(q.title)} <span class="quiz-type-badge qtb-ms-forms"><i class="ri-file-list-3-line"></i> Form</span></div>
+              <div class="sp-sub">Month ${q.month} · ${q.questions.length} answers available after completion</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <a class="btn btn-primary btn-sm" href="${escapeAttr(q.formsUrl || '#')}" target="_blank" rel="noopener" onclick="markFormOpened('${q.id}')"><i class="ri-external-link-line"></i> Open Form</a>
+              <button class="btn btn-secondary btn-sm" onclick="revealFormAnswers('${q.id}')"><i class="ri-check-double-line"></i> Mark complete & see answers</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>` : ''}
+
+    ${(!liveQuizzes.length && !selfPaced.length && !msForms.length) ? '' : ''}
+  `;
+}
+
+function renderSelfPacedCard(q) {
+  const now = Date.now();
+  const opens = q.opensAt ? new Date(q.opensAt).getTime() : null;
+  const closes = q.closesAt ? new Date(q.closesAt).getTime() : null;
+  const notYet = opens && now < opens;
+  const closed = closes && now > closes;
+  const open = !notYet && !closed;
+
+  let pill;
+  if (notYet) pill = `<span class="timeleft-pill upcoming"><i class="ri-time-line"></i> ${timeUntil(opens)} to open</span>`;
+  else if (closed) pill = `<span class="timeleft-pill" style="background:var(--bg-hover);color:var(--text-tertiary);"><i class="ri-lock-line"></i> Closed</span>`;
+  else if (closes) pill = `<span class="timeleft-pill ${closes - now < 3600000 ? 'closing' : ''}" data-closes="${closes}"><i class="ri-hourglass-line"></i> ${timeLeft(closes)} left</span>`;
+  else pill = `<span class="timeleft-pill"><i class="ri-infinity-line"></i> Always open</span>`;
+
+  return `
+    <div class="sp-card">
+      <div class="sp-meta">
+        <div class="sp-title">${escapeHtml(q.title)} <span class="quiz-type-badge qtb-self-paced"><i class="ri-timer-line"></i> Self-paced</span></div>
+        <div class="sp-sub">Month ${q.month} · ${q.questions.length} question${q.questions.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        ${pill}
+        <button class="btn btn-primary btn-sm" ${open ? '' : 'disabled style="opacity:.5;cursor:not-allowed;"'} onclick="${open ? `startSelfPaced('${q.id}')` : ''}"><i class="ri-play-line"></i> ${open ? 'Start' : 'Unavailable'}</button>
+      </div>
     </div>
   `;
 }
 
+// Duration helpers
+function timeLeft(targetMs) {
+  const diff = Math.max(0, targetMs - Date.now());
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+function timeUntil(targetMs) { return timeLeft(targetMs); }
+
+// ── Self-paced: taking a quiz ──
+window.startSelfPaced = function(quizId) {
+  const quiz = state.quizzes.find(q => q.id === quizId);
+  if (!quiz) return;
+  let name = '';
+  if (state.members.length) {
+    // Prefill via a quick prompt-less approach: ask through a small modal.
+  }
+  state.selfPacedState = { quizId, phase: 'name', quiz, answers: {}, review: null };
+  renderSelfPacedView();
+};
+
+function renderSelfPacedView() {
+  const sp = state.selfPacedState;
+  const container = document.getElementById('quiz-content');
+  if (!sp) { renderQuizParticipant(); return; }
+
+  if (sp.phase === 'name') {
+    const nameField = state.members.length
+      ? `<select id="sp-name-select"><option value="">Select your name...</option>${state.members.map(m => `<option value="${escapeAttr(m.name)}">${escapeHtml(m.name)}</option>`).join('')}</select>`
+      : `<input id="sp-name-input" placeholder="Enter your name">`;
+    container.innerHTML = `
+      <div class="quiz-join-wrap">
+        <div style="font-size:44px;margin-bottom:12px;">📝</div>
+        <h3 style="margin-bottom:6px;">${escapeHtml(sp.quiz.title)}</h3>
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">${sp.quiz.questions.length} questions · answers revealed at the end</p>
+        <div class="input-group"><i class="ri-user-line"></i>${nameField}</div>
+        <button class="btn btn-primary btn-full" onclick="beginSelfPaced()"><i class="ri-play-line"></i> Begin Quiz</button>
+        <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="exitSelfPaced()">Cancel</button>
+      </div>`;
+    return;
+  }
+
+  if (sp.phase === 'taking') {
+    const closes = sp.quiz.closesAt ? new Date(sp.quiz.closesAt).getTime() : null;
+    container.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <h3 style="margin:0;">${escapeHtml(sp.quiz.title)}</h3>
+        ${closes ? `<span class="timeleft-pill ${closes - Date.now() < 600000 ? 'closing' : ''}" id="sp-countdown"><i class="ri-hourglass-line"></i> ${timeLeft(closes)} left</span>` : ''}
+      </div>
+      <form id="selfPacedForm">
+        ${sp.quiz.questions.map((q, i) => `
+          <div class="quiz-question-card" style="text-align:left;margin-bottom:16px;">
+            <div class="quiz-question-number">Question ${i + 1} of ${sp.quiz.questions.length}</div>
+            <div class="quiz-question-text" style="margin-bottom:12px;">${escapeHtml(q.question)}</div>
+            <div class="quiz-options">
+              ${Object.entries(q.options).map(([k, v]) => `
+                <label class="quiz-option" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                  <input type="radio" name="sp-${q.id}" value="${k}" style="width:auto;">
+                  <span>${k}. ${escapeHtml(v)}</span>
+                </label>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <button type="submit" class="btn btn-primary btn-full"><i class="ri-check-line"></i> Submit Quiz</button>
+        <button type="button" class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="exitSelfPaced()">Cancel</button>
+      </form>`;
+
+    document.getElementById('selfPacedForm').onsubmit = (e) => { e.preventDefault(); submitSelfPaced(); };
+
+    if (closes) {
+      sp._timer = setInterval(() => {
+        const pill = document.getElementById('sp-countdown');
+        if (!pill) { clearInterval(sp._timer); return; }
+        if (Date.now() > closes) { clearInterval(sp._timer); toast('Time is up — submitting', 'error'); submitSelfPaced(); return; }
+        pill.innerHTML = `<i class="ri-hourglass-line"></i> ${timeLeft(closes)} left`;
+        pill.classList.toggle('closing', closes - Date.now() < 600000);
+      }, 30000);
+    }
+    return;
+  }
+
+  if (sp.phase === 'review') {
+    renderSelfPacedReview();
+  }
+}
+
+window.beginSelfPaced = function() {
+  const sp = state.selfPacedState;
+  const nameEl = document.getElementById('sp-name-select') || document.getElementById('sp-name-input');
+  const name = (nameEl?.value || '').trim();
+  if (!name) { toast('Please enter your name', 'error'); return; }
+  sp.name = name;
+  sp.phase = 'taking';
+  renderSelfPacedView();
+};
+
+window.submitSelfPaced = async function() {
+  const sp = state.selfPacedState;
+  if (sp._timer) clearInterval(sp._timer);
+  const answers = {};
+  sp.quiz.questions.forEach(q => {
+    const sel = document.querySelector(`input[name="sp-${q.id}"]:checked`);
+    if (sel) answers[q.id] = sel.value;
+  });
+  const res = await api(`/api/quizzes/${sp.quizId}/submit`, {
+    method: 'POST',
+    body: JSON.stringify({ name: sp.name, answers }),
+  });
+  if (res.error) { toast(res.error, 'error'); exitSelfPaced(); return; }
+  sp.review = res;
+  sp.phase = 'review';
+  renderSelfPacedView();
+};
+
+function renderSelfPacedReview() {
+  const sp = state.selfPacedState;
+  const r = sp.review;
+  const pct = r.total ? Math.round((r.score / r.total) * 100) : 0;
+  const container = document.getElementById('quiz-content');
+  container.innerHTML = `
+    <div class="review-summary">
+      <div style="font-size:44px;margin-bottom:8px;">${pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '📚'}</div>
+      <div class="review-score">${r.score}/${r.total}</div>
+      <p style="color:var(--text-secondary);margin-top:6px;">${escapeHtml(r.name)} · ${pct}% correct</p>
+    </div>
+    ${r.review.map((item, i) => `
+      <div class="review-item">
+        <div class="review-q">
+          <span>${i + 1}. ${escapeHtml(item.question)}</span>
+          <span class="review-verdict ${item.isCorrect ? 'rv-correct' : 'rv-wrong'}" style="margin-left:auto;white-space:nowrap;">${item.isCorrect ? '✓ Correct' : '✗ Incorrect'}</span>
+        </div>
+        ${Object.entries(item.options).map(([k, v]) => {
+          const isCorrect = k === item.correctAnswer;
+          const isYours = k === item.yourAnswer;
+          const cls = isCorrect ? 'correct' : (isYours ? 'wrong' : '');
+          const tag = isCorrect ? ' <strong>(correct)</strong>' : (isYours ? ' <strong>(your answer)</strong>' : '');
+          return `<div class="review-opt ${cls}">${isCorrect ? '<i class="ri-check-line"></i>' : (isYours ? '<i class="ri-close-line"></i>' : '<i class="ri-checkbox-blank-circle-line" style="opacity:.3;"></i>')} <span>${k}. ${escapeHtml(v)}${tag}</span></div>`;
+        }).join('')}
+        ${item.explanation ? `<div class="review-explain"><i class="ri-lightbulb-line"></i> ${escapeHtml(item.explanation)}</div>` : ''}
+      </div>
+    `).join('')}
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="exitSelfPaced()"><i class="ri-arrow-left-line"></i> Back to Quizzes</button>
+  `;
+}
+
+window.exitSelfPaced = function() {
+  const sp = state.selfPacedState;
+  if (sp?._timer) clearInterval(sp._timer);
+  state.selfPacedState = null;
+  renderQuizParticipant();
+};
+
+// ── MS Forms flow ──
+window.markFormOpened = function(quizId) { /* opening handled by anchor target */ };
+
+window.revealFormAnswers = async function(quizId) {
+  const res = await api(`/api/quizzes/${quizId}/answers`);
+  if (!res || res.error) { toast(res?.error || 'Could not load answers', 'error'); return; }
+  openModal(`
+    <h2 style="text-align:left;margin-bottom:16px;">Answers: ${escapeHtml(res.title)}</h2>
+    <p style="color:var(--text-tertiary);font-size:13px;margin-bottom:16px;">Review the correct answers below. We trust you completed the form honestly. 🙌</p>
+    ${res.review.map((item, i) => `
+      <div class="review-item">
+        <div class="review-q"><span>${i + 1}. ${escapeHtml(item.question)}</span></div>
+        ${Object.entries(item.options).map(([k, v]) => {
+          const isCorrect = k === item.correctAnswer;
+          return `<div class="review-opt ${isCorrect ? 'correct' : ''}">${isCorrect ? '<i class="ri-check-line"></i>' : '<i class="ri-checkbox-blank-circle-line" style="opacity:.3;"></i>'} <span>${k}. ${escapeHtml(v)}${isCorrect ? ' <strong>(correct)</strong>' : ''}</span></div>`;
+        }).join('')}
+        ${item.explanation ? `<div class="review-explain"><i class="ri-lightbulb-line"></i> ${escapeHtml(item.explanation)}</div>` : ''}
+      </div>
+    `).join('')}
+  `, 'lg');
+};
+
 window.joinQuizRoom = function() {
   const code = document.getElementById('quiz-room-code').value.toUpperCase();
   const select = document.getElementById('quiz-member-select');
-  const memberId = select.value;
-  const memberName = select.options[select.selectedIndex]?.dataset?.name;
-  if (!code || !memberId) { toast('Please enter room code and select your name', 'error'); return; }
+  const nameInput = document.getElementById('quiz-name-input');
+  let memberId, memberName;
+  if (select) {
+    memberId = select.value;
+    memberName = select.options[select.selectedIndex]?.dataset?.name;
+  } else if (nameInput) {
+    memberName = nameInput.value.trim();
+    memberId = memberName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+  }
+  if (!code || !memberName) { toast('Please enter room code and your name', 'error'); return; }
   state.quizState = { roomCode: code, memberId, memberName, inProgress: false, finished: false, questions: [], currentQ: 0, tabSwitches: 0, answers: [] };
   state.socket.emit('quiz:join', { roomCode: code, memberId, memberName });
   document.getElementById('quiz-content').innerHTML = `
@@ -1285,6 +1926,7 @@ window.createSurveyModal = function() {
         presenterId: document.getElementById('cs-presenter').value,
         month: parseInt(document.getElementById('cs-month').value),
         topic: document.getElementById('cs-topic').value,
+        side: state.side,
       }),
     });
     await loadAllData();
@@ -1423,10 +2065,12 @@ function setupSocketListeners() {
   s.on('quiz:liveResults', (data) => {
     const grid = document.getElementById('admin-quiz-participants');
     if (grid) {
+      const quiz = state.quizzes.find(q => q.id === state.adminQuizState?.quizId);
+      const totalQ = quiz?.questions.length || 5;
       grid.innerHTML = data.results.map(r => `
         <div class="quiz-participant-card">
           <div class="qpc-name">${r.memberName}</div>
-          <div class="qpc-score">${r.finalScore}/${5}</div>
+          <div class="qpc-score">${r.finalScore}/${totalQ}</div>
           <div style="font-size:12px;color:var(--text-secondary);">Correct: ${r.score}</div>
           ${r.tabSwitches > 0 ? `<div class="qpc-penalty">Tab switches: −${r.tabSwitches}</div>` : ''}
           <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">${r.finished ? '✅ Finished' : '⏳ In progress'}</div>
@@ -1466,6 +2110,8 @@ function setupSocketListeners() {
 
   // Survey: started
   s.on('survey:started', (survey) => {
+    // Only surface surveys for the side the user is currently viewing.
+    if ((survey.side || 'engsys') !== state.side) return;
     if (!state.isAdmin) {
       state.surveys.push(survey);
       showSurveyCard(survey);

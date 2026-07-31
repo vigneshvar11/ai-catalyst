@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260506">
+  <link rel="stylesheet" href="/css/styles.css?v=20260731">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
   <style>
     /* Critical inline styles to prevent FOUC */
@@ -64,8 +64,11 @@
       <button class="nav-btn" data-tab="team">
         <i class="ri-team-line"></i><span>Team</span>
       </button>
-      <button class="nav-btn" data-tab="quiz" id="nav-quiz" style="display:none;">
+      <button class="nav-btn" data-tab="quiz" id="nav-quiz">
         <i class="ri-gamepad-line"></i><span>Quiz</span>
+      </button>
+      <button class="nav-btn" data-tab="knowledge" id="nav-knowledge">
+        <i class="ri-book-open-line"></i><span>Knowledge</span>
       </button>
       <!-- Admin-only tabs -->
       <!-- EngSys-only tab -->
@@ -82,11 +85,15 @@
       <button class="nav-btn admin-only" data-tab="admin-quiz" style="display:none;">
         <i class="ri-gamepad-line"></i><span>Quiz Mgr</span>
       </button>
-      <button class="nav-btn admin-only" data-tab="admin-survey" style="display:none;">
+      <button class="nav-btn admin-only admin-survey-only" data-tab="admin-survey" style="display:none;">
         <i class="ri-survey-line"></i><span>Survey</span>
       </button>
     </nav>
     <div class="header-right">
+      <div class="side-toggle" id="sideToggle" title="Switch between EngSys and DTS">
+        <button class="side-opt active" data-side="engsys"><i class="ri-flashlight-line"></i><span>EngSys</span></button>
+        <button class="side-opt" data-side="dts"><i class="ri-cpu-line"></i><span>DTS</span></button>
+      </div>
       <button class="profile-btn" id="profileBtn" title="Admin Login">
         <i class="ri-user-line"></i>
       </button>
@@ -205,9 +212,18 @@
     <section id="tab-quiz" class="tab-content">
       <div class="section-header">
         <h2><i class="ri-gamepad-line"></i> Quiz Arena</h2>
-        <p>Join a live quiz session</p>
+        <p>Join a live session or take a self-paced quiz</p>
       </div>
       <div id="quiz-content"></div>
+    </section>
+
+    <!-- ── KNOWLEDGE BOARD (shared) ── -->
+    <section id="tab-knowledge" class="tab-content">
+      <div class="section-header">
+        <h2><i class="ri-book-open-line"></i> Knowledge Board</h2>
+        <p>Curated links to our resource pool, SharePoint & learning material</p>
+      </div>
+      <div id="knowledge-content"></div>
     </section>
 
     <!-- ── SURVEY REPORT (engsys-only) ── -->
@@ -279,7 +295,7 @@
 
   <!-- ═══ GENERIC MODAL ═══ -->
   <div class="modal-overlay" id="genericModal">
-    <div class="modal modal-lg">
+    <div class="modal modal-lg" id="genericModalBox">
       <div class="modal-close" id="closeGenericModal"><i class="ri-close-line"></i></div>
       <div id="genericModalContent"></div>
     </div>
@@ -303,6 +319,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <script src="/js/app.js?v=20260506"></script>
+  <script src="/js/app.js?v=20260731"></script>
 </body>
 </html>

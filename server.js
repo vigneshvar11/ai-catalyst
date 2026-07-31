@@ -29,6 +29,43 @@ function writeDB(data) {
   fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 }
 
+// ─── Sides (EngSys / DTS) ───
+const SIDES = ['engsys', 'dts'];
+function normalizeSide(side) {
+  return SIDES.includes(side) ? side : 'engsys';
+}
+
+// Return only records belonging to the requested side. Records without a `side`
+// field are treated as EngSys (the original single-team data).
+function filterBySide(list, side) {
+  const s = normalizeSide(side);
+  return (list || []).filter(item => (item.side || 'engsys') === s);
+}
+
+// One-time, idempotent migration: tag legacy records as EngSys, ensure the
+// shared knowledge board exists, and add DTS metadata to config.
+function migrateDB() {
+  const db = readDB();
+  let changed = false;
+
+  ['members', 'events', 'points', 'quizzes', 'surveys'].forEach(col => {
+    if (!Array.isArray(db[col])) { db[col] = []; changed = true; }
+    db[col].forEach(item => {
+      if (!item.side) { item.side = 'engsys'; changed = true; }
+    });
+  });
+
+  if (!Array.isArray(db.knowledgeBoard)) { db.knowledgeBoard = []; changed = true; }
+  if (!Array.isArray(db.teams)) { db.teams = []; changed = true; }
+
+  db.config = db.config || {};
+  if (!db.config.dtsTeamName) { db.config.dtsTeamName = 'SI EP NA DTS'; changed = true; }
+  if (!db.config.engsysTeamName) { db.config.engsysTeamName = db.config.teamName || 'Engineering Systems'; changed = true; }
+
+  if (changed) writeDB(db);
+}
+migrateDB();
+
 // Ensure upload directories exist
 const uploadDir = path.join(__dirname, 'uploads', 'avatars');
 if (!fs.existsSync(uploadDir)) {
@@ -65,7 +102,7 @@ app.post('/api/auth/login', (req, res) => {
 // ─── MEMBERS CRUD ───
 app.get('/api/members', (req, res) => {
   const db = readDB();
-  res.json(db.members);
+  res.json(req.query.side ? filterBySide(db.members, req.query.side) : db.members);
 });
 
 app.post('/api/members', (req, res) => {
@@ -76,6 +113,7 @@ app.post('/api/members', (req, res) => {
     email: req.body.email || '',
     role: req.body.role || '',
     domain: req.body.domain || 'Cross-Functional',
+    side: normalizeSide(req.body.side),
     avatar: null,
     joinedDate: new Date().toISOString().split('T')[0]
   };
@@ -113,12 +151,12 @@ app.post('/api/members/:id/avatar', upload.single('avatar'), (req, res) => {
 // ─── EVENTS CRUD ───
 app.get('/api/events', (req, res) => {
   const db = readDB();
-  res.json(db.events);
+  res.json(req.query.side ? filterBySide(db.events, req.query.side) : db.events);
 });
 
 app.post('/api/events', (req, res) => {
   const db = readDB();
-  const event = { id: `event-${uuidv4().slice(0, 8)}`, ...req.body };
+  const event = { id: `event-${uuidv4().slice(0, 8)}`, ...req.body, side: normalizeSide(req.body.side) };
   db.events.push(event);
   writeDB(db);
   res.json(event);
@@ -143,12 +181,12 @@ app.delete('/api/events/:id', (req, res) => {
 // ─── POINTS CRUD ───
 app.get('/api/points', (req, res) => {
   const db = readDB();
-  res.json(db.points);
+  res.json(req.query.side ? filterBySide(db.points, req.query.side) : db.points);
 });
 
 app.post('/api/points', (req, res) => {
   const db = readDB();
-  const entry = { id: `pts-${uuidv4().slice(0, 8)}`, ...req.body, date: new Date().toISOString() };
+  const entry = { id: `pts-${uuidv4().slice(0, 8)}`, ...req.body, side: normalizeSide(req.body.side), date: new Date().toISOString() };
   db.points.push(entry);
   writeDB(db);
   res.json(entry);
@@ -172,8 +210,10 @@ app.delete('/api/points/:id', (req, res) => {
 
 app.get('/api/leaderboard', (req, res) => {
   const db = readDB();
-  const board = db.members.map(m => {
-    const memberPoints = db.points.filter(p => p.memberId === m.id);
+  const members = req.query.side ? filterBySide(db.members, req.query.side) : db.members;
+  const points = req.query.side ? filterBySide(db.points, req.query.side) : db.points;
+  const board = members.map(m => {
+    const memberPoints = points.filter(p => p.memberId === m.id);
     const monthlyBreakdown = {};
     memberPoints.forEach(p => {
       if (!monthlyBreakdown[p.month]) monthlyBreakdown[p.month] = 0;
@@ -189,19 +229,29 @@ app.get('/api/leaderboard', (req, res) => {
 // ─── QUIZZES ───
 app.get('/api/quizzes', (req, res) => {
   const db = readDB();
-  res.json(db.quizzes);
+  res.json(req.query.side ? filterBySide(db.quizzes, req.query.side) : db.quizzes);
 });
 
 app.post('/api/quizzes', (req, res) => {
   const db = readDB();
+  const type = ['live', 'self-paced', 'ms-forms'].includes(req.body.type) ? req.body.type : 'live';
   const quiz = {
     id: `quiz-${uuidv4().slice(0, 8)}`,
     title: req.body.title,
     month: req.body.month,
+    side: normalizeSide(req.body.side),
+    type,
     questions: req.body.questions || [],
+    // Live only
     roomCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+    // Self-paced scheduling window (ISO strings, optional)
+    opensAt: req.body.opensAt || null,
+    closesAt: req.body.closesAt || null,
+    // MS Forms link (ms-forms type only)
+    formsUrl: req.body.formsUrl || '',
     status: 'waiting',
     participants: [],
+    responses: [],
     results: [],
     createdAt: new Date().toISOString()
   };
@@ -219,10 +269,115 @@ app.put('/api/quizzes/:id', (req, res) => {
   res.json(db.quizzes[idx]);
 });
 
+app.delete('/api/quizzes/:id', (req, res) => {
+  const db = readDB();
+  db.quizzes = db.quizzes.filter(q => q.id !== req.params.id);
+  writeDB(db);
+  res.json({ success: true });
+});
+
+// Self-paced quiz submission — grades answers and returns a Udemy-style review.
+app.post('/api/quizzes/:id/submit', (req, res) => {
+  const db = readDB();
+  const quiz = db.quizzes.find(q => q.id === req.params.id);
+  if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+
+  // Enforce open window if scheduled.
+  const now = Date.now();
+  if (quiz.opensAt && now < new Date(quiz.opensAt).getTime()) {
+    return res.status(403).json({ error: 'This quiz has not opened yet.' });
+  }
+  if (quiz.closesAt && now > new Date(quiz.closesAt).getTime()) {
+    return res.status(403).json({ error: 'This quiz has closed.' });
+  }
+
+  const name = (req.body.name || '').trim() || 'Anonymous';
+  const answers = req.body.answers || {}; // { [questionId]: answer }
+
+  let score = 0;
+  const review = quiz.questions.map(q => {
+    const given = answers[q.id];
+    const isCorrect = given === q.correctAnswer;
+    if (isCorrect) score++;
+    return {
+      id: q.id,
+      question: q.question,
+      options: q.options,
+      yourAnswer: given ?? null,
+      correctAnswer: q.correctAnswer,
+      explanation: q.explanation || '',
+      isCorrect
+    };
+  });
+
+  const total = quiz.questions.length;
+  const response = { name, answers, score, total, submittedAt: new Date().toISOString() };
+  const qIdx = db.quizzes.findIndex(q => q.id === req.params.id);
+  if (!Array.isArray(db.quizzes[qIdx].responses)) db.quizzes[qIdx].responses = [];
+  db.quizzes[qIdx].responses.push(response);
+  writeDB(db);
+
+  res.json({ name, score, total, review });
+});
+
+// Reveal answers for an MS-Forms quiz (called after "Mark as complete").
+app.get('/api/quizzes/:id/answers', (req, res) => {
+  const db = readDB();
+  const quiz = db.quizzes.find(q => q.id === req.params.id);
+  if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+  const review = quiz.questions.map(q => ({
+    id: q.id,
+    question: q.question,
+    options: q.options,
+    correctAnswer: q.correctAnswer,
+    explanation: q.explanation || ''
+  }));
+  res.json({ title: quiz.title, review });
+});
+
+// ─── KNOWLEDGE BOARD (shared across both sides) ───
+app.get('/api/knowledge', (req, res) => {
+  const db = readDB();
+  const list = [...(db.knowledgeBoard || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  res.json(list);
+});
+
+app.post('/api/knowledge', (req, res) => {
+  const db = readDB();
+  if (!Array.isArray(db.knowledgeBoard)) db.knowledgeBoard = [];
+  const item = {
+    id: `kb-${uuidv4().slice(0, 8)}`,
+    label: req.body.label || 'Untitled',
+    url: req.body.url || '#',
+    icon: req.body.icon || 'ri-links-line',
+    category: req.body.category || 'Resources',
+    order: typeof req.body.order === 'number' ? req.body.order : db.knowledgeBoard.length
+  };
+  db.knowledgeBoard.push(item);
+  writeDB(db);
+  res.json(item);
+});
+
+app.put('/api/knowledge/:id', (req, res) => {
+  const db = readDB();
+  const idx = (db.knowledgeBoard || []).findIndex(k => k.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Item not found' });
+  db.knowledgeBoard[idx] = { ...db.knowledgeBoard[idx], ...req.body };
+  writeDB(db);
+  res.json(db.knowledgeBoard[idx]);
+});
+
+app.delete('/api/knowledge/:id', (req, res) => {
+  const db = readDB();
+  db.knowledgeBoard = (db.knowledgeBoard || []).filter(k => k.id !== req.params.id);
+  writeDB(db);
+  res.json({ success: true });
+});
+
 // ─── SURVEYS ───
 app.get('/api/surveys', (req, res) => {
   const db = readDB();
-  res.json(db.surveys);
+  res.json(req.query.side ? filterBySide(db.surveys, req.query.side) : db.surveys);
 });
 
 app.post('/api/surveys', (req, res) => {
@@ -231,6 +386,7 @@ app.post('/api/surveys', (req, res) => {
     id: `survey-${uuidv4().slice(0, 8)}`,
     presenterId: req.body.presenterId,
     month: req.body.month,
+    side: normalizeSide(req.body.side),
     topic: req.body.topic || '',
     status: 'active',
     votes: [],
