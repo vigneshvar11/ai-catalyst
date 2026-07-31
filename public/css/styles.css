@@ -1608,3 +1608,34 @@ body[data-side="dts"] .profile-btn { background: rgba(255,255,255,0.06); }
 .rv-correct { background: rgba(16,185,129,0.15); color: #059669; }
 .rv-wrong { background: rgba(239,68,68,0.12); color: #dc2626; }
 
+/* Quiz landing — empty state, live-join divider, disabled self-paced card */
+.quiz-empty {
+  text-align: center;
+  padding: 48px 20px 32px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  margin-bottom: 8px;
+}
+.quiz-live-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 4px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.quiz-live-divider::before,
+.quiz-live-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.sp-card-disabled { opacity: 0.72; }
+.sp-card-disabled .sp-title { color: var(--text-secondary); }
+
+

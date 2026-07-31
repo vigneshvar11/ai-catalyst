@@ -1520,9 +1520,9 @@ function renderQuizParticipant() {
   if (state.selfPacedState) { renderSelfPacedView(); return; }
 
   const container = document.getElementById('quiz-content');
-  const liveQuizzes = state.quizzes.filter(q => (q.type || 'live') === 'live');
   const selfPaced = state.quizzes.filter(q => q.type === 'self-paced');
   const msForms = state.quizzes.filter(q => q.type === 'ms-forms');
+  const hasAssigned = selfPaced.length || msForms.length;
 
   // Name entry: dropdown when members exist (EngSys), free text otherwise (DTS).
   const nameField = state.members.length
@@ -1534,26 +1534,45 @@ function renderQuizParticipant() {
        </div>`
     : `<div class="input-group"><i class="ri-user-line"></i><input id="quiz-name-input" placeholder="Enter your name"></div>`;
 
+  // The live-join panel is hidden behind a button (a room code only exists while
+  // an admin is actively hosting a live quiz).
+  const liveJoinPanel = state.showLiveJoin
+    ? `<div class="quiz-join-wrap" style="margin-top:16px;">
+         <div style="font-size:40px;margin-bottom:10px;">🎮</div>
+         <h3 style="margin-bottom:6px;">Join a Live Quiz</h3>
+         <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">Enter the room code the admin is sharing right now</p>
+         <div class="input-group"><i class="ri-key-2-line"></i>
+           <input id="quiz-room-code" placeholder="Room Code (e.g. ABC123)" style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;" maxlength="6">
+         </div>
+         ${nameField}
+         <button class="btn btn-primary btn-full" onclick="joinQuizRoom()"><i class="ri-login-box-line"></i> Join Quiz</button>
+         <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="toggleLiveJoin(false)">Cancel</button>
+       </div>`
+    : `<div style="text-align:center;margin-top:24px;">
+         <button class="btn btn-primary" onclick="toggleLiveJoin(true)"><i class="ri-live-line"></i> Attend a Live Quiz</button>
+         <p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Have a room code from the admin? Click to join.</p>
+       </div>`;
+
+  // Empty state when nothing is scheduled and live-join isn't open.
+  const emptyState = (!hasAssigned && !state.showLiveJoin)
+    ? `<div class="quiz-empty">
+         <div style="font-size:52px;margin-bottom:8px;">🗒️</div>
+         <h3 style="margin-bottom:6px;">No quiz assigned right now</h3>
+         <p style="color:var(--text-secondary);font-size:14px;max-width:420px;margin:0 auto;">When a self-paced quiz is scheduled, it'll show up here with its dates. If an admin is hosting a live quiz, join with a room code below.</p>
+       </div>`
+    : '';
+
   container.innerHTML = `
-    <div class="quiz-join-wrap">
-      <div style="font-size:48px;margin-bottom:12px;">🎮</div>
-      <h3 style="margin-bottom:8px;">Join a Live Quiz</h3>
-      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">Enter the room code provided by the admin</p>
-      <div class="input-group"><i class="ri-key-2-line"></i>
-        <input id="quiz-room-code" placeholder="Room Code (e.g. ABC123)" style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;" maxlength="6">
-      </div>
-      ${nameField}
-      <button class="btn btn-primary btn-full" onclick="joinQuizRoom()"><i class="ri-login-box-line"></i> Join Quiz</button>
-    </div>
+    ${emptyState}
 
     ${selfPaced.length ? `
-      <div class="section-header" style="margin-top:32px;"><h2 style="font-size:18px;"><i class="ri-timer-line"></i> Self-paced Quizzes</h2><p>Take these anytime within their window</p></div>
+      <div class="section-header"><h2 style="font-size:18px;"><i class="ri-timer-line"></i> Self-paced Quizzes</h2><p>Attend anytime within the open window</p></div>
       <div class="selfpaced-list">
         ${selfPaced.map(q => renderSelfPacedCard(q)).join('')}
       </div>` : ''}
 
     ${msForms.length ? `
-      <div class="section-header" style="margin-top:32px;"><h2 style="font-size:18px;"><i class="ri-file-list-3-line"></i> Form Quizzes</h2><p>Answer on Microsoft Forms, then reveal the answers here</p></div>
+      <div class="section-header" style="margin-top:28px;"><h2 style="font-size:18px;"><i class="ri-file-list-3-line"></i> Form Quizzes</h2><p>Answer on Microsoft Forms, then reveal the answers here</p></div>
       <div class="selfpaced-list">
         ${msForms.map(q => `
           <div class="sp-card">
@@ -1569,9 +1588,15 @@ function renderQuizParticipant() {
         `).join('')}
       </div>` : ''}
 
-    ${(!liveQuizzes.length && !selfPaced.length && !msForms.length) ? '' : ''}
+    ${hasAssigned ? '<div class="quiz-live-divider"><span>or</span></div>' : ''}
+    ${liveJoinPanel}
   `;
 }
+
+window.toggleLiveJoin = function(show) {
+  state.showLiveJoin = !!show;
+  renderQuizParticipant();
+};
 
 function renderSelfPacedCard(q) {
   const now = Date.now();
@@ -1581,21 +1606,34 @@ function renderSelfPacedCard(q) {
   const closed = closes && now > closes;
   const open = !notYet && !closed;
 
-  let pill;
-  if (notYet) pill = `<span class="timeleft-pill upcoming"><i class="ri-time-line"></i> ${timeUntil(opens)} to open</span>`;
-  else if (closed) pill = `<span class="timeleft-pill" style="background:var(--bg-hover);color:var(--text-tertiary);"><i class="ri-lock-line"></i> Closed</span>`;
-  else if (closes) pill = `<span class="timeleft-pill ${closes - now < 3600000 ? 'closing' : ''}" data-closes="${closes}"><i class="ri-hourglass-line"></i> ${timeLeft(closes)} left</span>`;
-  else pill = `<span class="timeleft-pill"><i class="ri-infinity-line"></i> Always open</span>`;
+  const fmt = (ms) => new Date(ms).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  // Status pill + a short tagline describing the window.
+  let pill, tagline;
+  if (notYet) {
+    pill = `<span class="timeleft-pill upcoming"><i class="ri-time-line"></i> Opens in ${timeUntil(opens)}</span>`;
+    tagline = `Opens ${fmt(opens)}${closes ? ` · closes ${fmt(closes)}` : ''}`;
+  } else if (closed) {
+    pill = `<span class="timeleft-pill" style="background:var(--bg-hover);color:var(--text-tertiary);"><i class="ri-lock-line"></i> Closed</span>`;
+    tagline = `Closed ${fmt(closes)}`;
+  } else if (closes) {
+    pill = `<span class="timeleft-pill ${closes - now < 3600000 ? 'closing' : ''}" data-closes="${closes}"><i class="ri-hourglass-line"></i> ${timeLeft(closes)} left</span>`;
+    tagline = `Open now · closes ${fmt(closes)}`;
+  } else {
+    pill = `<span class="timeleft-pill"><i class="ri-infinity-line"></i> Always open</span>`;
+    tagline = 'Open now · no closing date';
+  }
 
   return `
-    <div class="sp-card">
+    <div class="sp-card ${open ? '' : 'sp-card-disabled'}">
       <div class="sp-meta">
         <div class="sp-title">${escapeHtml(q.title)} <span class="quiz-type-badge qtb-self-paced"><i class="ri-timer-line"></i> Self-paced</span></div>
         <div class="sp-sub">Month ${q.month} · ${q.questions.length} question${q.questions.length !== 1 ? 's' : ''}</div>
+        <div class="sp-sub" style="color:var(--text-secondary);"><i class="ri-calendar-event-line"></i> ${tagline}</div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         ${pill}
-        <button class="btn btn-primary btn-sm" ${open ? '' : 'disabled style="opacity:.5;cursor:not-allowed;"'} onclick="${open ? `startSelfPaced('${q.id}')` : ''}"><i class="ri-play-line"></i> ${open ? 'Start' : 'Unavailable'}</button>
+        <button class="btn btn-primary btn-sm" ${open ? '' : 'disabled style="opacity:.5;cursor:not-allowed;"'} onclick="${open ? `startSelfPaced('${q.id}')` : ''}"><i class="ri-play-line"></i> ${notYet ? 'Not open yet' : closed ? 'Closed' : 'Start'}</button>
       </div>
     </div>
   `;
