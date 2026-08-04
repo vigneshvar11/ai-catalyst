@@ -76,7 +76,18 @@ try {
     # If db.json is locally modified (live runtime data), preserve it across pull.
     $dbDirty = ((git status --porcelain -- $DbRelPath) | Where-Object { $_.Trim() -ne '' }).Count -gt 0
     $localChanges = @(git status --porcelain)
-    $otherChanges = @($localChanges | Where-Object { $_ -notmatch ('\s' + [regex]::Escape($DbRelPath) + '$') })
+    $ignoredLocalPatterns = @(
+        '^\?\?\s+backups/',
+        '^\?\?\s+package-lock\.json$'
+    )
+    $otherChanges = @($localChanges | Where-Object {
+        $line = $_
+        if ($line -match ('\s' + [regex]::Escape($DbRelPath) + '$')) { return $false }
+        foreach ($pat in $ignoredLocalPatterns) {
+            if ($line -match $pat) { return $false }
+        }
+        return ($line.Trim() -ne '')
+    })
     if ($otherChanges.Count -gt 0) {
         Write-Host "  Local changes detected (outside data/db.json):" -ForegroundColor Yellow
         $otherChanges | ForEach-Object { Write-Host ("    " + $_) -ForegroundColor Yellow }
