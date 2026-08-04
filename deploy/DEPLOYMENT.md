@@ -6,9 +6,9 @@ This guide migrates the EMBRACE AI dashboard from Render (third-party) to:
 - **Source code**: code.siemens.com (Siemens GitLab)
 - **Hosting**: `SN1W7220.AD001.SIEMENS.NET` (Windows Server + direct Node.js service)
 
-Architecture on the server:
+Architecture on the server (safe default):
 ```
-Browser → Node.js (port 80) → data/db.json
+Browser → Node.js (dedicated app port, default 8080) → data/db.json
    → Socket.IO (same process)
 ```
 
@@ -97,20 +97,21 @@ powershell -ExecutionPolicy Bypass -File .\deploy\windows\install-service.ps1
 This creates a service called **EmbraceAI** that:
 - Runs `node server.js` automatically on boot
 - Restarts on crashes (5-second delay)
+- Uses a dedicated app port by default (`PORT=8080`) so IIS/port 80 is untouched
 - Logs to `C:\apps\embrace-ai\logs\`
 
-### Step 4: Switch to Direct Hosting
+### Step 4: Keep Existing IIS Untouched
 
 ```powershell
-cmd /c .\deploy\windows\switch-to-direct.bat
+cmd /c .\deploy\windows\host-without-iis.bat
 ```
 
-This stops IIS, moves the service to port 80, and exposes the app directly.
+This keeps IIS and existing sites intact and exposes EMBRACE AI on a dedicated port (default 8080).
 
 ### Step 5: Verify
 
-1. On the server, open: **http://localhost**
-2. From your workstation, open: **http://SN1W7220.AD001.SIEMENS.NET**
+1. On the server, open: **http://localhost:8080**
+2. From your workstation, open: **http://SN1W7220.AD001.SIEMENS.NET:8080**
 3. Test each feature:
    - [ ] Dashboard loads with countdown, activity card, top 3
    - [ ] Leaderboard displays all 16 members
@@ -142,6 +143,7 @@ See `.gitlab-ci.yml` — uncomment the deploy stage after installing a GitLab Ru
 ### Data Safety
 
 Before every manual update, the server script creates a timestamped backup under `C:\apps\embrace-ai\backups\`.
+It also preserves local runtime `data/db.json` across pull/restart and applies `git update-index --skip-worktree data/db.json` to prevent future pull conflicts.
 
 To restore a previous snapshot:
 
@@ -162,9 +164,8 @@ powershell -ExecutionPolicy Bypass -File C:\apps\embrace-ai\deploy\windows\resto
 | Issue | Fix |
 |-------|-----|
 | App not loading | `nssm status EmbraceAI` — if not Running, check `C:\apps\embrace-ai\logs\` |
-| Port 80 conflict | Run `switch-to-direct.bat` again to stop IIS services |
-| Port 80 still busy | Check `netstat -ano | findstr ":80 "` and stop the conflicting process |
-| WebSocket not connecting | Confirm the service is running on port 80 and the browser is using the same origin |
+| Port conflict | Use `host-without-iis.bat` to move EMBRACE AI to a free dedicated app port |
+| WebSocket not connecting | Confirm the service is running on the configured app port and the browser is using that same origin |
 | `db.json` permissions | Ensure the service account has read/write on `C:\apps\embrace-ai\data\` |
 
 ### Useful Commands
@@ -173,8 +174,9 @@ powershell -ExecutionPolicy Bypass -File C:\apps\embrace-ai\deploy\windows\resto
 nssm status EmbraceAI       # Check if running
 nssm restart EmbraceAI      # Restart after code changes
 nssm stop EmbraceAI         # Stop the service
+nssm get EmbraceAI AppEnvironmentExtra  # Show NODE_ENV/PORT
 Get-Content C:\apps\embrace-ai\logs\embrace-ai-stderr.log -Tail 50  # Recent errors
-cmd /c deploy\windows\switch-to-direct.bat  # Reapply direct hosting settings
+cmd /c deploy\windows\host-without-iis.bat  # Keep IIS untouched, run on dedicated app port
 ```
 
 ---

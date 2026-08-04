@@ -5,7 +5,8 @@
 
 .DESCRIPTION
     Creates a service named "EmbraceAI" that auto-starts with the server.
-    The service runs node server.js from C:\apps\embrace-ai on port 80.
+    The service runs node server.js from C:\apps\embrace-ai on a dedicated
+    app port (default: 8080) to avoid IIS/port-80 conflicts.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -13,6 +14,12 @@ $ServiceName = 'EmbraceAI'
 $AppDir = 'C:\apps\embrace-ai'
 $NodePath = (Get-Command node).Source
 $NssmPath = 'C:\tools\nssm\nssm.exe'
+$DefaultPort = if ($env:EMBRACE_AI_PORT) { $env:EMBRACE_AI_PORT } else { '8080' }
+
+if ($DefaultPort -notmatch '^\d+$') {
+    Write-Error ('Invalid EMBRACE_AI_PORT value: ' + $DefaultPort)
+    exit 1
+}
 
 Write-Host ''
 Write-Host '=== Installing EmbraceAI as Windows Service ===' -ForegroundColor Cyan
@@ -59,7 +66,7 @@ New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 
 & $NssmPath set $ServiceName AppExit Default Restart
 & $NssmPath set $ServiceName AppRestartDelay 5000
-& $NssmPath set $ServiceName AppEnvironmentExtra 'NODE_ENV=production' 'PORT=80'
+& $NssmPath set $ServiceName AppEnvironmentExtra 'NODE_ENV=production' ('PORT=' + $DefaultPort)
 
 Write-Host '  Starting service...' -ForegroundColor Yellow
 & $NssmPath start $ServiceName
@@ -68,7 +75,7 @@ Start-Sleep -Seconds 3
 $svc = Get-Service -Name $ServiceName
 if ($svc.Status -eq 'Running') {
     Write-Host ('`n  Service ' + $ServiceName + ' is RUNNING') -ForegroundColor Green
-    Write-Host '  App available at: http://localhost and http://localhost:80' -ForegroundColor Green
+    Write-Host ('  App available at: http://localhost:' + $DefaultPort) -ForegroundColor Green
 } else {
     Write-Host ('`n  Service status: ' + $svc.Status) -ForegroundColor Red
     Write-Host ('  Check logs at: ' + $LogDir) -ForegroundColor Yellow
